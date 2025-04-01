@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "581496518383",
+    "project_id": "agri-d6fbb",
+    "storage_bucket": "agri-d6fbb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:581496518383:android:1d8d96c77a8a9aea7c8d1a",
+        "android_client_info": {
+          "package_name": "com.example.agri_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOJRXvdFJFcwVAfA5AJs_i-SDoqku9WIU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
