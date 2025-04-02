@@ -34,7 +34,7 @@ void main() async {
   // Initialize timezone
   tz.initializeTimeZones();
 
-  // ✅ Initialize notifications via NotificationService
+  //  Initialize notifications via NotificationService
   await NotificationService.initNotifications();
 
   DateTime now = DateTime.now().add(Duration(seconds: 5));
