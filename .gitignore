@@ -48,5 +48,6 @@ app.*.map.json
 
 pubspec.lock
 .vscode
+android/java_pid*.hprof
 
 
