@@ -209,59 +209,56 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
     );
   }
 
-  Future<void> _saveEvent(
-    EventExpenseProvider eventExpenseProvider,
-    BuildContext context,
-  ) async {
-    if (_titleController.text.isEmpty) {
-      showCustomSnackBar(context, "Please enter a title");
-      return;
-    }
-
-    if (_selectedType == "Expense" &&
-        (_amountController.text.isEmpty ||
-            double.tryParse(_amountController.text) == null)) {
-      showCustomSnackBar(context, "Please enter a valid expense amount");
-      return;
-    }
-
-    String finalCategory =
-        _selectedCategory == "Other"
-            ? _customCategoryController.text
-            : _selectedCategory!;
-
-    if (finalCategory.isEmpty) {
-      showCustomSnackBar(context, "Please enter a category");
-      return;
-    }
-
-    try {
-      await eventExpenseProvider.addEventExpense(
-        EventExpense(
-          title: _titleController.text,
-          amount:
-              _selectedType == "Expense"
-                  ? double.parse(_amountController.text)
-                  : null,
-          category: finalCategory,
-          date: widget.selectedDate,
-          type: _selectedType,
-          reminder: _selectedReminderTime,
-        ),
-      );
-
-      // Schedule notification if a reminder is set
-      if (_selectedReminderTime != null) {
-        await NotificationService.scheduleNotification(
-          _titleController.text,
-          _selectedReminderTime!,
-        );
-      }
-
-      showCustomSnackBar(context, "Added successfully");
-      Navigator.pop(context);
-    } catch (e) {
-      showCustomSnackBar(context, "Failed to add: $e");
-    }
+ Future<void> _saveEvent(
+  EventExpenseProvider eventExpenseProvider,
+  BuildContext context,
+) async {
+  if (_titleController.text.isEmpty) {
+    showCustomSnackBar(context, "Please enter a title");
+    return;
   }
+
+  if (_selectedType == "Expense" &&
+      (_amountController.text.isEmpty ||
+          double.tryParse(_amountController.text) == null)) {
+    showCustomSnackBar(context, "Please enter a valid expense amount");
+    return;
+  }
+
+  String finalCategory =
+      _selectedCategory == "Other" ? _customCategoryController.text : _selectedCategory!;
+
+  if (finalCategory.isEmpty) {
+    showCustomSnackBar(context, "Please enter a category");
+    return;
+  }
+
+  try {
+    // Add event and get the generated ID
+    final event = EventExpense(
+      id: DateTime.now().millisecondsSinceEpoch.toString(), // Generate a unique ID
+      title: _titleController.text,
+      amount: _selectedType == "Expense" ? double.parse(_amountController.text) : null,
+      category: finalCategory,
+      date: widget.selectedDate,
+      type: _selectedType,
+      reminder: _selectedReminderTime,
+    );
+
+    await eventExpenseProvider.addEventExpense(event);
+
+    // Schedule notification if a reminder is set
+    if (_selectedReminderTime != null) {
+      await NotificationService.scheduleNotification(
+        _titleController.text,
+        _selectedReminderTime!,
+      );
+    }
+
+    showCustomSnackBar(context, "Added successfully");
+    Navigator.pop(context, true); // Return true to refresh the calendar
+  } catch (e) {
+    showCustomSnackBar(context, "Failed to add: $e");
+  }
+}
 }

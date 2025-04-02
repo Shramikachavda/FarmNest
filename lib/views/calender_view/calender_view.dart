@@ -1,5 +1,6 @@
 import 'package:agri_flutter/core/color_const.dart';
 import 'package:agri_flutter/providers/eventExpense.dart/event_expense_provider.dart';
+import 'package:agri_flutter/providers/eventExpense.dart/graph.dart';
 import 'package:agri_flutter/views/calender_view/add_event_expense.dart';
 import 'package:agri_flutter/services/noti_service.dart'; // Import NotiService
 import 'package:flutter/material.dart';
@@ -19,16 +20,10 @@ class _CalenderViewState extends State<CalenderView> {
   CalendarFormat formatMonth = CalendarFormat.month;
   DateTime focusedDay = DateTime.now();
   DateTime selectedDay = DateTime.now();
-  late NotificationService notiService; // Declare NotiService
 
   @override
   void initState() {
     super.initState();
-
-    // Initialize NotiService
-    notiService = NotificationService();
-    NotificationService.initNotifications(); // ✅ Correct method name
-    // Call this in main.dart as well
 
     // Fetch data when calendar opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -48,7 +43,19 @@ class _CalenderViewState extends State<CalenderView> {
     final eventExpenseProvider = Provider.of<EventExpenseProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Farm Calendar")),
+      appBar: AppBar(
+        title: const Text("Farm Calendar"),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (context) => Graph()));
+            },
+            icon: Icon(Icons.grain_sharp),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final result = await Navigator.push(

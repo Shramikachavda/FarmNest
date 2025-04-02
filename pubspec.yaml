@@ -54,6 +54,8 @@ dependencies:
   timezone: ^0.10.0
   android_alarm_manager_plus: ^4.0.7
   permission_handler: ^11.4.0
+  flutter_svg: ^2.0.17
+  fl_chart: ^0.70.2
   
 
 dev_dependencies:
