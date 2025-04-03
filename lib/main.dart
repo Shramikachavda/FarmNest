@@ -7,6 +7,7 @@ import 'package:agri_flutter/providers/location_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/cart_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/favorite_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/product_provider.dart';
+import 'package:agri_flutter/providers/password_provider.dart';
 import 'package:agri_flutter/services/noti_service.dart';
 import 'package:agri_flutter/theme/theme.dart';
 import 'package:agri_flutter/views/splash_screen.dart';
@@ -52,6 +53,8 @@ void main() async {
         ChangeNotifierProvider(create: (context) => CropDetailsProvider()),
         ChangeNotifierProvider(create: (context) => LocationProvider()),
         ChangeNotifierProvider(create: (context) => WeatherViewModel()),
+        ChangeNotifierProvider(create: (context) => PasswordProvider()),
+        ChangeNotifierProvider(create: (context) => ConfirmPasswordProvider()),
       ],
       child: MyApp(),
     ),
@@ -64,7 +67,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: Size(360, 690),
+      designSize: Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {

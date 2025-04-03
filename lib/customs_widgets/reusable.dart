@@ -62,15 +62,25 @@ Future customNavigation(BuildContext context, Widget newPath) {
 // Small text (Font size: 14)
 Widget smallText(String text) => Text(text, style: TextStyle(fontSize: 14));
 
+Widget smallText16(String text , {Color? color}) => Text(text, style: TextStyle(fontSize: 16));
+
 // Medium text (Font size: 20)
-Widget mediumText(String text) => Text(text, style: TextStyle(fontSize: 20));
+Widget mediumText(String text  , {Color? color}) => Text(text, style: TextStyle(fontSize: 20));
 
 // Large text (Font size: 24)
 Widget largeText(String text) => Text(text, style: TextStyle(fontSize: 24));
 
+//
+// Large text (Font size: 28)
+Widget largeText28(String text) => Text(text, style: TextStyle(fontSize: 28));
+
 // Semi-bold text (Font size: 20, Weight: Semi-bold)
 Widget semiBoldText(String text) =>
     Text(text, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600));
+
+//
+Widget semiBoldText24(String text) =>
+    Text(text, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600));
 
 // Bold text (Font size: 20, Weight: Bold)
 Widget boldText(String text) =>

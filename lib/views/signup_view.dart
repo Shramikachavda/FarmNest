@@ -4,7 +4,12 @@ import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/services/firebase_auth.dart';
 import 'package:agri_flutter/services/hive_user_service.dart';
 import 'package:agri_flutter/views/login_view.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/password_provider.dart';
 
 class SignupView extends StatefulWidget {
   const SignupView({super.key});
@@ -25,16 +30,23 @@ class _SignupViewState extends State<SignupView> {
   void _validateAndSignup() async {
     final validate = _formKey.currentState!.validate();
     if (validate) {
-      try { 
-        final user = await _fireBaseAuth.signUp(
+      try {
+        User? user = await _fireBaseAuth.signUp(
           _nameController.text.trim(),
           _emailController.text.trim(),
-          _passwordController.text.trim(),
+          _passwordController.text.trim()
         );
+
+
+
+        print("Verification email sent! Check your inbox.");
 
         if (user != null) {
           // ✅ Store user's name in Hive using UID as key
-          await _hiveService.saveUserName(user.uid, _nameController.text.trim());
+          await _hiveService.saveUserName(
+            user.uid,
+            _nameController.text.trim(),
+          );
 
           // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
@@ -62,95 +74,154 @@ class _SignupViewState extends State<SignupView> {
     final textColor = theme.colorScheme.onSurface;
 
     return Scaffold(
+      appBar: AppBar(),
       backgroundColor: theme.scaffoldBackgroundColor,
       body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: customText("Create your account", textColor, 32),
-                  ),
-                  Row(
-                    children: [
-                      const SizedBox(width: 10),
-                      customText("Already have an account?", textColor, 16),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LoginView(),
-                            ),
-                          );
-                        },
-                        child: customText("Sign in", theme.primaryColor, 16),
+        padding: EdgeInsets.symmetric(horizontal: 30.w),
+        child: SingleChildScrollView(
+
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: 50.h,) ,
+                customText("Create your account", textColor, 32),
+
+                //sign in
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+
+                  children: [
+                    customText("Already have an account?", textColor, 16),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginView(),
+                          ),
+                        );
+                      },
+                      child: customText("Sign in", theme.primaryColor, 18),
+                    ),
+                  ],
+                ),
+                 SizedBox(height: 40.h),
+
+                //name
+                CustomFormField(
+                  keyboardType: TextInputType.text,
+                  hintText: 'Enter your full name',
+                  label: 'Full Name',
+                  textEditingController: _nameController,
+                  icon: Icon(Icons.person, color: theme.iconTheme.color),
+                  validator:
+                      (value)  {
+                       if(value== null || value.isEmpty){
+                         return  'Please enter your full name';
+                       }
+                       return null;
+                      }
+
+                ),
+                SizedBox(height: 24.h),
+
+                //email
+                CustomFormField(
+                  keyboardType: TextInputType.emailAddress,
+                  hintText: 'Enter your email address',
+                  label: 'Email Address',
+                  textEditingController: _emailController,
+                  icon: Icon(Icons.email, color: theme.iconTheme.color),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    if (!RegExp(
+                      r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$",
+                    ).hasMatch(value)) {
+                      return 'Enter a valid email';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 24.h),
+
+                //password
+                // Password Field
+                Selector<PasswordProvider, bool>(
+                  selector: (context, provider) => provider.isObscure,
+                  builder: (context, isObscure, child) {
+                    return CustomFormField(
+                      keyboardType: TextInputType.text,
+                      hintText: 'Enter your password',
+                      label: 'Password',
+                      textEditingController: _passwordController,
+                      obscureText: isObscure,
+                      isPasswordField: true,
+
+                      icon: Icon(
+                        isObscure ? Icons.visibility_off : Icons.visibility,
+                        color: Theme.of(context).iconTheme.color,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  CustomFormField(
-                    keyboardType: TextInputType.text,
-                    hintText: 'Enter your full name',
-                    label: 'Full Name',
-                    textEditingController: _nameController,
-                    icon: Icon(Icons.person, color: theme.iconTheme.color),
-                    validator: (value) =>
-                        value == null || value.isEmpty ? 'Please enter your full name' : null,
-                  ),
-                  CustomFormField(
-                    keyboardType: TextInputType.emailAddress,
-                    hintText: 'Enter your email address',
-                    label: 'Email Address',
-                    textEditingController: _emailController,
-                    icon: Icon(Icons.email, color: theme.iconTheme.color),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      if (!RegExp(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$").hasMatch(value)) {
-                        return 'Enter a valid email';
-                      }
-                      return null;
-                    },
-                  ),
-                  CustomFormField(
-                    keyboardType: TextInputType.visiblePassword,
-                    hintText: 'Enter your password',
-                    label: 'Password',
-                    textEditingController: _passwordController,
-                    icon: Icon(Icons.lock, color: theme.iconTheme.color),
-                    obscureText: true,
-                    validator: (value) =>
-                        (value == null || value.length < 6) ? 'Password must be at least 6 characters' : null,
-                  ),
-                  CustomFormField(
-                    keyboardType: TextInputType.visiblePassword,
-                    hintText: 'Confirm your password',
-                    label: 'Confirm Password',
-                    textEditingController: _confirmPasswordController,
-                    icon: Icon(Icons.lock, color: theme.iconTheme.color),
-                    obscureText: true,
-                    validator: (value) =>
-                        (value == null || value != _passwordController.text) ? 'Passwords do not match' : null,
-                  ),
-                  CustomButton(
-                    onClick: _validateAndSignup,
-                    buttonName: 'Sign up',
-                    buttonColor: theme.primaryColor,
-                    textColor: textColor,
-                  ),
-                ],
-              ),
+                      onTogglePassword: () => context.read<PasswordProvider>().toggleObscure(),
+                      validator: (value) =>
+                      (value == null || value.isEmpty) ? 'Password cannot be empty' : null,
+                    );
+                  },
+                ),
+                SizedBox(height: 24.h),
+
+                 // Confirm Password Field
+                Selector<ConfirmPasswordProvider, bool>(
+                  selector: (context, provider) => provider.isObscure,
+                  builder: (context, isObscure, child) {
+                    return CustomFormField(
+                      keyboardType: TextInputType.text,
+                      hintText: 'Confirm your password',
+                      label: 'Confirm Password',
+                      textEditingController: _confirmPasswordController,
+                      obscureText: isObscure,
+                      isPasswordField: true,
+
+                      icon: Icon(
+                        isObscure ? Icons.visibility_off : Icons.visibility,
+                        color: Theme.of(context).iconTheme.color,
+                      ),
+                      onTogglePassword: () => context.read<ConfirmPasswordProvider>().toggleObscure(),
+                      validator: (value) => (value == null || value != _passwordController.text)
+                          ? 'Passwords do not match'
+                          : null,
+                    );
+                  },
+                ),
+                SizedBox(height: 24.h),
+
+                //signup buttom
+                CustomButton(
+                  onClick: _validateAndSignup,
+                  buttonName: 'Sign up',
+                  buttonColor: theme.primaryColor,
+                  textColor: textColor,
+                ),
+              ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _emailController.dispose();
+    _confirmPasswordController.dispose();
+    _passwordController.dispose();
+    _nameController.dispose();
   }
 }

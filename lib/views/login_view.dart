@@ -6,6 +6,12 @@ import 'package:agri_flutter/views/home_view.dart';
 import 'package:agri_flutter/views/signup_view.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+
+import '../core/image.dart' show ImageConst;
+import '../providers/password_provider.dart' show PasswordProvider;
+import 'forget_password.dart' show ForgotPasswordScreen;
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -19,6 +25,7 @@ class _LoginViewState extends State<LoginView> {
   final TextEditingController _passwordController = TextEditingController();
   final _formkey = GlobalKey<FormState>();
   final FireBaseAuth _fireBaseAuth = FireBaseAuth();
+
   // Initialize FirebaseAuth
 
   Future<void> loginUser() async {
@@ -37,7 +44,8 @@ class _LoginViewState extends State<LoginView> {
         }
 
         // ✅ Navigate to HomeView only if login is successful
-      } on FirebaseAuthException catch (e) {
+      }
+      on FirebaseAuthException catch (e) {
         // ✅ Handle Firebase Authentication errors
         String errorMessage = "Login failed. Please try again.";
 
@@ -64,18 +72,30 @@ class _LoginViewState extends State<LoginView> {
           errorMessage = "Login failed. Error: ${e.message ?? "Unknown error"}";
         }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
-        );
-      } catch (e) {
-        // ✅ Handle any other errors
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Error: ${e.toString()}"),
-            backgroundColor: Colors.red,
-          ),
-        );
+        if (mounted) {
+
+
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+
+      }catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Error: ${e.toString()}"),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
+
     }
   }
 
@@ -86,7 +106,7 @@ class _LoginViewState extends State<LoginView> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor, // Adapt to theme
       body: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: EdgeInsets.symmetric(horizontal: 30.w),
         child: Center(
           child: Form(
             key: _formkey,
@@ -94,15 +114,17 @@ class _LoginViewState extends State<LoginView> {
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.asset(
-                    "assets/image/farmnest.png",
-                    width: 150,
-                    height: 150,
-                  ),
-                  const SizedBox(height: 30),
+                  //logo
+                  Image.asset(ImageConst.logo, width: 180.w, height: 180.h),
+                  SizedBox(height: 50.h),
 
-                  // ✅ Email Field with Validation
+                  //welcome back text
+                  largeText28("Welcome back"),
+                  SizedBox(height: 24.h),
+
+                  //email
                   CustomFormField(
                     hintText: "Enter Your Email",
                     keyboardType: TextInputType.emailAddress,
@@ -122,68 +144,73 @@ class _LoginViewState extends State<LoginView> {
                       return null;
                     },
                   ),
+                  SizedBox(height: 24.h),
 
-                  // ✅ Password Field with Validation
-                  CustomFormField(
-                    hintText: "Enter Your Password",
-                    keyboardType: TextInputType.text,
-                    label: 'Password',
-                    textEditingController: _passwordController,
-                    obscureText: true, // Hide password
-                    icon: Icon(Icons.lock, color: theme.iconTheme.color),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please enter password";
-                      }
-                      if (value.length < 6) {
-                        return "Password must be at least 6 characters";
-                      }
-                      return null;
+                  //password
+                  Selector<PasswordProvider, bool>(
+                    selector: (context, provider) => provider.isObscure,
+                    builder: (context, isObscure, child) {
+                      return CustomFormField(
+                        keyboardType: TextInputType.text,
+                        hintText: 'Enter your password',
+                        label: 'Password',
+                        textEditingController: _passwordController,
+                        obscureText: isObscure,
+                        isPasswordField: true,
+
+                        icon: Icon(
+                          isObscure ? Icons.visibility_off : Icons.visibility,
+                          color: Theme.of(context).iconTheme.color,
+                        ),
+                        onTogglePassword: () => context.read<PasswordProvider>().toggleObscure(),
+                        validator: (value) =>
+                        (value == null || value.isEmpty) ? 'Password cannot be empty' : null,
+                      );
                     },
                   ),
+                  SizedBox(height: 20.h),
 
-                  SizedBox(height: 10),
+
+                  //forgot password
                   GestureDetector(
-                    onTap: () {},
-                    child: customText(
-                      "Forgot Password?",
-                      theme.primaryColor,
-                      16,
-                    ),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ForgotPasswordScreen(),
+                        ),
+                      );
+                    },
+                    child: Text("Forgot password?", style: TextStyle(fontSize: 16 ,   color: Theme.of(context).primaryColor,)),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 20.h),
 
+                  //signin
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      customText(
+                      smallText16(
                         "Don't have an account?",
-                        theme.textTheme.bodyMedium!.color!,
-                        16,
+
                       ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
+                      SizedBox(width: 5.w,) ,
+
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => SignupView(),
                             ),
                           );
                         },
-                        child: Text(
-                          "Sign up",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: theme.primaryColor,
-                          ),
-                        ),
+                        child: Text("Sign up", style: TextStyle(fontSize: 16 ,   color: Theme.of(context).primaryColor,)),
                       ),
                     ],
                   ),
+                  SizedBox(height: 20.h),
 
-                  // ✅ Sign In Button with Firebase Validation
+                  //signin button
                   CustomButton(
-                    onClick: loginUser, // Use the updated login function
+                    onClick: loginUser   , // Use the updated login function
                     buttonName: 'Sign In',
                     buttonColor: theme.primaryColor,
                     textColor:

@@ -9,6 +9,7 @@ import 'package:agri_flutter/views/onboard_screen.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -60,17 +61,20 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Center(
-        child: TweenAnimationBuilder(
-          tween: Tween<double>(begin: 0.0, end: 1.0),
-          duration: const Duration(seconds: 2),
-          curve: Curves.easeIn,
-          builder: (context, value, child) {
-            return Opacity(
-              opacity: value,
-              child: Image.asset(ImageConst.logo, width: 150, height: 150),
-            );
-          },
+      body: Padding(
+        padding:  EdgeInsets.symmetric(horizontal: 97.5.w , vertical: 301.58.h),
+        child: Center(
+          child: TweenAnimationBuilder(
+            tween: Tween<double>(begin: 0.0, end: 1.0),
+            duration: const Duration(seconds: 2),
+            curve: Curves.easeIn,
+            builder: (context, value, child) {
+              return Opacity(
+                opacity: value,
+                child: Image.asset(ImageConst.logoName, width: 180.w, height: 180.h),
+              );
+            },
+          ),
         ),
       ),
     );
