@@ -4,6 +4,7 @@ import 'package:agri_flutter/customs_widgets/custom_onboard.dart';
 import 'package:agri_flutter/repo/onboard.dart';
 import 'package:flutter/material.dart';
 import 'package:agri_flutter/views/login_view.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardScreen extends StatefulWidget {
@@ -60,12 +61,15 @@ class _OnboardScreenState extends State<OnboardScreen> {
             children: [
               TextButton(
                 onPressed: _completeOnboarding, // Mark onboarding as completed
-                child: Text("Skip"),
+                child: Text("Skip" ),
               ),
               SmoothPageIndicator(
                 controller: _pageController,
                 count: 3,
                 effect: WormEffect(
+                  //radius: 5 ,
+                  dotHeight: 9.h,
+                  dotWidth: 9.w,
                   activeDotColor: ColorConst.midGreen,
                   dotColor: ColorConst.green,
                 ),

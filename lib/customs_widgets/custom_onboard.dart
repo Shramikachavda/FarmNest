@@ -1,6 +1,7 @@
 import 'package:agri_flutter/core/image.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomOnboard extends StatelessWidget {
   const CustomOnboard({
@@ -19,24 +20,26 @@ class CustomOnboard extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(ImageConst.logo, width: 120, height: 120),
-            SizedBox(height: 40),
-            Container(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              width: 300,
-              height: 300,
-              child: Image.asset(image, fit: BoxFit.cover),
-            ),
-            SizedBox(height: 20),
-            largeBold(title),
-            // Text(title),
-            SizedBox(height: 20),
-            smallText(description),
-          ],
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 65.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(ImageConst.logoName, width: 140.w, height: 140.h),
+              SizedBox(height: 24.h),
+              Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                width: 300.w,
+                height: 300.h,
+                child: Image.asset(image, fit: BoxFit.fill),
+              ),
+              SizedBox(height: 20.h),
+              largeBold(title),
+              SizedBox(height: 20.h),
+              Text(description, textAlign: TextAlign.justify, maxLines: 3),
+            ],
+          ),
         ),
       ),
     );
