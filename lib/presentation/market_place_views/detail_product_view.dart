@@ -96,7 +96,7 @@ class _DetailProductViewState extends State<DetailProductView> {
                   padding: EdgeInsets.all(5.r),
                   child: Text(
                     '${product.quantity}', // ✅ Now dynamically updates
-                    style: Theme.of(context).textTheme.bodySmall,
+
                   ),
                 ),
                 InkWell(

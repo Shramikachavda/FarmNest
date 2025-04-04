@@ -12,7 +12,7 @@ Widget customIcon(BuildContext context, String icon) {
 }
 
 Widget customIconButton(BuildContext context, String icon, VoidCallback onTap) {
-  final theme = Theme.of(context);
+  final theme = themeColor();
   final isDarkMode = theme.brightness == Brightness.dark;
 
   return Container(

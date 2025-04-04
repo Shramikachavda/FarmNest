@@ -6,12 +6,14 @@ import 'package:agri_flutter/core/drop_down_value.dart';
 import 'package:agri_flutter/models/crop_details.dart';
 
 import 'package:agri_flutter/providers/farm_state_provider.dart/crop_details_provider.dart';
-import 'package:agri_flutter/services/firestore_event_expense.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../services/firestore.dart';
 
 class CropDetailView extends StatefulWidget {
   final String? cropId; // Optional cropId parameter

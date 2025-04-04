@@ -2,15 +2,14 @@ import 'package:agri_flutter/core/image.dart';
 import 'package:agri_flutter/providers/location_provider.dart';
 import 'package:agri_flutter/repo/onboard.dart';
 import 'package:agri_flutter/services/firebase_auth.dart';
-import 'package:agri_flutter/services/location.dart';
 import 'package:agri_flutter/presentation/home_view.dart';
 import 'package:agri_flutter/presentation/login_view.dart';
 import 'package:agri_flutter/presentation/onboard_screen.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import '../theme/theme.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,6 +20,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
 
+  //di
   final FireBaseAuth _fireBaseAuth = FireBaseAuth();
   final OnboardingRepository _onboardingRepository = OnboardingRepository();
 
@@ -32,9 +32,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _initializeApp() async {
     await Provider.of<LocationProvider>(context, listen: false).getLocation();
-    
+
     // Check onboarding status
-    bool isOnboardingCompleted = await _onboardingRepository.isOnboardingCompleted();
+    bool isOnboardingCompleted =
+        await _onboardingRepository.isOnboardingCompleted();
     User? user = _fireBaseAuth.getCurrentUser();
 
     Future.delayed(const Duration(seconds: 2), () {
@@ -60,9 +61,9 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: themeColor().surface ,
       body: Padding(
-        padding:  EdgeInsets.symmetric(horizontal: 97.5.w , vertical: 301.58.h),
+        padding: EdgeInsets.symmetric(horizontal: 97.5.w, vertical: 301.58.h),
         child: Center(
           child: TweenAnimationBuilder(
             tween: Tween<double>(begin: 0.0, end: 1.0),
@@ -71,7 +72,11 @@ class _SplashScreenState extends State<SplashScreen> {
             builder: (context, value, child) {
               return Opacity(
                 opacity: value,
-                child: Image.asset(ImageConst.logoName, width: 180.w, height: 180.h),
+                child: Image.asset(
+                  ImageConst.logoName,
+                  width: 180.w,
+                  height: 180.h,
+                ),
               );
             },
           ),

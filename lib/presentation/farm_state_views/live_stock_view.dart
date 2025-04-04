@@ -5,10 +5,12 @@ import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/core/drop_down_value.dart';
 import 'package:agri_flutter/models/live_stock_detail.dart';
 import 'package:agri_flutter/providers/farm_state_provider.dart/liveStock_provider.dart';
-import 'package:agri_flutter/services/firestore_event_expense.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+
+import '../../services/firestore.dart';
 
 class LiveStockDetailView extends StatefulWidget {
   final String? livestockId; // Optional livestockId parameter

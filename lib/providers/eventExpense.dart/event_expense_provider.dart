@@ -1,5 +1,5 @@
 import 'package:agri_flutter/models/event_expense.dart';
-import 'package:agri_flutter/services/firestore_event_expense.dart';
+import 'package:agri_flutter/services/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 

@@ -5,6 +5,8 @@ import 'package:agri_flutter/presentation/market_place_views/market_homePage_vie
 import 'package:agri_flutter/presentation/zoom_drawer.dart';
 import 'package:flutter/material.dart';
 
+import '../theme/theme.dart';
+
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
@@ -23,7 +25,7 @@ class HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = themeColor();
     return Scaffold(
       body: pages[pageIndex],
 
@@ -32,8 +34,7 @@ class HomeViewState extends State<HomeView> {
         height: 60,
         decoration: BoxDecoration(
           color:
-              theme.bottomNavigationBarTheme.backgroundColor ??
-              theme.primaryColor,
+              theme.surface ,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
@@ -55,21 +56,17 @@ class HomeViewState extends State<HomeView> {
                     Icons.graphic_eq,
                     color:
                         pageIndex == 0
-                            ? theme
-                                    .bottomNavigationBarTheme
-                                    .selectedItemColor ??
-                                Colors.black
-                            : theme
-                                    .bottomNavigationBarTheme
-                                    .unselectedItemColor ??
-                                Colors.white,
+                            ?     theme.surface
+
+
+                            :    theme.surface ,
                     size: pageIndex == 0 ? 30 : 25, // Bigger icon when selected
                   ),
                   if (pageIndex == 0)
                     Text(
                       "home",
                       style: TextStyle(
-                        color: theme.bottomNavigationBarTheme.selectedItemColor,
+                        color:     theme.surface ,
                         fontSize: 10,
                       ),
                     ),
@@ -90,21 +87,17 @@ class HomeViewState extends State<HomeView> {
                     Icons.shop,
                     color:
                         pageIndex == 1
-                            ? theme
-                                    .bottomNavigationBarTheme
-                                    .selectedItemColor ??
-                                Colors.black
-                            : theme
-                                    .bottomNavigationBarTheme
-                                    .unselectedItemColor ??
-                                Colors.white,
+                            ?     theme.surface
+
+
+                            :    theme.surface ,
                     size: pageIndex == 1 ? 30 : 25, // Bigger icon when selected
                   ),
                   if (pageIndex == 1)
                     Text(
                       "Shop",
                       style: TextStyle(
-                        color: theme.bottomNavigationBarTheme.selectedItemColor,
+                        color:     theme.surface ,
                         fontSize: 10,
                       ),
                     ),
@@ -124,21 +117,15 @@ class HomeViewState extends State<HomeView> {
                     Icons.calendar_today,
                     color:
                         pageIndex == 2
-                            ? theme
-                                    .bottomNavigationBarTheme
-                                    .selectedItemColor ??
-                                Colors.black
-                            : theme
-                                    .bottomNavigationBarTheme
-                                    .unselectedItemColor ??
-                                Colors.white,
+                            ?     theme.surface
+                            :   theme.surface ,
                     size: pageIndex == 2 ? 30 : 25, // Bigger icon when selected
                   ),
                   if (pageIndex == 2)
                     Text(
                       "Calendar",
                       style: TextStyle(
-                        color: theme.bottomNavigationBarTheme.selectedItemColor,
+
                         fontSize: 10,
                       ),
                     ),
@@ -158,21 +145,15 @@ class HomeViewState extends State<HomeView> {
                     Icons.graphic_eq,
                     color:
                         pageIndex == 3
-                            ? theme
-                                    .bottomNavigationBarTheme
-                                    .selectedItemColor ??
-                                Colors.black
-                            : theme
-                                    .bottomNavigationBarTheme
-                                    .unselectedItemColor ??
-                                Colors.white,
+                            ?     theme.surface
+                            :     theme.surface ,
                     size: pageIndex == 3 ? 30 : 25, // Bigger icon when selected
                   ),
                   if (pageIndex == 3)
                     Text(
                       "Stats",
                       style: TextStyle(
-                        color: theme.bottomNavigationBarTheme.selectedItemColor,
+
                         fontSize: 10,
                       ),
                     ),

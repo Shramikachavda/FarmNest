@@ -65,6 +65,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => WeatherViewModel()),
         ChangeNotifierProvider(create: (context) => PasswordProvider()),
         ChangeNotifierProvider(create: (context) => ConfirmPasswordProvider()),
+
       ],
       child: BlocProvider(
         create: (_) => appThemeBloc,
@@ -97,6 +98,7 @@ class MyApp extends StatelessWidget {
               theme: materialTheme.light(),
               darkTheme: materialTheme.dark(),
               themeMode: state.themeMode,
+            // themeMode: ThemeMode.system,
               navigatorKey: navigatorKey,
               home: SplashScreen(),
             );

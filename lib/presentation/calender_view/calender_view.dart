@@ -71,7 +71,7 @@ class _CalenderViewState extends State<CalenderView> {
             eventExpenseProvider.fetchAllData();
           }
         },
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: themeColor().primary,
         child: const Icon(Icons.add),
       ),
       body: Column(

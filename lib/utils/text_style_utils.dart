@@ -12,42 +12,58 @@ const double captionFontSize = 12;
 const double buttonFontSize = 16;
 
 class AppTextStyles {
+
+  //32
   static const TextStyle headline1Style = TextStyle(
     fontSize: headline1FontSize,
     fontWeight: FontWeight.bold,
   );
 
+
+  //24
   static const TextStyle headline2Style = TextStyle(
     fontSize: headline2FontSize,
     fontWeight: FontWeight.w600,
   );
 
+  //22
   static const TextStyle titleStyle = TextStyle(
     fontSize: titleFontSize,
     fontWeight: FontWeight.w600,
   );
 
+  //18 semi bold
+  static const TextStyle bodySemiLargeStyle = TextStyle(
+    fontSize: bodyLargeFontSize,
+    fontWeight: FontWeight.w600,
+  );
+
+  //18
   static const TextStyle bodyLargeStyle = TextStyle(
     fontSize: bodyLargeFontSize,
     fontWeight: FontWeight.normal,
   );
 
+  //16
   static const TextStyle bodyStyle = TextStyle(
     fontSize: bodyFontSize,
     fontWeight: FontWeight.normal,
   );
 
+  //14
   static const TextStyle bodySmallStyle = TextStyle(
     fontSize: bodySmallFontSize,
     fontWeight: FontWeight.normal,
   );
 
+  //12
   static const TextStyle captionStyle = TextStyle(
     fontSize: captionFontSize,
     fontWeight: FontWeight.w400,
     color: Colors.grey,
   );
 
+  //16
   static const TextStyle buttonStyle = TextStyle(
     fontSize: buttonFontSize,
     fontWeight: FontWeight.w500,

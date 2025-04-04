@@ -15,7 +15,7 @@ class MaterialTheme {
   static ColorScheme lightScheme() {
     return const ColorScheme(
       brightness: Brightness.light,
-      primary: Color(0xff006d3f),
+      primary:  Color(0xFF5BA377),
       surfaceTint: Color(0xff006d3f),
       onPrimary: Color(0xffffffff),
       primaryContainer: Color(0xff6dc58f),
@@ -180,7 +180,7 @@ class MaterialTheme {
   static ColorScheme darkScheme() {
     return const ColorScheme(
       brightness: Brightness.dark,
-      primary: Color(0xff88e1a9),
+      primary:  Color(0xFF5BA377),
       surfaceTint: Color(0xff80d9a1),
       onPrimary: Color(0xff00391f),
       primaryContainer: Color(0xff6dc58f),
@@ -290,7 +290,7 @@ class MaterialTheme {
   static ColorScheme darkHighContrastScheme() {
     return const ColorScheme(
       brightness: Brightness.dark,
-      primary: Color(0xffbdffd1),
+      primary:  Color(0xFF5BA377),
       surfaceTint: Color(0xff80d9a1),
       onPrimary: Color(0xff000000),
       primaryContainer: Color(0xff7cd59d),
@@ -351,7 +351,7 @@ class MaterialTheme {
       bodyColor: colorScheme.onSurface,
       displayColor: colorScheme.onSurface,
     ),
-    scaffoldBackgroundColor: colorScheme.background,
+    scaffoldBackgroundColor: colorScheme.surface,
     canvasColor: colorScheme.surface,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(

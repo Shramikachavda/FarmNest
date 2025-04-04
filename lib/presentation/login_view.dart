@@ -11,6 +11,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../core/image.dart' show ImageConst;
+import '../customs_widgets/custom_snackbar.dart';
 import '../providers/password_provider.dart' show PasswordProvider;
 import 'forget_password.dart' show ForgotPasswordScreen;
 
@@ -28,7 +29,6 @@ class _LoginViewState extends State<LoginView> {
   final FireBaseAuth _fireBaseAuth = FireBaseAuth();
 
   // Initialize FirebaseAuth
-
   Future<void> loginUser() async {
     if (_formkey.currentState!.validate()) {
       final email = _emailController.text.trim();
@@ -47,7 +47,7 @@ class _LoginViewState extends State<LoginView> {
         // ✅ Navigate to HomeView only if login is successful
       }
       on FirebaseAuthException catch (e) {
-        // ✅ Handle Firebase Authentication errors
+
         String errorMessage = "Login failed. Please try again.";
 
         if (e.code == 'wrong-password') {
@@ -73,26 +73,16 @@ class _LoginViewState extends State<LoginView> {
           errorMessage = "Login failed. Error: ${e.message ?? "Unknown error"}";
         }
 
-        if (mounted) {
 
 
-          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage),
-              duration: Duration(seconds: 3),
-            ),
-          );
-        }
+          showCustomSnackBar(context , errorMessage) ;
+
+
 
       }catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Error: ${e.toString()}"),
-            ),
-          );
-        }
+        showCustomSnackBar(context , "Error: ${e.toString()}") ;
+
+
       }
 
     }
@@ -178,7 +168,7 @@ class _LoginViewState extends State<LoginView> {
                               ),
                             );
                           },
-                          child: Text("Forgot password?", style: TextStyle(fontSize: 16 ,   color: Theme.of(context).primaryColor,)),
+                          child: Text("Forgot password?", style: TextStyle(fontSize: 16 ,   color: themeColor().primary,)),
                         ),
                         SizedBox(height: 14.h),
 
@@ -199,8 +189,8 @@ class _LoginViewState extends State<LoginView> {
                                   ),
                                 );
                               },
-                              child: Text("Sign up", style: TextStyle(fontSize: 16 ,   color: Theme.of(context).primaryColor,)),
-                            ),
+                              child: Text("Sign up",)),
+
                           ],
                         ),
                         SizedBox(height: 20.h),
@@ -209,9 +199,7 @@ class _LoginViewState extends State<LoginView> {
                         CustomButton(
                           onClick: loginUser   , // Use the updated login function
                           buttonName: 'Sign In',
-                          textColor:
-                              Theme.of(context).textTheme.bodyLarge!.color ??
-                              Colors.white,
+
                         ),
                       ],
                     ),

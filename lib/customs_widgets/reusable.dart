@@ -93,56 +93,61 @@ Widget reusableDropdown<T>({
 }
 
 //
+
+
 Future customNavigation(BuildContext context, Widget newPath) {
   return Navigator.of(
     context,
   ).push(MaterialPageRoute(builder: (context) => newPath));
 }
 
-Widget headLine1(String text) => Text(text, style: AppTextStyles.headline1Style);
-Widget headLine2(String text) => Text(text, style: AppTextStyles.headline2Style);
+//bold and 32
+Widget headLine1(String text , {Color? color,TextAlign? textAlign}) => Text(text,
+    textAlign: textAlign,
+    style: AppTextStyles.headline1Style.copyWith(color: color));
+
+//semi bold and  24
+Widget headLine2(String text , {Color? color,TextAlign? textAlign}) => Text(text,
+    textAlign: textAlign,
+    style: AppTextStyles.headline2Style.copyWith(color: color));
+
+//semi bold  22
+Widget headLine3(String text , {Color? color,TextAlign? textAlign} ) => Text(text ,
+  textAlign: textAlign,
+  style: AppTextStyles.bodySemiLargeStyle.copyWith(color: color),);
 
 // Small text (Font size: 14)
 Widget smallText(String text, {Color? color,TextAlign? textAlign}) => Text(text,
     textAlign: textAlign,
     style: AppTextStyles.bodySmallStyle.copyWith(color: color,));
 
+//font 12
 Widget captionStyleText(String text, {Color? color,TextAlign? textAlign}) => Text(text,
     textAlign: textAlign,
     style: AppTextStyles.captionStyle.copyWith(color: color,));
 
+//font 16 error
 Widget errorText(String text) => Text(text, style: AppTextStyles.errorStyle);
 
+//24 semi bold
 Widget bodyLargeBoldText(String text , {Color? color}) => Text(text, style: AppTextStyles.headline2Style);
+
+//18 normal
 Widget bodyLargeText(String text , {Color? color}) => Text(text, style: AppTextStyles.bodyLargeStyle);
+
+
+
+
+// 16  normal
 Widget bodyText(String text , {Color? color}) => Text(text, style: AppTextStyles.bodyStyle.copyWith(color: color));
 
-// Medium text (Font size: 20)
-Widget mediumText(String text  , {Color? color}) => Text(text, style: TextStyle(fontSize: 20));
-
-// Large text (Font size: 24)
-Widget largeText(String text) => Text(text, style: TextStyle(fontSize: 24));
-
-//
-// Large text (Font size: 28)
-Widget largeText28(String text) => Text(text, style: TextStyle(fontSize: 28));
-
-// Semi-bold text (Font size: 20, Weight: Semi-bold)
-Widget semiBoldText(String text) =>
-    Text(text, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600));
 
 
-Widget semiBoldText24(String text) =>
-    Text(text, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600));
 
-// Bold text (Font size: 20, Weight: Bold)
-Widget boldText(String text) =>
-    Text(text, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold));
 
-// Bold text (Font size: 24, Weight: Bold)
-Widget largeBold(String text) =>
-    Text(text, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold));
 
+
+//extension
 extension StringNullableExtension on String? {
   String orEmpty() {
     return this ?? "";

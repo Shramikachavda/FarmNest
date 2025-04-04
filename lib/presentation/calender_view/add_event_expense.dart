@@ -9,6 +9,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:agri_flutter/models/event_expense.dart';
 
+import '../../theme/theme.dart';
+
 class AddEventExpenseDialog extends StatefulWidget {
   final DateTime selectedDate;
   const AddEventExpenseDialog(this.selectedDate, {super.key});
@@ -81,7 +83,7 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
     final eventExpenseProvider = Provider.of<EventExpenseProvider>(context);
 
     return AlertDialog(
-      backgroundColor: Theme.of(context).primaryColor,
+      backgroundColor: themeColor().primary,
       title: Align(
         alignment: Alignment.topRight,
         child: IconButton(

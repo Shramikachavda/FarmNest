@@ -5,6 +5,7 @@ import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/services/firebase_auth.dart';
 import 'package:agri_flutter/services/hive_user_service.dart';
 import 'package:agri_flutter/presentation/login_view.dart';
+import 'package:agri_flutter/theme/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,7 +34,7 @@ class _SignupViewState extends State<SignupView> {
     if (validate) {
       try {
         User? user = await _fireBaseAuth.signUp(
-          _nameController.text.trim(),
+
           _emailController.text.trim(),
           _passwordController.text.trim()
         );
@@ -71,12 +72,12 @@ class _SignupViewState extends State<SignupView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textColor = theme.colorScheme.onSurface;
+
+
 
     return Scaffold(
       appBar: CustomAppBar(),
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: ThemeData().scaffoldBackgroundColor,
       body: Column(
         children: [
           Expanded(
@@ -91,13 +92,13 @@ class _SignupViewState extends State<SignupView> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(height: 40.h),
-                      customText("Create your account", textColor, 32),
+                      customText("Create your account", themeColor().primary ,32),
 
                       //sign in
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          customText("Already have an account?", textColor, 16),
+                          customText("Already have an account?", themeColor().primary , 16),
                           TextButton(
                             onPressed: () {
                               Navigator.push(
@@ -107,7 +108,7 @@ class _SignupViewState extends State<SignupView> {
                                 ),
                               );
                             },
-                            child: customText("Sign in", theme.primaryColor, 18),
+                            child: customText("Sign in", themeColor().primary, 18),
                           ),
                         ],
                       ),
@@ -119,7 +120,7 @@ class _SignupViewState extends State<SignupView> {
                         hintText: 'Enter your full name',
                         label: 'Full Name',
                         textEditingController: _nameController,
-                        icon: Icon(Icons.person, color: theme.iconTheme.color),
+                        icon: Icon(Icons.person, color: themeColor().primary , ),
                         validator:
                             (value)  {
                              if(value== null || value.isEmpty){
@@ -137,7 +138,7 @@ class _SignupViewState extends State<SignupView> {
                         hintText: 'Enter your email address',
                         label: 'Email Address',
                         textEditingController: _emailController,
-                        icon: Icon(Icons.email, color: theme.iconTheme.color),
+                        icon: Icon(Icons.email,),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your email';
@@ -167,7 +168,7 @@ class _SignupViewState extends State<SignupView> {
 
                             icon: Icon(
                               isObscure ? Icons.visibility_off : Icons.visibility,
-                              color: Theme.of(context).iconTheme.color,
+                              color: themeColor().primary,
                             ),
                             onTogglePassword: () => context.read<PasswordProvider>().toggleObscure(),
                             validator: (value) =>
@@ -191,7 +192,7 @@ class _SignupViewState extends State<SignupView> {
 
                             icon: Icon(
                               isObscure ? Icons.visibility_off : Icons.visibility,
-                              color: Theme.of(context).iconTheme.color,
+                              color: themeColor().primary,
                             ),
                             onTogglePassword: () => context.read<ConfirmPasswordProvider>().toggleObscure(),
                             validator: (value) => (value == null || value != _passwordController.text)
@@ -206,8 +207,8 @@ class _SignupViewState extends State<SignupView> {
                       CustomButton(
                         onClick: _validateAndSignup,
                         buttonName: 'Sign up',
-                        buttonColor: theme.primaryColor,
-                        textColor: textColor,
+                        buttonColor: themeColor().surface,
+                        textColor: themeColor().surface,
                       ),
                     ],
                   ),

@@ -1,4 +1,6 @@
 import 'package:agri_flutter/services/hive_user_service.dart';
+
+
 import 'package:agri_flutter/presentation/login_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +12,7 @@ class FireBaseAuth {
 
 
   // ✅ Sign Up (Register) User & Store Name in Hive with UID
-Future<User?> signUp(String name, String email, String password) async {
+Future<User?> signUp( String email, String password) async {
   try {
     UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
       email: email,
@@ -23,8 +25,6 @@ Future<User?> signUp(String name, String email, String password) async {
       // ✅ Send Email Verification (OTP via Email)
       await user.sendEmailVerification();
 
-      // ✅ Store username in Hive using UID as the key
-      await _hiveService.saveUserName(user.uid, name);
     }
 
     return user;
@@ -103,7 +103,6 @@ Future<User?> signUp(String name, String email, String password) async {
     }
     return null;
   }
-
 
   Future<void> sendPasswordResetEmail(String email) async {
     await _auth.sendPasswordResetEmail(email: email);

@@ -39,22 +39,21 @@ class _OnboardScreenState extends State<OnboardScreen> {
                 children: [
                   CustomOnboard(
                     image: ImageConst.intro1,
-                    title: 'Welcome to Farm Nest',
+                    title: 'Welcome to Farm Nest –Your Digital Farming Companion',
                     description:
-                        "Manage your farm effortlessly with digital tools.",
+                        "Farm Nest gives you smart tools to manage your farm, track weather, and plan every season with confidence.",
                   ),
                   CustomOnboard(
                     image: ImageConst.intro2,
                     title: 'One-Stop Farm Marketplace',
                     description:
-                        "Explore farm essentials like fertilizers and machinery.",
+                        "Shop fertilizers, seeds, and machinery with ease—get everything your farm needs in one place.",
                   ),
                   CustomOnboard(
                     image: ImageConst.intro3,
-                    title: 'Smart Farm Management',
+                    title: 'Add Your Farm & Boost Yield with Soil Insights',
                     description:
-                        "Plan activities, track expenses, and stay updated.",
-                  ),
+                    "Plan your daily farming activities with ease.Track expenses and get timely updates to stay on top of everything."                  ),
                 ],
               ),
             ),
@@ -87,7 +86,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
                       );
                     }
                   },
-                  child: Text("Next"),
+                  child:  Text("Next"),
                 ),
               ],
             ),

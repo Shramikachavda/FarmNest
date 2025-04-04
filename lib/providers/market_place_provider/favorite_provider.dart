@@ -1,5 +1,5 @@
 import 'package:agri_flutter/models/product.dart';
-import 'package:agri_flutter/services/firestore_event_expense.dart';
+import 'package:agri_flutter/services/firestore.dart';
 import 'package:flutter/widgets.dart';
 
 class FavoriteProvider with ChangeNotifier {

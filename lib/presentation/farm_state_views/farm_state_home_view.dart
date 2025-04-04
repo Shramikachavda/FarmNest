@@ -80,7 +80,7 @@ class FarmStateHomeView extends StatelessWidget {
             padding: EdgeInsets.all(10.r),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.r),
-              //  color: Theme.of(context).cardColor,
+              //  color: themeColor().cardColor,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,7 +193,7 @@ class FarmStateHomeView extends StatelessWidget {
             padding: EdgeInsets.all(10.r),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.r),
-              //  color: Theme.of(context).cardColor,
+              //  color: themeColor().cardColor,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

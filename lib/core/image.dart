@@ -3,9 +3,9 @@ class ImageConst {
   static const String logoName = "assets/image/logo.png";
   static const String logo = "assets/image/farmnest_logo.png";
   //onboarding
-  static const String intro2 = "assets/image/illistratution 2.png";
-  static const String intro3 = "assets/image/Simplification.png";
-  static const String intro1 = "assets/image/soil testing illustration.png";
+  static const String intro2 = "assets/image/i2.png";
+  static const String intro3 = "assets/image/i3.png";
+  static const String intro1 = "assets/image/i1.png";
 
   //farmstate
   static const String vacc = "assets/image/image 17.svg ";

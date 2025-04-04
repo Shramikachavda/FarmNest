@@ -1,6 +1,6 @@
 import 'package:agri_flutter/models/crop_details.dart';
 import 'package:agri_flutter/models/live_stock_detail.dart';
-import 'package:agri_flutter/services/firestore_event_expense.dart';
+import 'package:agri_flutter/services/firestore.dart';
 import 'package:flutter/widgets.dart';
 
 class LivestockProvider with ChangeNotifier {

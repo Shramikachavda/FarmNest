@@ -1,54 +1,57 @@
 import 'package:agri_flutter/services/firebase_auth.dart';
-import 'package:agri_flutter/theme/app_theme_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-
+import '../theme/app_theme_bloc.dart';
+import '../theme/theme.dart';
 
 class DrawerWidget extends StatelessWidget {
+  final FireBaseAuth _fireBaseAuth = FireBaseAuth();
 
-  final FireBaseAuth _fireBaseAuth =  FireBaseAuth();
+  DrawerWidget({super.key});
 
-   DrawerWidget({super.key});
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+  //  final themeProvider = Provider.of<ToggleTheme>(context);
+    final theme = themeColor();
     return Drawer(
       child: ListView(
         children: [
           DrawerHeader(
-            decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+            decoration: BoxDecoration(color: Colors.green.shade100,),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CircleAvatar(
                   radius: 50,
-                  backgroundColor: theme.colorScheme.onPrimary,
+                  backgroundColor: theme.onPrimary,
                 ),
                 SizedBox(height: 10),
                 Text(
-                  "data",
-                  style: TextStyle(color: theme.textTheme.bodySmall!.color),
+                  "userName",
+
                 ),
               ],
             ),
           ),
           ListTile(
-            leading: Icon(Icons.person, color: theme.primaryColor),
+            leading: Icon(Icons.person),
             title: Text("Account"),
             onTap: () {},
           ),
           ListTile(
-            leading: Icon(Icons.mode_night, color: theme.primaryColor),
+            leading: Icon(Icons.mode_night, color: theme.primary),
             title: Text("Theme"),
             onTap: () {
               context.read<AppThemeBloc>().add(ToggleTheme());
+
             },
           ),
           ListTile(
-            leading: Icon(Icons.lock, color: theme.primaryColor),
-            title: Text("Change Password", style: theme.textTheme.bodySmall),
+            leading: Icon(Icons.lock),
+            title: Text("Change Password"),
             onTap: () {},
           ),
           SizedBox(),
@@ -57,10 +60,12 @@ class DrawerWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               //logout
-              GestureDetector( 
-  onTap: () async {
-    await _fireBaseAuth.logout(context); // Ensure it runs when tapped
-  },
+              GestureDetector(
+                onTap: () async {
+                  await _fireBaseAuth.logout(
+                    context,
+                  ); // Ensure it runs when tapped
+                },
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.green.shade100, // Light green background
@@ -70,17 +75,17 @@ class DrawerWidget extends StatelessWidget {
                   child: Icon(
                     Icons.logout,
                     size: 30,
-                    color: theme.primaryColor, // Icon color
+                    color: theme.primary, // Icon color
                   ),
                 ),
               ),
-              SizedBox(height: 10), // Space between icon and text
+              SizedBox(height: 10.h), // Space between icon and text
               Text(
                 "Sign Out",
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: theme.textTheme.bodyMedium!.color,
+
                 ),
               ),
             ],
