@@ -1,13 +1,13 @@
 import 'dart:async';
-
-import 'package:agri_flutter/core/color_const.dart';
 import 'package:agri_flutter/customs_widgets/custom_form_field.dart';
 import 'package:agri_flutter/providers/market_place_provider/favorite_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/product_provider.dart';
-import 'package:agri_flutter/views/market_place_views/detail_product_view.dart';
+import 'package:agri_flutter/presentation/market_place_views/detail_product_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../theme/theme.dart';
 
 class FavoriteView extends StatefulWidget {
   const FavoriteView({super.key});
@@ -159,9 +159,9 @@ class _FavoriteViewState extends State<FavoriteView> {
                                           child: Container(
                                             height: 35.w,
                                             width: 35.w,
-                                            decoration: const BoxDecoration(
+                                            decoration: BoxDecoration(
                                               shape: BoxShape.circle,
-                                              color: ColorConst.green,
+                                              color: themeColor().primary,
                                             ),
                                             child: Icon(
                                               Icons.favorite,
@@ -189,7 +189,7 @@ class _FavoriteViewState extends State<FavoriteView> {
                                       favoriteProduct.description,
                                       style: TextStyle(
                                         fontSize: 12.sp,
-                                        color: ColorConst.gray,
+                                        color: themeColor().surfaceContainerHighest,
                                       ),
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -209,7 +209,7 @@ class _FavoriteViewState extends State<FavoriteView> {
                                           style: TextStyle(
                                             fontSize: 12.sp,
                                             fontWeight: FontWeight.w500,
-                                            color: ColorConst.green,
+                                            color: themeColor().primary,
                                           ),
                                         ),
                                         Text(

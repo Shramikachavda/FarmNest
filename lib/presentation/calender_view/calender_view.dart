@@ -1,7 +1,8 @@
-import 'package:agri_flutter/core/color_const.dart';
+
 import 'package:agri_flutter/providers/eventExpense.dart/event_expense_provider.dart';
 import 'package:agri_flutter/providers/eventExpense.dart/graph.dart';
-import 'package:agri_flutter/views/calender_view/add_event_expense.dart';
+import 'package:agri_flutter/theme/theme.dart';
+import 'package:agri_flutter/presentation/calender_view/add_event_expense.dart';
 import 'package:agri_flutter/services/noti_service.dart'; // Import NotiService
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -86,25 +87,25 @@ class _CalenderViewState extends State<CalenderView> {
                 formatMonth = format;
               });
             },
-            headerStyle: const HeaderStyle(
+            headerStyle: HeaderStyle(
               titleCentered: true,
               titleTextStyle: TextStyle(color: Colors.white, fontSize: 18),
-              decoration: BoxDecoration(color: ColorConst.green),
+              decoration: BoxDecoration(color: themeColor().primary),
               formatButtonShowsNext: false,
             ),
             calendarStyle: CalendarStyle(
               markerSize: 20,
-              selectedTextStyle: TextStyle(color: ColorConst.white),
+              selectedTextStyle: TextStyle(color: themeColor().onPrimary),
               isTodayHighlighted: true,
               selectedDecoration: BoxDecoration(
-                color: ColorConst.green,
+                color: themeColor().primary,
                 shape: BoxShape.rectangle,
               ),
               tableBorder: TableBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
               todayDecoration: BoxDecoration(
-                color: ColorConst.green,
+                color: themeColor().primary,
                 shape: BoxShape.circle,
               ),
             ),
@@ -122,8 +123,7 @@ class _CalenderViewState extends State<CalenderView> {
 
             /// **Event Markers**
             eventLoader: (day) {
-              return eventExpenseProvider.getEventsAndExpensesForDate(day) ??
-                  [];
+              return eventExpenseProvider.getEventsAndExpensesForDate(day);
             },
 
             /// **Show Event Markers**
@@ -136,8 +136,8 @@ class _CalenderViewState extends State<CalenderView> {
                     child: Container(
                       width: 8,
                       height: 8,
-                      decoration: const BoxDecoration(
-                        color: ColorConst.green,
+                      decoration: BoxDecoration(
+                        color: themeColor().primary,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -206,9 +206,9 @@ class _CalenderViewState extends State<CalenderView> {
                               ],
                             ),
                             trailing: IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.delete,
-                                color: ColorConst.green,
+                                color: themeColor().primary,
                               ),
                               onPressed: () async {
                                 await provider.removeEventExpense(event);

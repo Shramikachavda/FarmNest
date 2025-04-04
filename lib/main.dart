@@ -9,9 +9,13 @@ import 'package:agri_flutter/providers/market_place_provider/favorite_provider.d
 import 'package:agri_flutter/providers/market_place_provider/product_provider.dart';
 import 'package:agri_flutter/providers/password_provider.dart';
 import 'package:agri_flutter/services/noti_service.dart';
+import 'package:agri_flutter/theme/app_theme_bloc.dart';
 import 'package:agri_flutter/theme/theme.dart';
-import 'package:agri_flutter/views/splash_screen.dart';
+import 'package:agri_flutter/theme/util.dart';
+import 'package:agri_flutter/utils/shared_prefs_util.dart';
+import 'package:agri_flutter/presentation/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,6 +32,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  await SpUtil.getInstance();
+
   await Hive.initFlutter();
 
   Hive.registerAdapter(UserModelAdapter());
@@ -41,6 +47,10 @@ void main() async {
   DateTime now = DateTime.now().add(Duration(seconds: 5));
   NotificationService.scheduleNotification("Test Event", now);
   print("📅 Notification Scheduled for: $now");
+
+  final appThemeBloc = await AppThemeBloc.create();
+
+  await SpUtil.getThemeMode();
 
   runApp(
     MultiProvider(
@@ -56,7 +66,10 @@ void main() async {
         ChangeNotifierProvider(create: (context) => PasswordProvider()),
         ChangeNotifierProvider(create: (context) => ConfirmPasswordProvider()),
       ],
-      child: MyApp(),
+      child: BlocProvider(
+        create: (_) => appThemeBloc,
+        child: const MyApp(),
+      ),
     ),
   );
 }
@@ -66,20 +79,28 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    var textTheme = createTextTheme(context, "Lato", "Lato");
+    final MaterialTheme materialTheme = MaterialTheme(textTheme);
+
     return ScreenUtilInit(
       designSize: Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Farm Nest',
-
-          theme: AppThemes.lightTheme, // Apply light theme
-          darkTheme: AppThemes.darkTheme, // Apply dark theme
-          themeMode: ThemeMode.system,
-
-          home: SplashScreen(),
+        return BlocBuilder<AppThemeBloc, AppThemeState>(
+          bloc: context.read<AppThemeBloc>(),
+          builder: (context, state) {
+            return MaterialApp(
+              title: 'Farm Nest',
+              debugShowCheckedModeBanner: false,
+              theme: materialTheme.light(),
+              darkTheme: materialTheme.dark(),
+              themeMode: state.themeMode,
+              navigatorKey: navigatorKey,
+              home: SplashScreen(),
+            );
+          },
         );
       },
     );

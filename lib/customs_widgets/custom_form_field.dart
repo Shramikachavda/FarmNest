@@ -52,7 +52,6 @@ class CustomFormField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         hintText: hintText,
-
         suffixIcon: isDatePicker
             ? IconButton(
           icon: Icon(Icons.calendar_today, size: 20),
@@ -62,8 +61,7 @@ class CustomFormField extends StatelessWidget {
             ? IconButton( // ✅ Only password fields use IconButton
           icon: icon ?? Icon(Icons.visibility),
           onPressed: onTogglePassword, // ✅ Calls toggle function
-        )
-            : icon, // ✅ Keeps normal icons as they are
+        ): icon, // ✅ Keeps normal icons as they are
       ),
     );
   }

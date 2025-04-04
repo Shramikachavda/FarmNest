@@ -1,9 +1,9 @@
-import 'package:agri_flutter/core/color_const.dart';
 import 'package:agri_flutter/customs_widgets/custom_button.dart';
 import 'package:agri_flutter/customs_widgets/custom_snackbar.dart';
 import 'package:agri_flutter/providers/market_place_provider/cart_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/favorite_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/product_provider.dart';
+import 'package:agri_flutter/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -87,7 +87,7 @@ class _DetailProductViewState extends State<DetailProductView> {
                     width: 27.h,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: ColorConst.green,
+                      color: themeColor().primary,
                     ),
                     child: Center(child: Icon(Icons.remove, size: 24.sp)),
                   ),
@@ -108,7 +108,7 @@ class _DetailProductViewState extends State<DetailProductView> {
                     width: 27.h,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: ColorConst.green,
+                      color: themeColor().primary,
                     ),
                     child: Center(child: Icon(Icons.add, size: 24.sp)),
                   ),
@@ -125,7 +125,7 @@ class _DetailProductViewState extends State<DetailProductView> {
               "Product Description",
               style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600),
             ),
-            Text(product.description, style: TextStyle(color: ColorConst.gray)),
+            Text(product.description, style: TextStyle(color: themeColor().surfaceContainerHighest)),
             Spacer(),
             Row(
               children: [

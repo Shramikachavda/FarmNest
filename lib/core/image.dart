@@ -14,4 +14,7 @@ class ImageConst {
   static const String startDate = "assets/image/image 13.svg";
   static const String harvestDate = "assets/image/image 12.svg";
   static const String ferti = "assets/image/image 10.svg";
+
+  //icons
+  static const String icBack = "assets/icons/ic_back.svg";
 }

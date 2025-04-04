@@ -1,5 +1,7 @@
 import 'package:agri_flutter/services/firebase_auth.dart';
+import 'package:agri_flutter/theme/app_theme_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 
@@ -40,7 +42,9 @@ class DrawerWidget extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.mode_night, color: theme.primaryColor),
             title: Text("Theme"),
-            onTap: () {},
+            onTap: () {
+              context.read<AppThemeBloc>().add(ToggleTheme());
+            },
           ),
           ListTile(
             leading: Icon(Icons.lock, color: theme.primaryColor),

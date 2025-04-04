@@ -1,4 +1,4 @@
-import 'package:agri_flutter/core/color_const.dart';
+
 import 'package:agri_flutter/customs_widgets/custom_button.dart';
 import 'package:agri_flutter/providers/market_place_provider/cart_provider.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +61,6 @@ class _CartViewState extends State<CartView> {
                                     width: 30.w,
                                     decoration: const BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: ColorConst.green,
                                     ),
                                     child: const Center(
                                       child: Icon(Icons.remove),
@@ -85,7 +84,6 @@ class _CartViewState extends State<CartView> {
                                     width: 30.w,
                                     decoration: const BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: ColorConst.green,
                                     ),
                                     child: const Center(child: Icon(Icons.add)),
                                   ),

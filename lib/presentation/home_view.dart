@@ -1,8 +1,8 @@
 
-import 'package:agri_flutter/views/calender_view/calender_view.dart';
-import 'package:agri_flutter/views/farm_state_views/farm_state_home_view.dart';
-import 'package:agri_flutter/views/market_place_views/market_homePage_view.dart';
-import 'package:agri_flutter/views/zoom_drawer.dart';
+import 'package:agri_flutter/presentation/calender_view/calender_view.dart';
+import 'package:agri_flutter/presentation/farm_state_views/farm_state_home_view.dart';
+import 'package:agri_flutter/presentation/market_place_views/market_homePage_view.dart';
+import 'package:agri_flutter/presentation/zoom_drawer.dart';
 import 'package:flutter/material.dart';
 
 class HomeView extends StatefulWidget {

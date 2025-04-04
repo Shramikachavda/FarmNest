@@ -1,4 +1,3 @@
-import 'package:agri_flutter/core/color_const.dart';
 import 'package:agri_flutter/customs_widgets/custom_choice_chip.dart';
 import 'package:agri_flutter/customs_widgets/custom_form_field.dart';
 import 'package:agri_flutter/customs_widgets/custom_snackbar.dart';
@@ -7,9 +6,10 @@ import 'package:agri_flutter/models/product.dart';
 import 'package:agri_flutter/providers/market_place_provider/cart_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/favorite_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/product_provider.dart';
-import 'package:agri_flutter/views/market_place_views/cart_view.dart';
-import 'package:agri_flutter/views/market_place_views/detail_product_view.dart';
-import 'package:agri_flutter/views/market_place_views/favorite_view.dart';
+import 'package:agri_flutter/theme/theme.dart';
+import 'package:agri_flutter/presentation/market_place_views/cart_view.dart';
+import 'package:agri_flutter/presentation/market_place_views/detail_product_view.dart';
+import 'package:agri_flutter/presentation/market_place_views/favorite_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -245,9 +245,7 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
                                           width: 35.w,
                                           height: 35.w,
                                           decoration: BoxDecoration(
-                                            color:
-                                                ColorConst
-                                                    .green, // Background color
+                                            color: themeColor().secondaryContainer,
                                             borderRadius: BorderRadius.circular(
                                               40.r,
                                             ), // Rounded corners
@@ -294,9 +292,7 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
                                           width: 35.w,
                                           height: 35.w,
                                           decoration: BoxDecoration(
-                                            color:
-                                                ColorConst
-                                                    .green, // Background color
+                                            color: themeColor().secondaryContainer,
                                             borderRadius: BorderRadius.circular(
                                               40.r,
                                             ), // Rounded corners

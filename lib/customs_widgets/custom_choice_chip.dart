@@ -1,4 +1,5 @@
-import 'package:agri_flutter/core/color_const.dart';
+
+import 'package:agri_flutter/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 Widget customChoiceChip({
@@ -12,7 +13,7 @@ Widget customChoiceChip({
       label: Text(label),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       selected: selectedCategory == label,
-      selectedColor: ColorConst.green,
+      selectedColor: themeColor().primary,
       disabledColor: Colors.grey,
       onSelected: (bool value) {
         onSelected(value ? label : '');

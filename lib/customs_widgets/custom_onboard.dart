@@ -21,7 +21,7 @@ class CustomOnboard extends StatelessWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 65.w),
+          padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 65.h),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -37,7 +37,7 @@ class CustomOnboard extends StatelessWidget {
               SizedBox(height: 20.h),
               largeBold(title),
               SizedBox(height: 20.h),
-              Text(description, textAlign: TextAlign.justify, maxLines: 3),
+              Text(description, textAlign: TextAlign.center, maxLines: 3),
             ],
           ),
         ),

@@ -1,6 +1,6 @@
-import 'package:agri_flutter/core/color_const.dart';
-import 'package:agri_flutter/views/farm_state_views/crop_detail_view.dart';
-import 'package:agri_flutter/views/farm_state_views/live_stock_view.dart';
+import 'package:agri_flutter/theme/theme.dart';
+import 'package:agri_flutter/presentation/farm_state_views/crop_detail_view.dart';
+import 'package:agri_flutter/presentation/farm_state_views/live_stock_view.dart';
 import 'package:flutter/material.dart';
 class AddFarmState extends StatelessWidget {
   final int initialTabIndex; // New parameter for tab selection
@@ -23,10 +23,10 @@ class AddFarmState extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Add your Crop/Livestock"),
           bottom: TabBar(
-            indicatorColor: ColorConst.green,
+            indicatorColor: themeColor().primary,
             indicatorWeight: 3,
             indicatorSize: TabBarIndicatorSize.tab,
-            labelColor: ColorConst.green,
+            labelColor: themeColor().primary,
             indicatorAnimation: TabIndicatorAnimation.elastic,
             enableFeedback: true,
             automaticIndicatorColorAdjustment: true,

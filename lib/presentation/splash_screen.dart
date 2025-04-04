@@ -3,9 +3,9 @@ import 'package:agri_flutter/providers/location_provider.dart';
 import 'package:agri_flutter/repo/onboard.dart';
 import 'package:agri_flutter/services/firebase_auth.dart';
 import 'package:agri_flutter/services/location.dart';
-import 'package:agri_flutter/views/home_view.dart';
-import 'package:agri_flutter/views/login_view.dart';
-import 'package:agri_flutter/views/onboard_screen.dart';
+import 'package:agri_flutter/presentation/home_view.dart';
+import 'package:agri_flutter/presentation/login_view.dart';
+import 'package:agri_flutter/presentation/onboard_screen.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

@@ -1,14 +1,14 @@
-import 'package:agri_flutter/core/color_const.dart';
 import 'package:agri_flutter/core/image.dart';
 import 'package:agri_flutter/customs_widgets/custom_icon.dart';
 import 'package:agri_flutter/models/crop_details.dart';
 import 'package:agri_flutter/models/live_stock_detail.dart';
 import 'package:agri_flutter/providers/farm_state_provider.dart/crop_details_provider.dart';
 import 'package:agri_flutter/providers/farm_state_provider.dart/liveStock_provider.dart';
-import 'package:agri_flutter/views/farm_state_views/add_farm_state.dart';
+import 'package:agri_flutter/theme/theme.dart';
+import 'package:agri_flutter/presentation/farm_state_views/add_farm_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart'; // 📆 For date formatting
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class FarmStateHomeView extends StatelessWidget {
@@ -127,10 +127,7 @@ class FarmStateHomeView extends StatelessWidget {
                               liveStockProvider.removeLiveStock(item);
                             }
                           },
-                          icon: const Icon(
-                            Icons.delete,
-                            color: ColorConst.green,
-                          ),
+                          icon: Icon(Icons.delete, color: themeColor().primary),
                         ),
                       ],
                     ),
@@ -234,9 +231,9 @@ class FarmStateHomeView extends StatelessWidget {
                               cropDetailsProvider.removeCrop(item);
                             }
                           },
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.delete,
-                            color: ColorConst.green,
+                            color: themeColor().primary,
                           ), // 🗑 Delete Icon
                         ),
                       ],
@@ -337,7 +334,7 @@ class FarmStateHomeView extends StatelessWidget {
       children: [
         IconButton(
           onPressed: onEdit,
-          icon: const Icon(Icons.edit, color: ColorConst.green),
+          icon: Icon(Icons.edit, color: themeColor().primary),
         ),
         SizedBox(width: 8.w), // Consistent spacing
         IconButton(
@@ -350,7 +347,7 @@ class FarmStateHomeView extends StatelessWidget {
               onDelete();
             }
           },
-          icon: const Icon(Icons.delete, color: ColorConst.green),
+          icon: Icon(Icons.delete, color: themeColor().primary),
         ),
       ],
     );
@@ -362,18 +359,18 @@ class FarmStateHomeView extends StatelessWidget {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text("Confirm Deletion"),
+            title: Text("Confirm Deletion"),
             content: Text(message),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text("Cancel"),
+                child: Text("Cancel"),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text(
+                child: Text(
                   "Delete",
-                  style: TextStyle(color: ColorConst.green),
+                  style: TextStyle(color: themeColor().primary),
                 ),
               ),
             ],

@@ -1,3 +1,4 @@
+import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/providers/api_provider/marker_price_provider.dart';
 import 'package:agri_flutter/providers/api_provider/weather_provider.dart';
 import 'package:agri_flutter/providers/eventExpense.dart/event_expense_provider.dart';
@@ -77,9 +78,8 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            bodyLargeBoldText(
               userName != null ? "Hello, $userName! 🌾" : "Hello, Farmer! 🌾",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16),
 
@@ -90,13 +90,10 @@ class _HomePageState extends State<HomePage> {
                   return Center(child: CircularProgressIndicator());
                 }
                 if (weatherViewModel.errorMessage != null) {
-                  return Text(
-                    weatherViewModel.errorMessage!,
-                    style: TextStyle(color: Colors.red),
-                  );
+                  return errorText(weatherViewModel.errorMessage.orEmpty());
                 }
                 if (weatherViewModel.currentWeather == null) {
-                  return Text('No weather data available.');
+                  return bodyText('No weather data available.');
                 }
 
                 final current = weatherViewModel.currentWeather!;
@@ -115,12 +112,11 @@ class _HomePageState extends State<HomePage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              bodyLargeText(
                                 "${current['main']['temp']}°C",
-                                style: TextStyle(fontSize: 20),
                               ),
-                              Text(current['weather'][0]['description']),
-                              Text("Your Location"),
+                              bodyText(current['weather'][0]['description']),
+                              bodyText("Your Location"),
                             ],
                           ),
                         ],
