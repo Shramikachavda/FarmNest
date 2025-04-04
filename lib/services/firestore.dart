@@ -5,6 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:agri_flutter/models/event_expense.dart';
 
+import '../models/user.dart';
+import '../models/user_data.dart';
+
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -442,4 +445,47 @@ class FirestoreService {
           'harvestDate': crop.harvesDate,
         });
   }
+
+
+  //user
+
+
+  //// ✅ Add User
+
+  /// ➕ Add User
+  Future<void> addUser(UserModelDb user) async {
+    try {
+      await _db.collection("users").doc(user.id).set(user.toMap());
+      print("✅ User added successfully");
+    } catch (e) {
+      print("❌ Error adding user: $e");
+      rethrow;
+    }
+  }
+
+  /// 🔍 Get User by ID
+  Future<UserModelDb?> getUserById(String id) async {
+    try {
+      DocumentSnapshot doc = await _db.collection("users").doc(id).get();
+      if (doc.exists) {
+        return UserModelDb.fromMap(doc.data() as Map<String, dynamic>);
+      }
+      return null;
+    } catch (e) {
+      print("❌ Error fetching user: $e");
+      rethrow;
+    }
+  }
+
+  /// 🔄 Update User
+  Future<void> updateUser(UserModelDb user) async {
+    try {
+      await _db.collection("users").doc(user.id).update(user.toMap());
+      print("✅ User updated successfully");
+    } catch (e) {
+      print("❌ Error updating user: $e");
+      rethrow;
+    }
+  }
+
 }
