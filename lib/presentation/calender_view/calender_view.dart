@@ -1,9 +1,8 @@
-
 import 'package:agri_flutter/providers/eventExpense.dart/event_expense_provider.dart';
 import 'package:agri_flutter/providers/eventExpense.dart/graph.dart';
 import 'package:agri_flutter/theme/theme.dart';
 import 'package:agri_flutter/presentation/calender_view/add_event_expense.dart';
-import 'package:agri_flutter/services/noti_service.dart'; // Import NotiService
+import 'package:agri_flutter/services/noti_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -25,8 +24,6 @@ class _CalenderViewState extends State<CalenderView> {
   @override
   void initState() {
     super.initState();
-
-    // Fetch data when calendar opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<EventExpenseProvider>(
         context,
@@ -59,11 +56,10 @@ class _CalenderViewState extends State<CalenderView> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddEventExpenseDialog(selectedDay),
-            ),
+          // Show dialog instead of pushing new page
+          final result = await showDialog<bool>(
+            context: context,
+            builder: (context) => AddEventExpenseDialog(selectedDay),
           );
 
           // Refresh events after adding
@@ -76,7 +72,6 @@ class _CalenderViewState extends State<CalenderView> {
       ),
       body: Column(
         children: [
-          /// **Table Calendar**
           TableCalendar(
             focusedDay: focusedDay,
             firstDay: DateTime(2020),
@@ -120,13 +115,9 @@ class _CalenderViewState extends State<CalenderView> {
                 focusedDay = focusDay;
               });
             },
-
-            /// **Event Markers**
             eventLoader: (day) {
               return eventExpenseProvider.getEventsAndExpensesForDate(day);
             },
-
-            /// **Show Event Markers**
             calendarBuilders: CalendarBuilders(
               markerBuilder: (context, date, events) {
                 if (events.isNotEmpty) {
@@ -148,8 +139,6 @@ class _CalenderViewState extends State<CalenderView> {
             ),
           ),
           SizedBox(height: 5.h),
-
-          /// **List of Events & Expenses**
           Expanded(
             child: Consumer<EventExpenseProvider>(
               builder: (context, provider, child) {
@@ -212,8 +201,6 @@ class _CalenderViewState extends State<CalenderView> {
                               ),
                               onPressed: () async {
                                 await provider.removeEventExpense(event);
-
-                                // **Cancel Notification if Exists**
                                 if (event.reminder != null) {
                                   await NotificationService.cancelNotification(
                                     int.parse(event.id),

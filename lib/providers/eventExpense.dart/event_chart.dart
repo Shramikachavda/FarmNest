@@ -75,31 +75,28 @@ class _EventPieChartState extends State<EventPieChart> {
     );
   }
 
-  /// Category Colors
-Color _getCategoryColor(String category) {
-  switch (category) {
-    case "Harvesting":
-      return Colors.green.shade700; // Represents lush crops being harvested
-    case "Irrigation":
-      return Colors.blue.shade600; // Water-related activity
-    case "Pesticide Application":
-      return Colors.orange.shade700; // Warning color for pesticides
-    case "Fertilization":
-      return Colors.brown.shade600; // Earthy soil-like tone
-    case "Equipment Maintenance":
-      return Colors.grey.shade700; // Represents metal tools & machinery
-    case "Soil Testing":
-      return Colors.deepOrange.shade400; // Represents soil analysis labs
-    case "Livestock Care":
-      return Colors.amber.shade700; // Warm, animal-related tone
-    case "Market Visit":
-      return Colors.teal.shade600; // Vibrant marketplace energy
-    case "Other":
-      return Colors.purple.shade600; // Neutral for miscellaneous tasks
-    default:
-      return Colors.blueGrey.shade600; // Default fallback color
+  Color _getCategoryColor(String category) {
+    switch (category) {
+      case "harvesting":
+        return Colors.green.shade700; // Represents lush crops being harvested
+      case "irrigation":
+        return Colors.blue.shade600; // Water-related activity
+      case "pesticideApplication":
+        return Colors.orange.shade700; // Warning color for pesticides
+      case "fertilization":
+        return Colors.brown.shade600; // Earthy soil-like tone
+      case "equipmentMaintenance":
+        return Colors.grey.shade700; // Represents metal tools & machinery
+      case "soilTesting":
+        return Colors.deepOrange.shade400; // Represents soil analysis labs
+      case "livestockCare":
+        return Colors.amber.shade700; // Warm, animal-related tone
+      case "marketVisit":
+        return Colors.teal.shade600; // Vibrant marketplace energy
+      case "other":
+        return Colors.purple.shade600; // Neutral for miscellaneous tasks
+      default:
+        return Colors.blueGrey.shade600; // Default fallback color
+    }
   }
-}
-
-   
 }

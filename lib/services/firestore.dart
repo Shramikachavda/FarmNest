@@ -488,4 +488,19 @@ class FirestoreService {
     }
   }
 
+  Future<void> changePassword(String newPassword) async {
+  try {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      await user.updatePassword(newPassword);
+      print("✅ Password changed successfully.");
+    } else {
+      print("❌ No user is currently signed in.");
+    }
+  } catch (e) {
+    print("❌ Error changing password: $e");
+  }
+}
+
 }

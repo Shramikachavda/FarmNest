@@ -61,4 +61,23 @@ class EventExpenseProvider with ChangeNotifier {
       throw Exception("Failed to remove event/expense: $e");
     }
   }
+
+
+  List<EventExpense> get upcomingTwoEvents {
+  final now = DateTime.now();
+  int count = 0;
+
+  List<EventExpense> result = [];
+
+  for (final event in _events) {
+    if (event.date.isAfter(now)) {
+      result.add(event);
+      count++;
+      if (count == 2) break;
+    }
+  }
+
+  return result;
+}
+
 }

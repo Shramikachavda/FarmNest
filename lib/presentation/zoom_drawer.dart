@@ -1,4 +1,6 @@
 import 'package:agri_flutter/presentation/home_page_view/home_page.dart';
+import 'package:agri_flutter/presentation/home_view.dart';
+import 'package:agri_flutter/theme/theme.dart';
 import 'package:agri_flutter/widgets/drawer.dart';
 
 import 'package:flutter/material.dart';
@@ -12,20 +14,22 @@ class MyZoomDrawer extends StatefulWidget {
 }
 
 class _MyZoomDrawerState extends State<MyZoomDrawer> {
- // final ZoomDrawerController _drawerController = ZoomDrawerController();
+  // final ZoomDrawerController _drawerController = ZoomDrawerController();
 
   @override
   Widget build(BuildContext context) {
     return ZoomDrawer(
       //  controller: _drawerController, // Ensure the controller is used correctly
-      mainScreen: const HomePage(),
-      menuScreen:  DrawerWidget(),
+      mainScreen: const HomeView(),
+      menuScreen: DrawerWidget(),
       borderRadius: 24.0,
-      showShadow: true,
+      // showShadow: true,
+      mainScreenAbsorbPointer: true,
+
       angle: 0.0, // No tilt effect
       menuScreenTapClose: true, // Close menu on tap
       duration: const Duration(milliseconds: 300), // Smooth transition
-      menuBackgroundColor: Colors.green.shade100,
+      //menuBackgroundColor: themeColor().primaryContainer,
       slideWidth: MediaQuery.of(context).size.width * 0.7, // 70% width for menu
     );
   }

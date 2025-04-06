@@ -25,29 +25,30 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       elevation: 0,
       automaticallyImplyLeading: false,
-      leadingWidth:80.w,
-      leading: showBackButton ? InkWell(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: Padding(
-          padding: EdgeInsets.only(left: 24.w,top: 16.h,right: 16.w),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              color: themeColor().primary,
-              child: customIcon(context, ImageConst.icBack),
-            ),
-          ),
-        ),
-      ) : null,
+
+      leadingWidth: 80.w,
+      leading:
+          showBackButton
+              ? InkWell(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Padding(
+                  padding: EdgeInsets.only(left: 24.w, top: 16.h, right: 16.w),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      color: themeColor().primary,
+                      child: customIcon(context, ImageConst.icBack),
+                    ),
+                  ),
+                ),
+              )
+              : null,
       centerTitle: true,
-      title: Text(
-        title??"",
-        style: AppTextStyles.bodyLargeStyle,
-      ),
+      title: Text(title ?? "", style: AppTextStyles.bodyLargeStyle),
       actions: actions,
     );
   }

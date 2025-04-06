@@ -1,12 +1,13 @@
 import 'package:agri_flutter/customs_widgets/reusable.dart';
+import 'package:agri_flutter/presentation/home_page_view/market_price_widget.dart'; // Assuming MarketPriceCard is here
+import 'package:agri_flutter/presentation/search.dart';
+import 'package:agri_flutter/presentation/weather_details.dart';
 import 'package:agri_flutter/providers/api_provider/marker_price_provider.dart';
 import 'package:agri_flutter/providers/api_provider/weather_provider.dart';
 import 'package:agri_flutter/providers/eventExpense.dart/event_expense_provider.dart';
-
-import 'package:agri_flutter/services/hive_user_service.dart';
+import 'package:agri_flutter/providers/user_provider.dart';
 import 'package:agri_flutter/services/location.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
@@ -22,21 +23,17 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final MarkerPriceProvider viewModel = MarkerPriceProvider();
   final LocationService locationService = LocationService();
-  WeatherViewModel? weatherViewModel; // Nullable to avoid init errors
-
-  final HiveService _hiveService = HiveService();
-  String? userName;
+  WeatherViewModel? weatherViewModel;
 
   @override
   void initState() {
     super.initState();
-    viewModel.loadPrices();
-    _loadUserName();
+    viewModel.loadInitialPrices(); // Load Gujarat-specific prices
 
-    // Delay _fetchWeatherData() to avoid context issues
     Future.delayed(Duration.zero, () {
       weatherViewModel = Provider.of<WeatherViewModel>(context, listen: false);
       _fetchWeatherData();
+      Provider.of<EventExpenseProvider>(context, listen: false).fetchAllData();
     });
   }
 
@@ -49,130 +46,319 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> _loadUserName() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      String? name = await _hiveService.getUserName(user.uid);
-      setState(() {
-        userName = name;
-      });
-    }
+  String getGreeting() {
+    final now = DateTime.now();
+    final hour = now.hour;
+    if (hour >= 5 && hour < 12) return " Good Morning 🌞";
+    if (hour >= 12 && hour < 17) return " Good Afternoon ☀️";
+    if (hour >= 17 && hour < 21) return " Good Evening 🌆";
+    return " Good Night 🌙";
   }
 
   @override
   Widget build(BuildContext context) {
-    final getUpcomingEventProvider = Provider.of<EventExpenseProvider>(
-      context,
-      listen: false,
-    );
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home"),
+        title: const Text("Home"),
         leading: IconButton(
-          icon: Icon(Icons.menu),
+          icon: const Icon(Icons.menu),
           onPressed: () => ZoomDrawer.of(context)?.toggle(),
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            bodyLargeBoldText(
-              userName != null ? "Hello, $userName! 🌾" : "Hello, Farmer! 🌾",
-            ),
-            SizedBox(height: 16),
+        padding: EdgeInsets.all(16.r),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Greeting
+              Row(
+                children: [
+                  bodyMediumText("Hy, "),
+                  bodyMediumText("${context.watch<UserProvider>().userName}!"),
+                  bodyMediumText(getGreeting()),
+                ],
+              ),
+              SizedBox(height: 16.h),
 
-            // Weather Card
-            Consumer<WeatherViewModel>(
-              builder: (context, weatherViewModel, _) {
-                if (weatherViewModel.isLoading) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                if (weatherViewModel.errorMessage != null) {
-                  return errorText(weatherViewModel.errorMessage.orEmpty());
-                }
-                if (weatherViewModel.currentWeather == null) {
-                  return bodyText('No weather data available.');
-                }
+              // Weather Card (Unchanged)
+              Consumer<WeatherViewModel>(
+                builder: (context, weatherViewModel, _) {
+                  if (weatherViewModel.isLoading) {
+                    return SizedBox(
+                      height: 180.h,
+                      child: const Card(
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                    );
+                  }
+                  if (weatherViewModel.errorMessage != null) {
+                    return SizedBox(
+                      height: 180.h,
+                      child: Card(
+                        child: Center(
+                          child: errorText(
+                            weatherViewModel.errorMessage.orEmpty(),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                  if (weatherViewModel.currentWeather == null) {
+                    return SizedBox(
+                      height: 180.h,
+                      child: const Card(
+                        child: Center(
+                          child: Text('No weather data available.'),
+                        ),
+                      ),
+                    );
+                  }
 
-                final current = weatherViewModel.currentWeather!;
-                return SizedBox(
-                  height: 180.h,
-                  child: Card(
-                    color: Colors.white,
+                  final weather = weatherViewModel.currentWeather!;
+                  final icon = weather['weather'][0]['icon'];
+                  final name = weather['name'];
+                  final description = weather['weather'][0]['description'];
+                  final tempMin = weather['main']['temp_min'];
+                  final tempMax = weather['main']['temp_max'];
+                  final humidity = weather['main']['humidity'];
+                  final windSpeed = weather['wind']['speed'];
+                  final sunrise = DateTime.fromMillisecondsSinceEpoch(
+                    weather['sys']['sunrise'] * 1000,
+                  );
+                  final sunset = DateTime.fromMillisecondsSinceEpoch(
+                    weather['sys']['sunset'] * 1000,
+                  );
 
-                    elevation: 4,
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0.r),
-                      child: Row(
-                        children: [
-                          Icon(Icons.wb_sunny, size: 40),
-                          SizedBox(width: 16.w),
-                          Column(
+                  return SizedBox(
+                    height: 220.h,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ForecastScreen(),
+                          ),
+                        );
+                      },
+                      child: Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.r),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(16.r),
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              bodyLargeText(
-                                "${current['main']['temp']}°C",
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      bodyLargeText(name),
+                                      bodyText("🌤 $description"),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Image.network(
+                                        "https://openweathermap.org/img/wn/$icon@2x.png",
+                                        width: 50.w,
+                                      ),
+                                      SizedBox(width: 8.w),
+                                      bodyLargeText(
+                                        "${weather['main']['temp']}°C",
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              bodyText(current['weather'][0]['description']),
-                              bodyText("Your Location"),
+                              const Divider(),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  bodyText("🔽 Min: $tempMin°C"),
+                                  bodyText("🔼 Max: $tempMax°C"),
+                                ],
+                              ),
+                              SizedBox(height: 8.h),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  bodyText("🌬 Wind: $windSpeed m/s"),
+                                  bodyText("💧 Humidity: $humidity%"),
+                                ],
+                              ),
+                              SizedBox(height: 8.h),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  bodyText(
+                                    "🌅 Sunrise: ${sunrise.hour}:${sunrise.minute.toString().padLeft(2, '0')}",
+                                  ),
+                                  bodyText(
+                                    "🌇 Sunset: ${sunset.hour}:${sunset.minute.toString().padLeft(2, '0')}",
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              ),
+              SizedBox(height: 16.h),
 
-            SizedBox(height: 16),
-            /*
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Upcoming Events",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10),
-               getUpcomingEventProvider.isEmpty
-                    ? Center(child: Text("No upcoming events"))
-                    : Column(
-                      children:
-                          getUpcomingEventProvider.map((event) {
+              // Upcoming Events (Unchanged)
+              Consumer<EventExpenseProvider>(
+                builder: (context, provider, _) {
+                  final events = provider.upcomingTwoEvents;
+                  if (events.isEmpty) return const Text("No upcoming events");
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Upcoming Events",
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                      SizedBox(
+                        height: 160.h,
+                        child: ListView.builder(
+                          itemCount: events.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            final event = events[index];
                             return Card(
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(12.r),
                               ),
                               elevation: 3,
+                              margin: EdgeInsets.only(bottom: 8.h),
                               child: ListTile(
                                 title: Text(
                                   event.title,
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 subtitle: Text(
-                                  "${event.date.toLocal()}".split(
-                                    ' ',
-                                  )[0], // Shows only date
+                                  "${event.date.toLocal()}".split(' ')[0],
                                 ),
-                                trailing: Icon(
+                                trailing: const Icon(
                                   Icons.event,
                                   color: Colors.green,
                                 ),
                               ),
                             );
-                          }).toList(),
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+              SizedBox(height: 16.h),
+
+              // Market Prices (Modified to include "Search Now" in the last card)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Market Prices (Gujarat)",
+                    style: TextStyle(
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.bold,
                     ),
+                  ),
+                  SizedBox(height: 10.h),
+                  Consumer<MarkerPriceProvider>(
+                    builder: (context, provider, _) {
+                      if (provider.isLoading) {
+                        return SizedBox(
+                          height: 180.h,
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+                      if (provider.errorMessage != null) {
+                        return SizedBox(
+                          height: 180.h,
+                          child: Center(child: Text(provider.errorMessage!)),
+                        );
+                      }
+                      if (provider.prices.isEmpty) {
+                        return SizedBox(
+                          height: 180.h,
+                          child: const Center(
+                            child: Text('No market data available.'),
+                          ),
+                        );
+                      }
 
-                //   Expanded(child: MarketPriceWidget()),
-                SizedBox(height: 10),
-              ],
-            ),
-         */
-          ],
+                      final displayCount =
+                          provider.prices.length > 2
+                              ? 2
+                              : provider.prices.length;
 
+                      return SizedBox(
+                        height: 180.h,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount:
+                              displayCount, // No extra card, use existing count
+                          itemBuilder: (context, index) {
+                            final isLastCard = index == displayCount - 1;
+                            return Stack(
+                              children: [
+                                MarketPriceCard(record: provider.prices[index]),
+                                if (isLastCard) // Add "Search Now" only to the last card
+                                  Positioned(
+                                    top: 8.h,
+                                    right: 8.w,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) =>
+                                                    const SearchScreen(),
+                                          ),
+                                        );
+                                      },
+                                      child: Text(
+                                        "Search more",
+                                        style: TextStyle(color: Colors.green),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

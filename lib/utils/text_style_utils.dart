@@ -12,13 +12,16 @@ const double captionFontSize = 12;
 const double buttonFontSize = 16;
 
 class AppTextStyles {
-
   //32
   static const TextStyle headline1Style = TextStyle(
     fontSize: headline1FontSize,
     fontWeight: FontWeight.bold,
   );
 
+  //32
+  static const TextStyle bodylargeStyle = TextStyle(
+    fontSize: headline1FontSize,
+  );
 
   //24
   static const TextStyle headline2Style = TextStyle(

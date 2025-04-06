@@ -1,4 +1,7 @@
 import 'package:agri_flutter/models/user.dart';
+import 'package:agri_flutter/presentation/post_sign_up/farm_detail.dart';
+import 'package:agri_flutter/presentation/post_sign_up/farm_detail2.dart';
+import 'package:agri_flutter/providers/api_provider/marker_price_provider.dart';
 import 'package:agri_flutter/providers/api_provider/weather_provider.dart';
 import 'package:agri_flutter/providers/eventExpense.dart/event_expense_provider.dart';
 import 'package:agri_flutter/providers/farm_state_provider.dart/crop_details_provider.dart';
@@ -8,6 +11,7 @@ import 'package:agri_flutter/providers/market_place_provider/cart_provider.dart'
 import 'package:agri_flutter/providers/market_place_provider/favorite_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/product_provider.dart';
 import 'package:agri_flutter/providers/password_provider.dart';
+import 'package:agri_flutter/providers/user_provider.dart';
 import 'package:agri_flutter/services/noti_service.dart';
 import 'package:agri_flutter/theme/app_theme_bloc.dart';
 import 'package:agri_flutter/theme/theme.dart';
@@ -65,12 +69,12 @@ void main() async {
         ChangeNotifierProvider(create: (context) => WeatherViewModel()),
         ChangeNotifierProvider(create: (context) => PasswordProvider()),
         ChangeNotifierProvider(create: (context) => ConfirmPasswordProvider()),
-
+        ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(
+          create: (context) => MarkerPriceProvider()..loadInitialPrices(),
+        ),
       ],
-      child: BlocProvider(
-        create: (_) => appThemeBloc,
-        child: const MyApp(),
-      ),
+      child: BlocProvider(create: (_) => appThemeBloc, child: MyApp()),
     ),
   );
 }
@@ -80,7 +84,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     var textTheme = createTextTheme(context, "Lato", "Lato");
     final MaterialTheme materialTheme = MaterialTheme(textTheme);
 
@@ -98,9 +101,9 @@ class MyApp extends StatelessWidget {
               theme: materialTheme.light(),
               darkTheme: materialTheme.dark(),
               themeMode: state.themeMode,
-            // themeMode: ThemeMode.system,
+              // themeMode: ThemeMode.system,
               navigatorKey: navigatorKey,
-              home: SplashScreen(),
+              home: AddFarmFieldLocationScreen(),
             );
           },
         );

@@ -1,16 +1,19 @@
 import 'package:agri_flutter/customs_widgets/custom_app_bar.dart';
 import 'package:agri_flutter/customs_widgets/custom_button.dart';
 import 'package:agri_flutter/customs_widgets/custom_form_field.dart';
+import 'package:agri_flutter/customs_widgets/custom_snackbar.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
+import 'package:agri_flutter/models/user_data.dart';
 import 'package:agri_flutter/services/firebase_auth.dart';
-import 'package:agri_flutter/services/hive_user_service.dart';
+import 'package:agri_flutter/services/firestore.dart';
+
 import 'package:agri_flutter/presentation/login_view.dart';
 import 'package:agri_flutter/theme/theme.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-
 import '../providers/password_provider.dart';
 
 class SignupView extends StatefulWidget {
@@ -21,39 +24,46 @@ class SignupView extends StatefulWidget {
 }
 
 class _SignupViewState extends State<SignupView> {
+  //formkey
   final _formKey = GlobalKey<FormState>();
+
+  //controller
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final FireBaseAuth _fireBaseAuth = FireBaseAuth();
-  final HiveService _hiveService = HiveService();
 
+  //firebase
+  final FireBaseAuth _fireBaseAuth = FireBaseAuth();
+  final FirestoreService _firestore = FirestoreService();
+
+  //validation
   void _validateAndSignup() async {
     final validate = _formKey.currentState!.validate();
     if (validate) {
       try {
         User? user = await _fireBaseAuth.signUp(
-
           _emailController.text.trim(),
-          _passwordController.text.trim()
+          _passwordController.text.trim(),
         );
-
-
 
         print("Verification email sent! Check your inbox.");
 
         if (user != null) {
-          // ✅ Store user's name in Hive using UID as key
-          await _hiveService.saveUserName(
-            user.uid,
-            _nameController.text.trim(),
+          await _firestore.addUser(
+            UserModelDb(
+              id: user.uid,
+              name: _nameController.text.trim(),
+              email: _emailController.text.trim(),
+            ),
+          );
+          showCustomSnackBar(
+            context,
+            "Verification email sent! Check your inbox.",
           );
 
+          showCustomSnackBar(context, "Signup successful! Please log in.");
           // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Signup successful! Please log in.")),
-          );
 
           // Navigate to Login Screen
           Navigator.pushReplacement(
@@ -63,26 +73,21 @@ class _SignupViewState extends State<SignupView> {
         }
       } catch (e) {
         // Show error message if signup fails
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Signup failed: ${e.toString()}")),
-        );
+        showCustomSnackBar(context, "Signup failed: ${e.toString()}");
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-
-
-
     return Scaffold(
       appBar: CustomAppBar(),
-      backgroundColor: ThemeData().scaffoldBackgroundColor,
+      backgroundColor: themeColor().surface,
       body: Column(
         children: [
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(bottom: 30.w,right: 24.w,left: 24.w),
+              padding: EdgeInsets.only(bottom: 24.w, right: 30.w, left: 30.w),
               child: SingleChildScrollView(
                 child: Form(
                   key: _formKey,
@@ -92,13 +97,18 @@ class _SignupViewState extends State<SignupView> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(height: 40.h),
-                      customText("Create your account", themeColor().primary ,32),
+
+                      bodyLargeText(
+                        "Create your account",
+                        color: themeColor().primary,
+                      ),
 
                       //sign in
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          customText("Already have an account?", themeColor().primary , 16),
+                          bodyText("Already have an account?"),
+
                           TextButton(
                             onPressed: () {
                               Navigator.push(
@@ -108,11 +118,14 @@ class _SignupViewState extends State<SignupView> {
                                 ),
                               );
                             },
-                            child: customText("Sign in", themeColor().primary, 18),
+                            child: buttonText(
+                              "Sign in",
+                              color: themeColor().primary,
+                            ),
                           ),
                         ],
                       ),
-                       SizedBox(height: 40.h),
+                      SizedBox(height: 40.h),
 
                       //name
                       CustomFormField(
@@ -120,15 +133,13 @@ class _SignupViewState extends State<SignupView> {
                         hintText: 'Enter your full name',
                         label: 'Full Name',
                         textEditingController: _nameController,
-                        icon: Icon(Icons.person, color: themeColor().primary , ),
-                        validator:
-                            (value)  {
-                             if(value== null || value.isEmpty){
-                               return  'Please enter your full name';
-                             }
-                             return null;
-                            }
-
+                        icon: Icon(Icons.person),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your full name';
+                          }
+                          return null;
+                        },
                       ),
                       SizedBox(height: 24.h),
 
@@ -138,7 +149,7 @@ class _SignupViewState extends State<SignupView> {
                         hintText: 'Enter your email address',
                         label: 'Email Address',
                         textEditingController: _emailController,
-                        icon: Icon(Icons.email,),
+                        icon: Icon(Icons.email),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your email';
@@ -167,18 +178,26 @@ class _SignupViewState extends State<SignupView> {
                             isPasswordField: true,
 
                             icon: Icon(
-                              isObscure ? Icons.visibility_off : Icons.visibility,
-                              color: themeColor().primary,
+                              isObscure
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
                             ),
-                            onTogglePassword: () => context.read<PasswordProvider>().toggleObscure(),
-                            validator: (value) =>
-                            (value == null || value.isEmpty) ? 'Password cannot be empty' : null,
+                            onTogglePassword:
+                                () =>
+                                    context
+                                        .read<PasswordProvider>()
+                                        .toggleObscure(),
+                            validator:
+                                (value) =>
+                                    (value == null || value.isEmpty)
+                                        ? 'Password cannot be empty'
+                                        : null,
                           );
                         },
                       ),
                       SizedBox(height: 24.h),
 
-                       // Confirm Password Field
+                      // Confirm Password Field
                       Selector<ConfirmPasswordProvider, bool>(
                         selector: (context, provider) => provider.isObscure,
                         builder: (context, isObscure, child) {
@@ -191,13 +210,21 @@ class _SignupViewState extends State<SignupView> {
                             isPasswordField: true,
 
                             icon: Icon(
-                              isObscure ? Icons.visibility_off : Icons.visibility,
-                              color: themeColor().primary,
+                              isObscure
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
                             ),
-                            onTogglePassword: () => context.read<ConfirmPasswordProvider>().toggleObscure(),
-                            validator: (value) => (value == null || value != _passwordController.text)
-                                ? 'Passwords do not match'
-                                : null,
+                            onTogglePassword:
+                                () =>
+                                    context
+                                        .read<ConfirmPasswordProvider>()
+                                        .toggleObscure(),
+                            validator:
+                                (value) =>
+                                    (value == null ||
+                                            value != _passwordController.text)
+                                        ? 'Passwords do not match'
+                                        : null,
                           );
                         },
                       ),
@@ -225,7 +252,6 @@ class _SignupViewState extends State<SignupView> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _emailController.dispose();
     _confirmPasswordController.dispose();

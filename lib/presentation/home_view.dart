@@ -1,4 +1,3 @@
-
 import 'package:agri_flutter/presentation/calender_view/calender_view.dart';
 import 'package:agri_flutter/presentation/farm_state_views/farm_state_home_view.dart';
 import 'package:agri_flutter/presentation/market_place_views/market_homePage_view.dart';
@@ -33,8 +32,7 @@ class HomeViewState extends State<HomeView> {
       bottomNavigationBar: Container(
         height: 60,
         decoration: BoxDecoration(
-          color:
-              theme.surface ,
+          color: theme.onPrimaryContainer,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
@@ -54,21 +52,13 @@ class HomeViewState extends State<HomeView> {
                 children: [
                   Icon(
                     Icons.graphic_eq,
-                    color:
-                        pageIndex == 0
-                            ?     theme.surface
-
-
-                            :    theme.surface ,
+                    color: pageIndex == 0 ? theme.surface : theme.surface,
                     size: pageIndex == 0 ? 30 : 25, // Bigger icon when selected
                   ),
                   if (pageIndex == 0)
                     Text(
                       "home",
-                      style: TextStyle(
-                        color:     theme.surface ,
-                        fontSize: 10,
-                      ),
+                      style: TextStyle(color: theme.surface, fontSize: 10),
                     ),
                 ],
               ),
@@ -85,21 +75,13 @@ class HomeViewState extends State<HomeView> {
                 children: [
                   Icon(
                     Icons.shop,
-                    color:
-                        pageIndex == 1
-                            ?     theme.surface
-
-
-                            :    theme.surface ,
+                    color: pageIndex == 1 ? theme.surface : theme.surface,
                     size: pageIndex == 1 ? 30 : 25, // Bigger icon when selected
                   ),
                   if (pageIndex == 1)
                     Text(
                       "Shop",
-                      style: TextStyle(
-                        color:     theme.surface ,
-                        fontSize: 10,
-                      ),
+                      style: TextStyle(color: theme.surface, fontSize: 10),
                     ),
                 ],
               ),
@@ -115,20 +97,11 @@ class HomeViewState extends State<HomeView> {
                 children: [
                   Icon(
                     Icons.calendar_today,
-                    color:
-                        pageIndex == 2
-                            ?     theme.surface
-                            :   theme.surface ,
+                    color: pageIndex == 2 ? theme.surface : theme.surface,
                     size: pageIndex == 2 ? 30 : 25, // Bigger icon when selected
                   ),
                   if (pageIndex == 2)
-                    Text(
-                      "Calendar",
-                      style: TextStyle(
-
-                        fontSize: 10,
-                      ),
-                    ),
+                    Text("Calendar", style: TextStyle(fontSize: 10)),
                 ],
               ),
             ),
@@ -143,20 +116,11 @@ class HomeViewState extends State<HomeView> {
                 children: [
                   Icon(
                     Icons.graphic_eq,
-                    color:
-                        pageIndex == 3
-                            ?     theme.surface
-                            :     theme.surface ,
+                    color: pageIndex == 3 ? theme.surface : theme.surface,
                     size: pageIndex == 3 ? 30 : 25, // Bigger icon when selected
                   ),
                   if (pageIndex == 3)
-                    Text(
-                      "Stats",
-                      style: TextStyle(
-
-                        fontSize: 10,
-                      ),
-                    ),
+                    Text("Stats", style: TextStyle(fontSize: 10)),
                 ],
               ),
             ),

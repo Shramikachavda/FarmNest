@@ -24,7 +24,8 @@ class CustomFormField extends StatelessWidget {
   final bool isDatePicker;
   final bool isPasswordField; // ✅ New flag for password fields
   final String? Function(String?)? validator;
-  final VoidCallback? onTogglePassword; // ✅ Function for toggling password visibility
+  final VoidCallback?
+  onTogglePassword; // ✅ Function for toggling password visibility
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
@@ -36,7 +37,7 @@ class CustomFormField extends StatelessWidget {
 
     if (pickedDate != null) {
       textEditingController.text =
-      "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+          "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
     }
   }
 
@@ -52,16 +53,19 @@ class CustomFormField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         hintText: hintText,
-        suffixIcon: isDatePicker
-            ? IconButton(
-          icon: Icon(Icons.calendar_today, size: 20),
-          onPressed: () => _selectDate(context),
-        )
-            : isPasswordField
-            ? IconButton( // ✅ Only password fields use IconButton
-          icon: icon ?? Icon(Icons.visibility),
-          onPressed: onTogglePassword, // ✅ Calls toggle function
-        ): icon, // ✅ Keeps normal icons as they are
+        suffixIcon:
+            isDatePicker
+                ? IconButton(
+                  icon: Icon(Icons.calendar_today, size: 20),
+                  onPressed: () => _selectDate(context),
+                )
+                : isPasswordField
+                ? IconButton(
+                  // ✅ Only password fields use IconButton
+                  icon: icon ?? Icon(Icons.visibility),
+                  onPressed: onTogglePassword, // ✅ Calls toggle function
+                )
+                : icon, // ✅ Keeps normal icons as they are
       ),
     );
   }

@@ -5,15 +5,14 @@ import 'package:agri_flutter/services/firebase_auth.dart';
 import 'package:agri_flutter/presentation/home_view.dart';
 import 'package:agri_flutter/presentation/signup_view.dart';
 import 'package:agri_flutter/theme/theme.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-
-import '../core/image.dart' show ImageConst;
+import '../core/image.dart';
 import '../customs_widgets/custom_snackbar.dart';
-import '../providers/password_provider.dart' show PasswordProvider;
-import 'forget_password.dart' show ForgotPasswordScreen;
+import '../providers/password_provider.dart';
+import 'forget_password.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -23,9 +22,14 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
+  //controller
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  //formkey
   final _formkey = GlobalKey<FormState>();
+
+  //firebase
   final FireBaseAuth _fireBaseAuth = FireBaseAuth();
 
   // Initialize FirebaseAuth
@@ -43,11 +47,7 @@ class _LoginViewState extends State<LoginView> {
             MaterialPageRoute(builder: (context) => HomeView()),
           );
         }
-
-        // ✅ Navigate to HomeView only if login is successful
-      }
-      on FirebaseAuthException catch (e) {
-
+      } on FirebaseAuthException catch (e) {
         String errorMessage = "Login failed. Please try again.";
 
         if (e.code == 'wrong-password') {
@@ -73,18 +73,10 @@ class _LoginViewState extends State<LoginView> {
           errorMessage = "Login failed. Error: ${e.message ?? "Unknown error"}";
         }
 
-
-
-          showCustomSnackBar(context , errorMessage) ;
-
-
-
-      }catch (e) {
-        showCustomSnackBar(context , "Error: ${e.toString()}") ;
-
-
+        showCustomSnackBar(context, errorMessage);
+      } catch (e) {
+        showCustomSnackBar(context, "Error: ${e.toString()}");
       }
-
     }
   }
 
@@ -100,18 +92,22 @@ class _LoginViewState extends State<LoginView> {
               child: Center(
                 child: Form(
                   key: _formkey,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
+
                   child: SingleChildScrollView(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         //logo
-                        Image.asset(ImageConst.logo, width: 180.w, height: 180.h),
+                        Image.asset(
+                          ImageConst.logo,
+                          width: 150.w,
+                          height: 150.h,
+                        ),
                         SizedBox(height: 50.h),
 
                         //welcome back text
-                        headLine1("Welcome back"),
+                        headLine1("Welcome back", color: themeColor().primary),
                         SizedBox(height: 24.h),
 
                         //email
@@ -148,16 +144,24 @@ class _LoginViewState extends State<LoginView> {
                               obscureText: isObscure,
                               isPasswordField: true,
                               icon: Icon(
-                                isObscure ? Icons.visibility_off : Icons.visibility,
+                                isObscure
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
                               ),
-                              onTogglePassword: () => context.read<PasswordProvider>().toggleObscure(),
-                              validator: (value) =>
-                              (value == null || value.isEmpty) ? 'Password cannot be empty' : null,
+                              onTogglePassword:
+                                  () =>
+                                      context
+                                          .read<PasswordProvider>()
+                                          .toggleObscure(),
+                              validator:
+                                  (value) =>
+                                      (value == null || value.isEmpty)
+                                          ? 'Password cannot be empty'
+                                          : null,
                             );
                           },
                         ),
                         SizedBox(height: 20.h),
-
 
                         //forgot password
                         InkWell(
@@ -168,7 +172,10 @@ class _LoginViewState extends State<LoginView> {
                               ),
                             );
                           },
-                          child: Text("Forgot password?", style: TextStyle(fontSize: 16 ,   color: themeColor().primary,)),
+                          child: buttonText(
+                            "Forgot password",
+                            color: themeColor().primary,
+                          ),
                         ),
                         SizedBox(height: 14.h),
 
@@ -176,10 +183,8 @@ class _LoginViewState extends State<LoginView> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            bodyText(
-                              "Don't have an account?",
-                            ),
-                            SizedBox(width: 5.w,) ,
+                            bodyText("Don't have an account?"),
+                            SizedBox(width: 5.w),
 
                             InkWell(
                               onTap: () {
@@ -189,17 +194,19 @@ class _LoginViewState extends State<LoginView> {
                                   ),
                                 );
                               },
-                              child: Text("Sign up",)),
-
+                              child: buttonText(
+                                "Sign up",
+                                color: themeColor().primary,
+                              ),
+                            ),
                           ],
                         ),
                         SizedBox(height: 20.h),
 
                         //signin button
                         CustomButton(
-                          onClick: loginUser   , // Use the updated login function
+                          onClick: loginUser, // Use the updated login function
                           buttonName: 'Sign In',
-
                         ),
                       ],
                     ),

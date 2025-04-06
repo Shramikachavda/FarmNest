@@ -60,3 +60,25 @@ enum LivestockAge {
   adult,    // 🐂 1-5 years
   senior    // 🧓 5+ years
 }
+
+enum Categoty {
+
+    harvesting,
+    irrigation,
+    pesticideApplication,
+    fertilization,
+    equipmentMaintenance,
+    soilTesting,
+    livestockCare,
+    marketVisit,
+  other,
+}
+
+enum FarmOwnershipType {
+  individual,
+  family,
+  partnership,
+  corporate,
+  leased,
+  government,
+}

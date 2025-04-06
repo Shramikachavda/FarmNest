@@ -1,42 +1,37 @@
-import 'package:agri_flutter/providers/api_provider/marker_price_provider.dart';
 import 'package:flutter/material.dart';
 
-class MarketPriceWidget extends StatefulWidget {
-  const MarketPriceWidget({super.key});
+class MarketPriceCard extends StatelessWidget {
+  final dynamic record;
 
-  @override
-  State<MarketPriceWidget> createState() => _MarketPriceWidgetState();
-}
-
-class _MarketPriceWidgetState extends State<MarketPriceWidget> {
-  final MarkerPriceProvider viewModel = MarkerPriceProvider();
+  const MarketPriceCard({required this.record, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: viewModel.loadPrices(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return Center(child: Text("Error: ${snapshot.error}"));
-        }
-        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text("No market data available"));
-        }
-
-        // Using snapshot data instead of viewModel.prices
-        final prices = snapshot.data!;
-        return Column(
-          children:
-              prices.take(2).map((item) {
-                final commodityName = item['commodity_name'] ?? 'Unknown';
-                final modalPrice = item['modal_price_rs'] ?? 'N/A';
-                return Text("$commodityName: ₹$modalPrice/q");
-              }).toList(),
-        );
-      },
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(30.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${record['Market']} Market (${record['State']})',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text('Commodity: ${record['Commodity']} (${record['Variety']})'),
+            Text('Date: ${record['Arrival_Date']}'),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Min: ₹${record['Min_Price']}'),
+                Text('Max: ₹${record['Max_Price']}'),
+                Text('Modal: ₹${record['Modal_Price']}'),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
