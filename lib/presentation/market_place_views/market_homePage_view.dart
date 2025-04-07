@@ -36,6 +36,8 @@ class MarketHomepageView extends BaseStatefulWidget {
 
 class _MarketHomepageViewState extends State<MarketHomepageView> {
   final TextEditingController _searchController = TextEditingController();
+
+  final FocusNode _focusNodeSearch = FocusNode();
   String selectedCategory = "";
   List<Product> _filteredProducts = [];
   Timer? _debounce;
@@ -123,6 +125,8 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
           children: [
             // Search Field
             CustomFormField(
+              focusNode: _focusNodeSearch,
+              textInputAction: TextInputAction.done,
               hintText: 'Product Name/Category',
               keyboardType: TextInputType.text,
               label: 'Search Store',

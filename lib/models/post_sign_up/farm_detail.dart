@@ -5,10 +5,8 @@ class FarmDetail {
   final double fieldSize;
   final String state;
   final String locationDescription;
-  final String farmersAllocated; // Consider int or List<String> if needed
-//  final double farmBoundaries;   // Consider using List<LatLng> or a complex object if it's geo-boundary
+  final String farmersAllocated;
   final List<double> farmBoundaries; // e.g., [lat1, lng1, lat2, lng2, ...]
-
 
   FarmDetail({
     required this.fieldName,
@@ -30,7 +28,9 @@ class FarmDetail {
       state: json['state'] ?? '',
       locationDescription: json['locationDescription'] ?? '',
       farmersAllocated: json['farmersAllocated'] ?? '',
-      farmBoundaries: (json['farmBoundaries'] ?? 0).toDouble(),
+      farmBoundaries: json['farmBoundaries'] != null
+          ? List<double>.from(json['farmBoundaries'].map((e) => e.toDouble()))
+          : [],
     );
   }
 

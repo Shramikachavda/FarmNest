@@ -32,7 +32,7 @@ class _MyZoomDrawerState extends State<MyZoomDrawer> {
   Widget build(BuildContext context) {
     return ZoomDrawer(
       //  controller: _drawerController, // Ensure the controller is used correctly
-      mainScreen: const HomeView(),
+      mainScreen: HomePage (),
       menuScreen: DrawerWidget(),
       borderRadius: 24.0,
       // showShadow: true,

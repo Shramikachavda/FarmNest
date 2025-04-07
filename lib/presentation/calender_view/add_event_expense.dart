@@ -32,9 +32,18 @@ class AddEventExpenseDialog extends BaseStatefulWidget {
 }
 
 class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
-  final _titleController = TextEditingController();
-  final _amountController = TextEditingController();
-  final _customCategoryController = TextEditingController();
+
+  //textEditingController
+  final TextEditingController  _titleController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _customCategoryController = TextEditingController();
+
+  //focusNode
+
+  final FocusNode _focusNodeTitle = FocusNode();
+  final FocusNode _focusNodeamount = FocusNode();
+  final FocusNode _focusNodeCategory = FocusNode();
+
   String _selectedType = "Event";
   DateTime? _selectedReminderTime;
   Categoty? _selectedCategory = Categoty.harvesting;
@@ -111,6 +120,9 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
               ),
               SizedBox(height: 15.h),
               CustomFormField(
+                focusNode: _focusNodeTitle,
+                textInputAction: TextInputAction.next,
+
                 hintText: 'Enter your title',
                 keyboardType: TextInputType.name,
                 label: 'Title',
@@ -187,6 +199,8 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
     return Column(
       children: [
         CustomFormField(
+          focusNode: _focusNodeCategory,
+          textInputAction: TextInputAction.next,
           hintText: 'Enter custom category',
           keyboardType: TextInputType.name,
           label: 'Custom Category',
@@ -201,6 +215,8 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
     return Column(
       children: [
         CustomFormField(
+          textInputAction: TextInputAction.next,
+          focusNode: _focusNodeamount,
           hintText: 'Enter your expense',
           keyboardType: TextInputType.number,
           label: 'Expense',

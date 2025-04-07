@@ -82,3 +82,13 @@ enum FarmOwnershipType {
   leased,
   government,
 }
+
+enum FarmersAllocated {
+  none,
+  one,
+  two,
+  three,
+  four,
+  five,
+  six
+}

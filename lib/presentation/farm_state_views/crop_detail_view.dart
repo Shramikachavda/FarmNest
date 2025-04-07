@@ -4,10 +4,7 @@ import 'package:agri_flutter/customs_widgets/custom_snackbar.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/core/drop_down_value.dart';
 import 'package:agri_flutter/models/crop_details.dart';
-
 import 'package:agri_flutter/providers/farm_state_provider.dart/crop_details_provider.dart';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -36,14 +33,24 @@ class CropDetailView extends BaseStatefulWidget {
 }
 
 class _CropDetailViewState extends State<CropDetailView> {
-  final _cropNameController = TextEditingController();
-  GrowthStage? selectedStage;
-  final _seedDateController = TextEditingController();
-  final _harvestDateController = TextEditingController();
-  final _addressOneController = TextEditingController();
-  final _addressTwoController = TextEditingController();
+
+  //textEditingController
+  final TextEditingController _cropNameController = TextEditingController();
+  final TextEditingController _seedDateController = TextEditingController();
+  final TextEditingController _harvestDateController = TextEditingController();
+  final TextEditingController _addressOneController = TextEditingController();
+  final TextEditingController _addressTwoController = TextEditingController();
+
+  //focusNode
+  final FocusNode _focusNodeCrop =FocusNode();
+  final FocusNode _focusNodeseed =FocusNode();
+  final FocusNode _focusNodeharvest =FocusNode();
+  final FocusNode _focusNodesddress1 =FocusNode();
+  final FocusNode _focusNodeaddress2 =FocusNode();
+
   PesticideType? selectedPesticide;
   FertilizerType? selectedFertilizer;
+  GrowthStage? selectedStage;
 
   final dateFormat = DateFormat("dd-MM-yyyy");
   final FirestoreService _firestoreService = FirestoreService();
@@ -99,6 +106,8 @@ class _CropDetailViewState extends State<CropDetailView> {
         child: Column(
           children: [
             CustomFormField(
+              textInputAction: TextInputAction.next,
+              focusNode: _focusNodeCrop,
               hintText: "Enter Crop Name",
               keyboardType: TextInputType.text,
               label: 'Crop Name',
@@ -122,6 +131,8 @@ class _CropDetailViewState extends State<CropDetailView> {
               },
             ),
             CustomFormField(
+              focusNode: _focusNodeseed,
+              textInputAction: TextInputAction.next,
               textEditingController: _seedDateController,
               label: "Seeding Date",
               hintText: "DD-MM-YYYY",
@@ -129,6 +140,8 @@ class _CropDetailViewState extends State<CropDetailView> {
               isDatePicker: true,
             ),
             CustomFormField(
+              focusNode: _focusNodeharvest,
+              textInputAction: TextInputAction.next,
               textEditingController: _harvestDateController,
               label: "Harvest Date",
               hintText: "DD-MM-YYYY",
@@ -136,6 +149,8 @@ class _CropDetailViewState extends State<CropDetailView> {
               isDatePicker: true,
             ),
             CustomFormField(
+              focusNode: _focusNodesddress1,
+              textInputAction: TextInputAction.next,
               hintText: "Enter farm location",
               keyboardType: TextInputType.text,
               label: 'Farm Location 1',
@@ -143,6 +158,8 @@ class _CropDetailViewState extends State<CropDetailView> {
               icon: Icon(Icons.location_on),
             ),
             CustomFormField(
+              focusNode: _focusNodeaddress2,
+              textInputAction: TextInputAction.done,
               hintText: "Enter additional location",
               keyboardType: TextInputType.text,
               label: 'Farm Location 2',

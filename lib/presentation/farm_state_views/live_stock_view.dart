@@ -5,7 +5,6 @@ import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/core/drop_down_value.dart';
 import 'package:agri_flutter/models/live_stock_detail.dart';
 import 'package:agri_flutter/providers/farm_state_provider.dart/liveStock_provider.dart';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -33,12 +32,21 @@ class LiveStockDetailView extends BaseStatefulWidget {
 }
 
 class _LiveStockDetailViewState extends State<LiveStockDetailView> {
-  final _livestockNameController = TextEditingController();
+
+  //textEditing controller
+  final TextEditingController _livestockNameController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _vaccinationDateController = TextEditingController();
+
   LivestockType? selectedLivestockType;
-  final _ageController = TextEditingController();
-  final _vaccinationDateController = TextEditingController();
   Gender? selectedGender;
   final FirestoreService _firestoreService = FirestoreService();
+
+
+  //focusNode
+  final FocusNode _focusNodeName =FocusNode();
+  final FocusNode _focusNodeAge =FocusNode();
+  final FocusNode _focusNodeVaccinate =FocusNode();
 
   final dateFormat = DateFormat("dd-MM-yyyy");
 
@@ -90,6 +98,8 @@ class _LiveStockDetailViewState extends State<LiveStockDetailView> {
         child: Column(
           children: [
             CustomFormField(
+              textInputAction: TextInputAction.next,
+              focusNode: _focusNodeName,
               hintText: "Enter Livestock Name",
               keyboardType: TextInputType.text,
               label: 'Livestock Name',
@@ -123,6 +133,8 @@ class _LiveStockDetailViewState extends State<LiveStockDetailView> {
               },
             ),
             CustomFormField(
+              textInputAction: TextInputAction.next,
+              focusNode: _focusNodeAge,
               hintText: "Enter Age",
               keyboardType: TextInputType.number,
               label: 'Age',
@@ -130,6 +142,8 @@ class _LiveStockDetailViewState extends State<LiveStockDetailView> {
               icon: Icon(Icons.numbers),
             ),
             CustomFormField(
+              textInputAction: TextInputAction.done,
+              focusNode: _focusNodeName,
               textEditingController: _vaccinationDateController,
               label: "Vaccination Date",
               hintText: "DD-MM-YYYY",

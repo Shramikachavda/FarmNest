@@ -17,11 +17,16 @@ class FarmerAddress {
 
   factory FarmerAddress.fromJson(Map<String, dynamic> json) {
     return FarmerAddress(
-      name: json['name'],
-      addressLine1: json['addressLine1'],
-      addressLine2: json['addressLine2'],
-      phoneNum: json['phoneNum'],
-      landMark: json['landMark'],
+      name: json['name'] ?? '',
+      addressLine1: json['addressLine1'] ?? '',
+      addressLine2: json['addressLine2'] ?? '',
+      phoneNum: json['phoneNum'] ?? 0,
+      landMark: json['landMark'] != null
+          ? LatLng(
+        json['landMark']['lat'],
+        json['landMark']['lng'],
+      )
+          : null,
     );
   }
 
@@ -31,7 +36,12 @@ class FarmerAddress {
       'addressLine1': addressLine1,
       'addressLine2': addressLine2,
       'phoneNum': phoneNum,
-      'landMark': landMark,
+      'landMark': landMark != null
+          ? {
+        'lat': landMark!.latitude,
+        'lng': landMark!.longitude,
+      }
+          : null,
     };
   }
 }

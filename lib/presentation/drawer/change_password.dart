@@ -30,9 +30,17 @@ class ChangePassword extends BaseStatefulWidget {
 }
 
 class _ChangePasswordState extends State<ChangePassword> {
+
+  //textEditingController
   final TextEditingController _currentPassword = TextEditingController();
   final TextEditingController _newPassword = TextEditingController();
   final TextEditingController _email = TextEditingController();
+
+  //focusNode
+  final FocusNode _focusNodeEmail = FocusNode();
+  final FocusNode _focusNodeCurrentPassword = FocusNode();
+  final FocusNode _focusNodeNewPassword = FocusNode();
+
   final FireBaseAuth _auth = FireBaseAuth();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -49,6 +57,8 @@ class _ChangePasswordState extends State<ChangePassword> {
               SizedBox(height: 20.h),
 
               CustomFormField(
+                focusNode: _focusNodeEmail,
+                textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.text,
                 hintText: 'Enter your email',
                 label: 'email',
@@ -67,6 +77,8 @@ class _ChangePasswordState extends State<ChangePassword> {
                 selector: (context, provider) => provider.isObscure,
                 builder: (context, isObscure, child) {
                   return CustomFormField(
+                    textInputAction: TextInputAction.next,
+                    focusNode: _focusNodeCurrentPassword,
                     keyboardType: TextInputType.text,
                     hintText: 'Enter your password',
                     label: 'Current password',
@@ -92,6 +104,8 @@ class _ChangePasswordState extends State<ChangePassword> {
                 selector: (context, provider) => provider.isObscure,
                 builder: (context, isObscure, child) {
                   return CustomFormField(
+                    focusNode: _focusNodeNewPassword,
+                    textInputAction: TextInputAction.done,
                     keyboardType: TextInputType.text,
                     hintText: 'Enter your new password',
                     label: 'New password',

@@ -1,11 +1,13 @@
 import 'package:agri_flutter/models/crop_details.dart';
+import 'package:agri_flutter/models/post_sign_up/default_farmer_address.dart';
+import 'package:agri_flutter/models/post_sign_up/farm_detail.dart';
 import 'package:agri_flutter/models/live_stock_detail.dart';
 import 'package:agri_flutter/models/product.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:agri_flutter/models/event_expense.dart';
+import '../models/post_sign_up/farmer_address.dart';
 
-import '../models/user.dart';
 import '../models/user_data.dart';
 
 class FirestoreService {
@@ -446,9 +448,7 @@ class FirestoreService {
         });
   }
 
-
   //user
-
 
   //// ✅ Add User
 
@@ -488,19 +488,172 @@ class FirestoreService {
     }
   }
 
-  Future<void> changePassword(String newPassword) async {
-  try {
-    User? user = FirebaseAuth.instance.currentUser;
+  //farmer address
 
-    if (user != null) {
-      await user.updatePassword(newPassword);
-      print("✅ Password changed successfully.");
-    } else {
-      print("❌ No user is currently signed in.");
+  //add
+  Future<void> addFamerAddress(FarmerAddress farm) async {
+    try {
+      await _db
+          .collection("users")
+          .doc(userId)
+          .collection("FarmerAddress")
+          .doc(farm.name)
+          .set(farm.toJson());
+      print("✅ User added successfully");
+    } catch (e) {
+      print("❌ Error adding user: $e");
+      rethrow;
     }
-  } catch (e) {
-    print("❌ Error changing password: $e");
   }
-}
 
+  //get farmadress
+  Future<FarmerAddress?> getFarmerAddress() async {
+    try {
+      final data =
+          await _db
+              .collection("users")
+              .doc(userId)
+              .collection("FarmerAddress")
+              .get();
+
+      if (data.docs.isNotEmpty) {
+        final doc = data.docs.first.data();
+
+        return FarmerAddress.fromJson(doc);
+      } else {
+        print("No address found.");
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
+  }
+
+  //update
+  Future<void> updateFarmerAddress(FarmerAddress farm) async {
+    try {
+      await _db
+          .collection("users")
+          .doc(userId)
+          .collection("FarmerAddress")
+          .doc(farm.name)
+          .update(farm.toJson());
+      print("update sucessfully");
+    } catch (e) {
+      rethrow;
+    }
+
+    //farm address
+
+    //add
+    Future<void> adaFarm(FarmDetail farm) async {
+      try {
+        await _db
+            .collection("users")
+            .doc(userId)
+            .collection("Farm")
+            .doc(farm.fieldName)
+            .set(farm.toJson());
+        print("✅ User added successfully");
+      } catch (e) {
+        print("❌ Error adding user: $e");
+        rethrow;
+      }
+    }
+
+    //get
+    Future<FarmDetail?> getFarm(String fieldName) async {
+      try {
+        final docSnapshot =
+            await _db
+                .collection("users")
+                .doc(userId)
+                .collection("Farm")
+                .doc(fieldName)
+                .get();
+
+        if (docSnapshot.exists) {
+          return FarmDetail.fromJson(docSnapshot.data()!);
+        } else {
+          print("❗ No farm found with field name: $fieldName");
+          return null;
+        }
+      } catch (e) {
+        print("❌ Error fetching farm: $e");
+        return null;
+      }
+    }
+
+    //update
+    Future<void> updateFarm(FarmDetail farm) async {
+      try {
+        await _db
+            .collection("users")
+            .doc(userId)
+            .collection("Farm")
+            .doc(farm.fieldName)
+            .update(farm.toJson());
+
+        print("✅ Farm updated successfully");
+      } catch (e) {
+        print("❌ Error updating farm: $e");
+        rethrow;
+      }
+    }
+
+    //farm address default
+
+    //add
+    Future<void> adaDefaultLocation(DefaultFarmerAddress farm) async {
+      try {
+        await _db
+            .collection("users")
+            .doc(userId)
+            .collection("defaultAddress")
+            .doc("default")
+            .set(farm.toJson());
+        print("✅ User added successfully");
+      } catch (e) {
+        print("❌ Error adding user: $e");
+        rethrow;
+      }
+    }
+
+    //get default address
+    Future<DefaultFarmerAddress?> getDefaultAddress() async {
+      try {
+        final data =
+            await _db
+                .collection("users")
+                .doc(userId)
+                .collection("defaultAddress")
+                .doc("default")
+                .get();
+        if (data.exists) {
+          return DefaultFarmerAddress.fromJson(data.data()!);
+        } else {
+          return null;
+        }
+      } catch (e) {
+        return null;
+      }
+    }
+
+    //update
+    Future<void> updateDefaultAddress(DefaultFarmerAddress address) async {
+      try {
+        await _db
+            .collection("users")
+            .doc(userId)
+            .collection("defaultAddress")
+            .doc("default")
+            .update(address.toJson());
+
+        print("✅ Default address updated successfully");
+      } catch (e) {
+        print("❌ Error updating default address: $e");
+        rethrow;
+      }
+    }
+  }
 }

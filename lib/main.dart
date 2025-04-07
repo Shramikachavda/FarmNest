@@ -1,6 +1,8 @@
-import 'package:agri_flutter/models/user.dart';
-import 'package:agri_flutter/presentation/post_sign_up/farm_detail.dart';
+
+import 'package:agri_flutter/presentation/post_sign_up/default_location.dart';
+
 import 'package:agri_flutter/presentation/post_sign_up/farm_detail2.dart';
+import 'package:agri_flutter/presentation/post_sign_up/post_signup_screen.dart';
 import 'package:agri_flutter/providers/api_provider/marker_price_provider.dart';
 import 'package:agri_flutter/providers/api_provider/weather_provider.dart';
 import 'package:agri_flutter/providers/eventExpense.dart/event_expense_provider.dart';
@@ -19,6 +21,7 @@ import 'package:agri_flutter/theme/util.dart';
 import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
 import 'package:agri_flutter/utils/shared_prefs_util.dart';
 import 'package:agri_flutter/presentation/splash_screen.dart';
+import 'package:agri_flutter/presentation/post_sign_up/add_farmer_address.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -41,7 +44,7 @@ void main() async {
 
   await Hive.initFlutter();
 
-  Hive.registerAdapter(UserModelAdapter());
+ // Hive.registerAdapter(UserModelAdapter());
 
   // Initialize timezone
   tz.initializeTimeZones();

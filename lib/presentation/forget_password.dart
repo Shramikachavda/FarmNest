@@ -3,6 +3,7 @@ import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/presentation/login_view.dart';
 import 'package:agri_flutter/theme/theme.dart';
 import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../core/widgets/BaseStateFullWidget.dart';
@@ -12,6 +13,7 @@ import '../customs_widgets/custom_snackbar.dart';
 import '../services/firebase_auth.dart';
 
 class ForgotPasswordScreen extends BaseStatefulWidget {
+  const ForgotPasswordScreen({super.key});
 
   @override
   State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
@@ -23,24 +25,21 @@ class ForgotPasswordScreen extends BaseStatefulWidget {
 
   static const String route = "/ForgotPasswordScreen";
 
-  const ForgotPasswordScreen({super.key});
-
   @override
   String get routeName => route;
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  //emailcontroller
   final TextEditingController _emailController = TextEditingController();
-
-  //firebase auth
+  final FocusNode _focusNodeEmail = FocusNode();
   final FireBaseAuth _fireBaseAuth = FireBaseAuth();
 
-  void _resetPassword() async {
+  Future<void> _resetPassword() async {
     final email = _emailController.text.trim();
 
     if (email.isEmpty) {
       showCustomSnackBar(context, "Please enter your email!");
+      return;
     }
 
     if (!RegExp(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$").hasMatch(email)) {
@@ -51,18 +50,43 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     _showLoadingDialog(); // Show loading indicator
 
     try {
-      await _fireBaseAuth.sendPasswordResetEmail(email);
+      bool success = await _fireBaseAuth.sendPasswordResetEmail(email);
+      if (!mounted) return;
 
-      showCustomSnackBar(
-        context,
-        "Password reset email sent! Check your inbox",
-      );
-      // Close loading dialog
-      // Navigate back to login presentation
-      NavigationUtils.popUntil(LoginView.route);
+      Navigator.pop(context); // Close loading dialog
+
+      if (success) {
+        showCustomSnackBar(
+          context,
+          "Password reset email sent! Check your inbox",
+        );
+        NavigationUtils.popUntil(LoginView.route);
+      } else {
+        showCustomSnackBar(
+          context,
+          "No account found with this email.",
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context); // Close loading dialog
+
+      String errorMessage;
+      switch (e.code) {
+        case 'invalid-email':
+          errorMessage = "Invalid email format.";
+          break;
+        case 'too-many-requests':
+          errorMessage = "Too many requests. Try again later.";
+          break;
+        default:
+          errorMessage = "Failed to send reset email: ${e.message}";
+      }
+      showCustomSnackBar(context, errorMessage);
     } catch (e) {
-      NavigationUtils.pop(); // Close loading dialog
-      showCustomSnackBar(context, "Error: ${e.toString()}");
+      if (!mounted) return;
+      Navigator.pop(context); // Close loading dialog
+      showCustomSnackBar(context, "An unexpected error occurred: $e");
     }
   }
 
@@ -89,15 +113,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(height: 40.h),
-
               headLine2("Forgot Password"),
               SizedBox(height: 8.h),
-
               bodyMediumText("Enter your registered email address"),
               SizedBox(height: 40.h),
-
-              //email addresss
               CustomFormField(
+                focusNode: _focusNodeEmail,
+                textInputAction: TextInputAction.done,
                 hintText: 'Enter your email address',
                 keyboardType: TextInputType.emailAddress,
                 label: 'Email Address',
@@ -105,10 +127,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 icon: Icon(Icons.email),
               ),
               SizedBox(height: 35.h),
-
-              //button
               CustomButton(onClick: _resetPassword, buttonName: 'Send Email'),
-
               Spacer(),
               footer(),
               SizedBox(height: 16.h),
@@ -122,6 +141,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   void dispose() {
     _emailController.dispose();
+    _focusNodeEmail.dispose();
     super.dispose();
   }
 }

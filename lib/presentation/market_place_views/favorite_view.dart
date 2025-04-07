@@ -28,7 +28,12 @@ class FavoriteView extends BaseStatefulWidget {
 }
 
 class _FavoriteViewState extends State<FavoriteView> {
+
+  //textEditingController
   final TextEditingController _searchController = TextEditingController();
+
+  //focusNode
+  final FocusNode _focusNodeSearch = FocusNode();
   List<dynamic> _filteredFavorites = [];
 
   Timer? _debounce;
@@ -97,6 +102,8 @@ class _FavoriteViewState extends State<FavoriteView> {
           children: [
             // 🟢 Search Field
             CustomFormField(
+              focusNode: _focusNodeSearch,
+              textInputAction: TextInputAction.done,
               hintText: 'Product Name/Category',
               keyboardType: TextInputType.text,
               label: 'Search Store',

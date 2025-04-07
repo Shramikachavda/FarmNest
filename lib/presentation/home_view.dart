@@ -37,6 +37,7 @@ class HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     final theme = themeColor();
     return Scaffold(
+      backgroundColor: themeColor().surface,
       body: pages[pageIndex],
       //  drawer: DrawerWidget(), // Show selected page
       bottomNavigationBar: Container(
@@ -62,7 +63,7 @@ class HomeViewState extends State<HomeView> {
                 children: [
                   Icon(
                     Icons.graphic_eq,
-                    color: pageIndex == 0 ? theme.surface : theme.surface,
+                    color: pageIndex == 0 ? theme.surface : theme.surface.withValues(alpha: 0.7),
                     size: pageIndex == 0 ? 30 : 25, // Bigger icon when selected
                   ),
                   if (pageIndex == 0)

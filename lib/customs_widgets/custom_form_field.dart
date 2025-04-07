@@ -2,21 +2,26 @@ import 'package:flutter/material.dart';
 
 class CustomFormField extends StatelessWidget {
   const CustomFormField({
-    this.icon, // Now supports any widget (Icon, IconButton, etc.)
+
+    this.icon,
     required this.hintText,
     required this.keyboardType,
     required this.label,
     required this.textEditingController,
     this.obscureText = false,
-    this.isPasswordField = false, // ✅ New flag for password fields
+    this.isPasswordField = false,
     this.validator,
-    this.isDatePicker = false, // ✅ Flag for date picker
-    this.onTogglePassword, // ✅ New function for toggling password visibility
+    this.isDatePicker = false,
+    this.onTogglePassword,
+    required this.focusNode ,
+    required this.textInputAction  ,
+
     super.key,
   });
 
   final TextEditingController textEditingController;
   final String hintText;
+  final TextInputAction textInputAction ;
   final Widget? icon; // ✅ Accepts both `Icon` and `IconButton`
   final String label;
   final TextInputType keyboardType;
@@ -25,7 +30,8 @@ class CustomFormField extends StatelessWidget {
   final bool isPasswordField; // ✅ New flag for password fields
   final String? Function(String?)? validator;
   final VoidCallback?
-  onTogglePassword; // ✅ Function for toggling password visibility
+  onTogglePassword;
+  final FocusNode focusNode;// ✅ Function for toggling password visibility
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
@@ -44,6 +50,8 @@ class CustomFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      focusNode: focusNode,
+      textInputAction : textInputAction ,
       keyboardType: keyboardType,
       obscureText: obscureText,
       controller: textEditingController,

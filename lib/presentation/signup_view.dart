@@ -40,10 +40,16 @@ class _SignupViewState extends State<SignupView> {
   final _formKey = GlobalKey<FormState>();
 
   //controller
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController  _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+
+  //focusnode
+  final FocusNode _focusNodeName = FocusNode();
+  final FocusNode _focusNodeEmail = FocusNode();
+  final FocusNode _focusNodePassword = FocusNode();
+  final FocusNode _focusNodeConfirmPassword = FocusNode();
 
   //firebase
   final FireBaseAuth _fireBaseAuth = FireBaseAuth();
@@ -133,6 +139,8 @@ class _SignupViewState extends State<SignupView> {
 
                       //name
                       CustomFormField(
+                        focusNode: _focusNodeName,
+                        textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.text,
                         hintText: 'Enter your full name',
                         label: 'Full Name',
@@ -149,6 +157,8 @@ class _SignupViewState extends State<SignupView> {
 
                       //email
                       CustomFormField(
+                        focusNode: _focusNodeEmail,
+                        textInputAction:TextInputAction.next ,
                         keyboardType: TextInputType.emailAddress,
                         hintText: 'Enter your email address',
                         label: 'Email Address',
@@ -174,6 +184,8 @@ class _SignupViewState extends State<SignupView> {
                         selector: (context, provider) => provider.isObscure,
                         builder: (context, isObscure, child) {
                           return CustomFormField(
+                            textInputAction: TextInputAction.next,
+                            focusNode: _focusNodePassword,
                             keyboardType: TextInputType.text,
                             hintText: 'Enter your password',
                             label: 'Password',
@@ -206,6 +218,8 @@ class _SignupViewState extends State<SignupView> {
                         selector: (context, provider) => provider.isObscure,
                         builder: (context, isObscure, child) {
                           return CustomFormField(
+                            focusNode: _focusNodeConfirmPassword,
+                            textInputAction: TextInputAction.done,
                             keyboardType: TextInputType.text,
                             hintText: 'Confirm your password',
                             label: 'Confirm Password',

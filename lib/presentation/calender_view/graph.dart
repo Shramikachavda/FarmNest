@@ -1,5 +1,5 @@
-import 'package:agri_flutter/providers/eventExpense.dart/event_chart.dart';
-import 'package:agri_flutter/providers/eventExpense.dart/expense_chart.dart';
+import 'package:agri_flutter/presentation/calender_view/event_chart.dart';
+import 'package:agri_flutter/presentation/calender_view/expense_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

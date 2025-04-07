@@ -38,6 +38,11 @@ class _LoginViewState extends State<LoginView> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  //focusnode
+
+  final FocusNode _focusNodeEmail = FocusNode();
+  final FocusNode _focusNodePassword = FocusNode();
+
   //formkey
   final _formkey = GlobalKey<FormState>();
 
@@ -55,7 +60,7 @@ class _LoginViewState extends State<LoginView> {
         User? user = await _fireBaseAuth.login(email, password);
 
         if (user != null) {
-          NavigationUtils.goTo(HomeView());
+          NavigationUtils.goToHome();
         }
       } on FirebaseAuthException catch (e) {
         String errorMessage = "Login failed. Please try again.";
@@ -82,9 +87,12 @@ class _LoginViewState extends State<LoginView> {
         } else {
           errorMessage = "Login failed. Error: ${e.message ?? "Unknown error"}";
         }
+        FocusScope.of(context).unfocus();
 
         showCustomSnackBar(context, errorMessage);
       } catch (e) {
+        FocusScope.of(context).unfocus();
+
         showCustomSnackBar(context, "Error: ${e.toString()}");
       }
     }
@@ -122,6 +130,8 @@ class _LoginViewState extends State<LoginView> {
 
                         //email
                         CustomFormField(
+                          textInputAction: TextInputAction.next,
+                          focusNode: _focusNodeEmail,
                           hintText: "Enter Your Email",
                           keyboardType: TextInputType.emailAddress,
                           label: 'Email',
@@ -147,6 +157,8 @@ class _LoginViewState extends State<LoginView> {
                           selector: (context, provider) => provider.isObscure,
                           builder: (context, isObscure, child) {
                             return CustomFormField(
+                              focusNode: _focusNodePassword,
+                              textInputAction: TextInputAction.done,
                               keyboardType: TextInputType.text,
                               hintText: 'Enter your password',
                               label: 'Password',
