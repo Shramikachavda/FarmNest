@@ -16,6 +16,7 @@ import 'package:agri_flutter/services/noti_service.dart';
 import 'package:agri_flutter/theme/app_theme_bloc.dart';
 import 'package:agri_flutter/theme/theme.dart';
 import 'package:agri_flutter/theme/util.dart';
+import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
 import 'package:agri_flutter/utils/shared_prefs_util.dart';
 import 'package:agri_flutter/presentation/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -101,9 +102,8 @@ class MyApp extends StatelessWidget {
               theme: materialTheme.light(),
               darkTheme: materialTheme.dark(),
               themeMode: state.themeMode,
-              // themeMode: ThemeMode.system,
-              navigatorKey: navigatorKey,
-              home: AddFarmFieldLocationScreen(),
+              navigatorKey: NavigationUtils.navigatorKey,
+              home: SplashScreen(),
             );
           },
         );

@@ -1,16 +1,32 @@
 import 'package:agri_flutter/customs_widgets/custom_app_bar.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
+import 'package:agri_flutter/presentation/login_view.dart';
 import 'package:agri_flutter/theme/theme.dart';
+import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../core/widgets/BaseStateFullWidget.dart';
 import '../customs_widgets/custom_button.dart';
 import '../customs_widgets/custom_form_field.dart';
 import '../customs_widgets/custom_snackbar.dart';
 import '../services/firebase_auth.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
+class ForgotPasswordScreen extends BaseStatefulWidget {
+
   @override
   State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/ForgotPasswordScreen";
+
+  const ForgotPasswordScreen({super.key});
+
+  @override
+  String get routeName => route;
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
@@ -41,10 +57,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         context,
         "Password reset email sent! Check your inbox",
       );
-      Navigator.pop(context); // Close loading dialog
-      Navigator.pop(context); // Navigate back to login presentation
+      // Close loading dialog
+      // Navigate back to login presentation
+      NavigationUtils.popUntil(LoginView.route);
     } catch (e) {
-      Navigator.pop(context); // Close loading dialog
+      NavigationUtils.pop(); // Close loading dialog
       showCustomSnackBar(context, "Error: ${e.toString()}");
     }
   }
@@ -61,7 +78,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: themeColor().surface,
-
       appBar: CustomAppBar(),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 30.w),

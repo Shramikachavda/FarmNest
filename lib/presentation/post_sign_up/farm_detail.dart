@@ -5,11 +5,23 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 
-class AddFarmerDetailsScreen extends StatefulWidget {
+import '../../core/widgets/BaseStateFullWidget.dart';
+
+class AddFarmerDetailsScreen extends BaseStatefulWidget {
   const AddFarmerDetailsScreen({super.key});
 
   @override
   State<AddFarmerDetailsScreen> createState() => _AddFarmerDetailsScreenState();
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/AddFarmerDetailsScreen";
+
+  @override
+  String get routeName => route;
 }
 
 class _AddFarmerDetailsScreenState extends State<AddFarmerDetailsScreen> {

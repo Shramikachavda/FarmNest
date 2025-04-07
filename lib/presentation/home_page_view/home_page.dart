@@ -13,11 +13,23 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:provider/provider.dart';
 
-class HomePage extends StatefulWidget {
+import '../../core/widgets/BaseStateFullWidget.dart';
+
+class HomePage extends BaseStatefulWidget {
   const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/HomePage";
+
+  @override
+  String get routeName => route;
 }
 
 class _HomePageState extends State<HomePage> {

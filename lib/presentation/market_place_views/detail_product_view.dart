@@ -8,11 +8,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-class DetailProductView extends StatefulWidget {
+import '../../core/widgets/BaseStateFullWidget.dart';
+
+class DetailProductView extends BaseStatefulWidget {
   const DetailProductView({super.key});
 
   @override
   State<DetailProductView> createState() => _DetailProductViewState();
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/DetailProductView";
+
+  @override
+  String get routeName => route;
 }
 
 class _DetailProductViewState extends State<DetailProductView> {
@@ -96,7 +108,6 @@ class _DetailProductViewState extends State<DetailProductView> {
                   padding: EdgeInsets.all(5.r),
                   child: Text(
                     '${product.quantity}', // ✅ Now dynamically updates
-
                   ),
                 ),
                 InkWell(
@@ -125,7 +136,10 @@ class _DetailProductViewState extends State<DetailProductView> {
               "Product Description",
               style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600),
             ),
-            Text(product.description, style: TextStyle(color: themeColor().surfaceContainerHighest)),
+            Text(
+              product.description,
+              style: TextStyle(color: themeColor().surfaceContainerHighest),
+            ),
             Spacer(),
             Row(
               children: [

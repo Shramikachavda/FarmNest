@@ -3,9 +3,23 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class EventPieChart extends StatefulWidget {
+import '../../core/widgets/BaseStateFullWidget.dart';
+
+class EventPieChart extends BaseStatefulWidget {
+  const EventPieChart({super.key});
+
   @override
   _EventPieChartState createState() => _EventPieChartState();
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/EventPieChart";
+
+  @override
+  String get routeName => route;
 }
 
 class _EventPieChartState extends State<EventPieChart> {

@@ -1,7 +1,7 @@
 /*import 'package:agri_flutter/customs_widgets/custom_form_field.dart';
 import 'package:flutter/material.dart';
 
-class FarmDetail2 extends StatefulWidget {
+class FarmDetail2 extends BaseStatefulWidget {
   const FarmDetail2({super.key});
 
   @override
@@ -36,12 +36,24 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class AddFarmFieldLocationScreen extends StatefulWidget {
+import '../../core/widgets/BaseStateFullWidget.dart';
+
+class AddFarmFieldLocationScreen extends BaseStatefulWidget {
   const AddFarmFieldLocationScreen({super.key});
 
   @override
   State<AddFarmFieldLocationScreen> createState() =>
       _AddFarmFieldLocationScreenState();
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/AddFarmFieldLocationScreen";
+
+  @override
+  String get routeName => route;
 }
 
 class _AddFarmFieldLocationScreenState
@@ -70,7 +82,8 @@ class _AddFarmFieldLocationScreenState
     showDialog(
       context: context,
       builder:
-          (context) => AlertDialog(
+          (context) =>
+          AlertDialog(
             backgroundColor: Colors.black,
             title: const Text(
               "Select Farm Boundaries",
@@ -120,7 +133,7 @@ class _AddFarmFieldLocationScreenState
                         onSubmitted: (value) async {
                           try {
                             List<Location> locations =
-                                await locationFromAddress(value);
+                            await locationFromAddress(value);
                             if (locations.isNotEmpty) {
                               final location = locations.first;
                               _currentPosition = LatLng(
@@ -205,11 +218,11 @@ class _AddFarmFieldLocationScreenState
         'locationDescription': _locationDescriptionController.text,
         'farmersAllocated': _farmersAllocatedController.text,
         'farmBoundaries':
-            _farmBoundaries
-                .map(
-                  (latLng) => {'lat': latLng.latitude, 'lng': latLng.longitude},
-                )
-                .toList(),
+        _farmBoundaries
+            .map(
+              (latLng) => {'lat': latLng.latitude, 'lng': latLng.longitude},
+        )
+            .toList(),
         'createdAt': FieldValue.serverTimestamp(),
       });
 
@@ -310,9 +323,9 @@ class _AddFarmFieldLocationScreenState
                     label: 'Farm Boundaries',
                     textEditingController: TextEditingController(
                       text:
-                          _farmBoundaries.isNotEmpty
-                              ? 'Boundaries selected'
-                              : '',
+                      _farmBoundaries.isNotEmpty
+                          ? 'Boundaries selected'
+                          : '',
                     ),
                   ),
                 ),
@@ -356,28 +369,28 @@ class _AddFarmFieldLocationScreenState
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : Center(
-                    child: ElevatedButton(
-                      onPressed: _saveFarmDetails,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 40.0,
-                          vertical: 12.0,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24.0),
-                        ),
-                      ),
-                      child: const Text(
-                        "Save And Proceed",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                child: ElevatedButton(
+                  onPressed: _saveFarmDetails,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40.0,
+                      vertical: 12.0,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24.0),
                     ),
                   ),
+                  child: const Text(
+                    "Save And Proceed",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),

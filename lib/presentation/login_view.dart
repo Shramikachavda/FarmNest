@@ -5,20 +5,32 @@ import 'package:agri_flutter/services/firebase_auth.dart';
 import 'package:agri_flutter/presentation/home_view.dart';
 import 'package:agri_flutter/presentation/signup_view.dart';
 import 'package:agri_flutter/theme/theme.dart';
+import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../core/image.dart';
+import '../core/widgets/BaseStateFullWidget.dart';
 import '../customs_widgets/custom_snackbar.dart';
 import '../providers/password_provider.dart';
 import 'forget_password.dart';
 
-class LoginView extends StatefulWidget {
+class LoginView extends BaseStatefulWidget {
   const LoginView({super.key});
+
+  static const String route = "/login";
 
   @override
   State<LoginView> createState() => _LoginViewState();
+
+  @override
+  String get routeName => route;
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
 }
 
 class _LoginViewState extends State<LoginView> {
@@ -43,9 +55,7 @@ class _LoginViewState extends State<LoginView> {
         User? user = await _fireBaseAuth.login(email, password);
 
         if (user != null) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => HomeView()),
-          );
+          NavigationUtils.goTo(HomeView());
         }
       } on FirebaseAuthException catch (e) {
         String errorMessage = "Login failed. Please try again.";
@@ -166,11 +176,7 @@ class _LoginViewState extends State<LoginView> {
                         //forgot password
                         InkWell(
                           onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => ForgotPasswordScreen(),
-                              ),
-                            );
+                            NavigationUtils.goTo(ForgotPasswordScreen());
                           },
                           child: buttonText(
                             "Forgot password",
@@ -188,11 +194,7 @@ class _LoginViewState extends State<LoginView> {
 
                             InkWell(
                               onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => SignupView(),
-                                  ),
-                                );
+                                NavigationUtils.goTo(SignupView());
                               },
                               child: buttonText(
                                 "Sign up",

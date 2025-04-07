@@ -9,11 +9,23 @@ import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
-class CalenderView extends StatefulWidget {
+import '../../core/widgets/BaseStateFullWidget.dart';
+
+class CalenderView extends BaseStatefulWidget {
   const CalenderView({super.key});
 
   @override
   State<CalenderView> createState() => _CalenderViewState();
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/CalenderView";
+
+  @override
+  String get routeName => route;
 }
 
 class _CalenderViewState extends State<CalenderView> {

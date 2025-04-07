@@ -33,7 +33,6 @@ class CustomOnboard extends StatelessWidget {
               SizedBox(height: 24.h),
               Container(
                 color: themeColor().surface,
-                width: 300.w,
                 height: 300.h,
                 child: Image.asset(image, fit: BoxFit.fill),
               ),

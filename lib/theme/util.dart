@@ -1,12 +1,10 @@
 import 'package:agri_flutter/theme/theme.dart';
+import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// to get main navigator key
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
 /// to get all app context
-BuildContext get globalContext => navigatorKey.currentState!.context;
+BuildContext get globalContext => NavigationUtils.navigatorKey.currentState!.context;
 
 TextTheme createTextTheme(BuildContext context, String bodyFontString, String displayFontString) {
   TextTheme baseTextTheme = Theme.of(context).textTheme;

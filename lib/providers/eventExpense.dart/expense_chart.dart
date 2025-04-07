@@ -3,9 +3,21 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ExpenseBarChart extends StatefulWidget {
+import '../../core/widgets/BaseStateFullWidget.dart';
+
+class ExpenseBarChart extends BaseStatefulWidget {
   @override
   _ExpenseBarChartState createState() => _ExpenseBarChartState();
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/ExpenseBarChart";
+
+  @override
+  String get routeName => route;
 }
 
 class _ExpenseBarChartState extends State<ExpenseBarChart> {
@@ -41,7 +53,7 @@ class _ExpenseBarChartState extends State<ExpenseBarChart> {
           for (var expense in expenses) {
             expenseSums[expense.category] =
                 (expenseSums[expense.category] ?? 0.0) +
-                (expense.amount ?? 0.0);
+                    (expense.amount ?? 0.0);
           }
 
           if (expenseSums.isEmpty) {
@@ -54,25 +66,25 @@ class _ExpenseBarChartState extends State<ExpenseBarChart> {
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
                 maxY:
-                    (expenseSums.values.reduce((a, b) => a > b ? a : b) + 50)
-                        .toDouble(),
+                (expenseSums.values.reduce((a, b) => a > b ? a : b) + 50)
+                    .toDouble(),
                 barGroups:
-                    expenseSums.entries.map((entry) {
-                      return BarChartGroupData(
-                        x: expenseSums.keys.toList().indexOf(entry.key),
-                        barRods: [
-                          BarChartRodData(
-                            toY:
-                                (entry.value ?? 0.0)
-                                    .toDouble(), // ✅ Fixes null issue
-                            color: _getCategoryColor(entry.key),
-                            width: 16,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ],
-                        showingTooltipIndicators: [0],
-                      );
-                    }).toList(),
+                expenseSums.entries.map((entry) {
+                  return BarChartGroupData(
+                    x: expenseSums.keys.toList().indexOf(entry.key),
+                    barRods: [
+                      BarChartRodData(
+                        toY:
+                        (entry.value ?? 0.0)
+                            .toDouble(), // ✅ Fixes null issue
+                        color: _getCategoryColor(entry.key),
+                        width: 16,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ],
+                    showingTooltipIndicators: [0],
+                  );
+                }).toList(),
                 titlesData: FlTitlesData(
                   leftTitles: AxisTitles(
                     sideTitles: SideTitles(
@@ -119,7 +131,8 @@ class _ExpenseBarChartState extends State<ExpenseBarChart> {
                   touchTooltipData: BarTouchTooltipData(
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       return BarTooltipItem(
-                        '${expenseSums.keys.elementAt(group.x)}\n ₹${rod.toY.toInt()} spent',
+                        '${expenseSums.keys.elementAt(group.x)}\n ₹${rod.toY
+                            .toInt()} spent',
                         TextStyle(color: Colors.white),
                       );
                     },

@@ -15,11 +15,23 @@ import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:async';
 
-class MarketHomepageView extends StatefulWidget {
+import '../../core/widgets/BaseStateFullWidget.dart';
+
+class MarketHomepageView extends BaseStatefulWidget {
   const MarketHomepageView({super.key});
 
   @override
   State<MarketHomepageView> createState() => _MarketHomepageViewState();
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/MarketHomepageView";
+
+  @override
+  String get routeName => route;
 }
 
 class _MarketHomepageViewState extends State<MarketHomepageView> {
@@ -245,7 +257,8 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
                                           width: 35.w,
                                           height: 35.w,
                                           decoration: BoxDecoration(
-                                            color: themeColor().secondaryContainer,
+                                            color:
+                                                themeColor().secondaryContainer,
                                             borderRadius: BorderRadius.circular(
                                               40.r,
                                             ), // Rounded corners
@@ -292,7 +305,8 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
                                           width: 35.w,
                                           height: 35.w,
                                           decoration: BoxDecoration(
-                                            color: themeColor().secondaryContainer,
+                                            color:
+                                                themeColor().secondaryContainer,
                                             borderRadius: BorderRadius.circular(
                                               40.r,
                                             ), // Rounded corners

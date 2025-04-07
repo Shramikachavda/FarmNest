@@ -4,13 +4,24 @@ import 'package:agri_flutter/presentation/market_place_views/market_homePage_vie
 import 'package:agri_flutter/presentation/zoom_drawer.dart';
 import 'package:flutter/material.dart';
 
+import '../core/widgets/BaseStateFullWidget.dart';
 import '../theme/theme.dart';
 
-class HomeView extends StatefulWidget {
+class HomeView extends BaseStatefulWidget {
   const HomeView({super.key});
 
   @override
   State<HomeView> createState() => HomeViewState();
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/HomeView";
+
+  @override
+  String get routeName => route;
 }
 
 class HomeViewState extends State<HomeView> {
@@ -27,7 +38,6 @@ class HomeViewState extends State<HomeView> {
     final theme = themeColor();
     return Scaffold(
       body: pages[pageIndex],
-
       //  drawer: DrawerWidget(), // Show selected page
       bottomNavigationBar: Container(
         height: 60,

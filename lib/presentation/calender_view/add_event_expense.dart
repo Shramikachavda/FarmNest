@@ -10,12 +10,25 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:agri_flutter/models/event_expense.dart';
 
-class AddEventExpenseDialog extends StatefulWidget {
+import '../../core/widgets/BaseStateFullWidget.dart';
+
+class AddEventExpenseDialog extends BaseStatefulWidget {
   final DateTime selectedDate;
+
   const AddEventExpenseDialog(this.selectedDate, {super.key});
 
   @override
   State<AddEventExpenseDialog> createState() => _AddEventExpenseDialogState();
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/AddEventExpenseDialog";
+
+  @override
+  String get routeName => route;
 }
 
 class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
@@ -232,7 +245,8 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
             _selectedType == "Expense"
                 ? double.parse(_amountController.text)
                 : null,
-        category: finalCategory, // Convert enum to string
+        category: finalCategory,
+        // Convert enum to string
         date: widget.selectedDate,
         type: _selectedType,
         reminder: _selectedReminderTime,

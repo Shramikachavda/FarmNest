@@ -2,20 +2,29 @@ import 'package:agri_flutter/core/image.dart';
 import 'package:agri_flutter/providers/location_provider.dart';
 import 'package:agri_flutter/repo/onboard.dart';
 import 'package:agri_flutter/services/firebase_auth.dart';
-import 'package:agri_flutter/presentation/home_view.dart';
-import 'package:agri_flutter/presentation/login_view.dart';
-import 'package:agri_flutter/presentation/onboard_screen.dart';
+import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import '../core/widgets/BaseStateFullWidget.dart';
 import '../theme/theme.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends BaseStatefulWidget {
   const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
+
+    static const String route = "/SplashScreen";
+
+@override
+  String get routeName => route;
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
 }
 
 class _SplashScreenState extends State<SplashScreen> {
@@ -40,20 +49,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
     Future.delayed(const Duration(seconds: 2), () {
       if (!isOnboardingCompleted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const OnboardScreen()),
-        );
+        NavigationUtils.goToOnboardScreen();
       } else if (user != null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeView()),
-        );
+        NavigationUtils.goToHome();
       } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginView()),
-        );
+        NavigationUtils.goToLogin();
       }
     });
   }

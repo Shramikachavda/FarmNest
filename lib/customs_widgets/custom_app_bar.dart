@@ -2,6 +2,7 @@ import 'package:agri_flutter/core/image.dart';
 import 'package:agri_flutter/customs_widgets/custom_icon.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/theme/theme.dart';
+import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
 import 'package:agri_flutter/utils/text_style_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,7 +34,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 onTap: () {
-                  Navigator.pop(context);
+                  NavigationUtils.pop();
                 },
                 child: Padding(
                   padding: EdgeInsets.only(left: 24.w, top: 16.h, right: 16.w),

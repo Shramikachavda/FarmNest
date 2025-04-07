@@ -10,15 +10,26 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
+import '../../core/widgets/BaseStateFullWidget.dart';
 import '../../services/firestore.dart';
 
-class LiveStockDetailView extends StatefulWidget {
+class LiveStockDetailView extends BaseStatefulWidget {
   final String? livestockId; // Optional livestockId parameter
 
   const LiveStockDetailView({super.key, this.livestockId});
 
   @override
   State<LiveStockDetailView> createState() => _LiveStockDetailViewState();
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/LiveStockDetailView";
+
+  @override
+  String get routeName => route;
 }
 
 class _LiveStockDetailViewState extends State<LiveStockDetailView> {
@@ -129,19 +140,22 @@ class _LiveStockDetailViewState extends State<LiveStockDetailView> {
               onClick: () {
                 if (widget.livestockId != null) {
                   // If livestockId exists, update the livestock details
-                  livestockProvider.updateLivestock(
-                    _firestoreService.userId,
-                    LiveStockDetail(
-                      id: widget.livestockId!,
-                      liveStockName: _livestockNameController.text,
-                      liveStockLive: selectedLivestockType?.name ?? "Unknown",
-                      gender: selectedGender?.name ?? "Unknown",
-                      age: int.tryParse(_ageController.text) ?? 0,
-                      vaccinatedDate:
-                          parseDate(_vaccinationDateController.text) ??
-                          DateTime.now(),
-                    ),
-                  ).then((value) {
+                  livestockProvider
+                      .updateLivestock(
+                        _firestoreService.userId,
+                        LiveStockDetail(
+                          id: widget.livestockId!,
+                          liveStockName: _livestockNameController.text,
+                          liveStockLive:
+                              selectedLivestockType?.name ?? "Unknown",
+                          gender: selectedGender?.name ?? "Unknown",
+                          age: int.tryParse(_ageController.text) ?? 0,
+                          vaccinatedDate:
+                              parseDate(_vaccinationDateController.text) ??
+                              DateTime.now(),
+                        ),
+                      )
+                      .then((value) {
                         showCustomSnackBar(
                           context,
                           " Livestock updated successfully",
@@ -149,17 +163,20 @@ class _LiveStockDetailViewState extends State<LiveStockDetailView> {
                       });
                 } else {
                   // If no livestockId, add a new livestock
-                  livestockProvider.addLiveStock(
-                    LiveStockDetail(
-                      liveStockName: _livestockNameController.text,
-                      liveStockLive: selectedLivestockType?.name ?? "Unknown",
-                      gender: selectedGender?.name ?? "Unknown",
-                      age: int.tryParse(_ageController.text) ?? 0,
-                      vaccinatedDate:
-                          parseDate(_vaccinationDateController.text) ??
-                          DateTime.now(),
-                    ),
-                  ) .then((value) {
+                  livestockProvider
+                      .addLiveStock(
+                        LiveStockDetail(
+                          liveStockName: _livestockNameController.text,
+                          liveStockLive:
+                              selectedLivestockType?.name ?? "Unknown",
+                          gender: selectedGender?.name ?? "Unknown",
+                          age: int.tryParse(_ageController.text) ?? 0,
+                          vaccinatedDate:
+                              parseDate(_vaccinationDateController.text) ??
+                              DateTime.now(),
+                        ),
+                      )
+                      .then((value) {
                         showCustomSnackBar(
                           context,
                           " Livestock added successfully",

@@ -4,11 +4,23 @@ import 'package:agri_flutter/providers/api_provider/marker_price_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SearchScreen extends StatefulWidget {
+import '../core/widgets/BaseStateFullWidget.dart';
+
+class SearchScreen extends BaseStatefulWidget {
   const SearchScreen({super.key});
 
   @override
   _SearchScreenState createState() => _SearchScreenState();
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/SearchScreen";
+
+  @override
+  String get routeName => route;
 }
 
 class _SearchScreenState extends State<SearchScreen> {
@@ -37,26 +49,27 @@ class _SearchScreenState extends State<SearchScreen> {
                   provider.loadFilteredPrices(
                     state: 'Gujarat', // Fixed to Gujarat
                     commodity:
-                        _commodityController.text.isNotEmpty
-                            ? _commodityController.text
-                            : null,
+                    _commodityController.text.isNotEmpty
+                        ? _commodityController.text
+                        : null,
                   );
                 },
                 child: const Text('Search'),
               ),
               if (provider.isLoading)
                 const CircularProgressIndicator()
-              else if (provider.errorMessage != null)
-                Text(provider.errorMessage!)
               else
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: provider.prices.length,
-                    itemBuilder: (context, index) {
-                      return MarketPriceCard(record: provider.prices[index]);
-                    },
+                if (provider.errorMessage != null)
+                  Text(provider.errorMessage!)
+                else
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: provider.prices.length,
+                      itemBuilder: (context, index) {
+                        return MarketPriceCard(record: provider.prices[index]);
+                      },
+                    ),
                   ),
-                ),
             ],
           );
         },

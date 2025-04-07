@@ -7,11 +7,23 @@ import 'package:agri_flutter/presentation/login_view.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class OnboardScreen extends StatefulWidget {
+import '../core/widgets/BaseStateFullWidget.dart';
+
+class OnboardScreen extends BaseStatefulWidget {
   const OnboardScreen({super.key});
 
   @override
   State<OnboardScreen> createState() => _OnboardScreenState();
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/OnboardScreen";
+
+  @override
+  String get routeName => route;
 }
 
 class _OnboardScreenState extends State<OnboardScreen> {
@@ -41,19 +53,19 @@ class _OnboardScreenState extends State<OnboardScreen> {
                     image: ImageConst.intro1,
                     title: 'Welcome to Farm Nest –Your Digital Farming Companion',
                     description:
-                        "Farm Nest gives you smart tools to manage your farm, track weather, and plan every season with confidence.",
+                    "Farm Nest gives you smart tools to manage your farm, track weather, and plan every season with confidence.",
                   ),
                   CustomOnboard(
                     image: ImageConst.intro2,
                     title: 'One-Stop Farm Marketplace',
                     description:
-                        "Shop fertilizers, seeds, and machinery with ease—get everything your farm needs in one place.",
+                    "Shop fertilizers, seeds, and machinery with ease—get everything your farm needs in one place.",
                   ),
                   CustomOnboard(
-                    image: ImageConst.intro3,
-                    title: 'Add Your Farm & Boost Yield with Soil Insights',
-                    description:
-                    "Plan your daily farming activities with ease.Track expenses and get timely updates to stay on top of everything."                  ),
+                      image: ImageConst.intro3,
+                      title: 'Add Your Farm & Boost Yield with Soil Insights',
+                      description:
+                      "Plan your daily farming activities with ease.Track expenses and get timely updates to stay on top of everything."),
                 ],
               ),
             ),
@@ -62,8 +74,9 @@ class _OnboardScreenState extends State<OnboardScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 TextButton(
-                  onPressed: _completeOnboarding, // Mark onboarding as completed
-                  child: Text("Skip" ),
+                  onPressed: _completeOnboarding,
+                  // Mark onboarding as completed
+                  child: Text("Skip"),
                 ),
                 SmoothPageIndicator(
                   controller: _pageController,
@@ -86,7 +99,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
                       );
                     }
                   },
-                  child:  Text("Next"),
+                  child: Text("Next"),
                 ),
               ],
             ),

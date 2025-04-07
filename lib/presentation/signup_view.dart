@@ -9,18 +9,30 @@ import 'package:agri_flutter/services/firestore.dart';
 
 import 'package:agri_flutter/presentation/login_view.dart';
 import 'package:agri_flutter/theme/theme.dart';
+import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import '../core/widgets/BaseStateFullWidget.dart';
 import '../providers/password_provider.dart';
 
-class SignupView extends StatefulWidget {
+class SignupView extends BaseStatefulWidget {
   const SignupView({super.key});
 
   @override
   State<SignupView> createState() => _SignupViewState();
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/SignupView";
+
+  @override
+  String get routeName => route;
 }
 
 class _SignupViewState extends State<SignupView> {
@@ -66,10 +78,7 @@ class _SignupViewState extends State<SignupView> {
           // Show success message
 
           // Navigate to Login Screen
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => LoginView()),
-          );
+          NavigationUtils.popUntil(LoginView.route);
         }
       } catch (e) {
         // Show error message if signup fails
@@ -111,12 +120,7 @@ class _SignupViewState extends State<SignupView> {
 
                           TextButton(
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => LoginView(),
-                                ),
-                              );
+                              NavigationUtils.popUntil(LoginView.route);
                             },
                             child: buttonText(
                               "Sign in",

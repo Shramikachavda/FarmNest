@@ -7,13 +7,24 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../core/widgets/BaseStateFullWidget.dart';
 import '../../theme/theme.dart';
 
-class FavoriteView extends StatefulWidget {
+class FavoriteView extends BaseStatefulWidget {
   const FavoriteView({super.key});
 
   @override
   State<FavoriteView> createState() => _FavoriteViewState();
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/FavoriteView";
+
+  @override
+  String get routeName => route;
 }
 
 class _FavoriteViewState extends State<FavoriteView> {
@@ -189,7 +200,9 @@ class _FavoriteViewState extends State<FavoriteView> {
                                       favoriteProduct.description,
                                       style: TextStyle(
                                         fontSize: 12.sp,
-                                        color: themeColor().surfaceContainerHighest,
+                                        color:
+                                            themeColor()
+                                                .surfaceContainerHighest,
                                       ),
                                       overflow: TextOverflow.ellipsis,
                                     ),

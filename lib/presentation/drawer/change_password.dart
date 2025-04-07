@@ -10,11 +10,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-class ChangePassword extends StatefulWidget {
+import '../../core/widgets/BaseStateFullWidget.dart';
+
+class ChangePassword extends BaseStatefulWidget {
   const ChangePassword({super.key});
 
   @override
   State<ChangePassword> createState() => _ChangePasswordState();
+
+  static const String route = "/ChangePassword";
+
+  @override
+  String get routeName => route;
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
 }
 
 class _ChangePasswordState extends State<ChangePassword> {
@@ -23,6 +35,7 @@ class _ChangePasswordState extends State<ChangePassword> {
   final TextEditingController _email = TextEditingController();
   final FireBaseAuth _auth = FireBaseAuth();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

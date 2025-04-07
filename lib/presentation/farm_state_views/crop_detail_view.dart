@@ -13,15 +13,26 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../core/widgets/BaseStateFullWidget.dart';
 import '../../services/firestore.dart';
 
-class CropDetailView extends StatefulWidget {
+class CropDetailView extends BaseStatefulWidget {
   final String? cropId; // Optional cropId parameter
 
   const CropDetailView({super.key, this.cropId});
 
   @override
   State<CropDetailView> createState() => _CropDetailViewState();
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/CropDetailView";
+
+  @override
+  String get routeName => route;
 }
 
 class _CropDetailViewState extends State<CropDetailView> {
