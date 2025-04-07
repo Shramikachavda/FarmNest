@@ -8,6 +8,7 @@ import 'package:agri_flutter/services/firebase_auth.dart';
 import 'package:agri_flutter/services/firestore.dart';
 
 import 'package:agri_flutter/presentation/login_view.dart';
+import 'package:agri_flutter/services/local_storage/post_sign_up.dart';
 import 'package:agri_flutter/theme/theme.dart';
 import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -41,9 +42,10 @@ class _SignupViewState extends State<SignupView> {
 
   //controller
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController  _emailController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   //focusnode
   final FocusNode _focusNodeName = FocusNode();
@@ -75,16 +77,26 @@ class _SignupViewState extends State<SignupView> {
               email: _emailController.text.trim(),
             ),
           );
+          print("User added to Firestore, preparing to navigate...");
           showCustomSnackBar(
             context,
             "Verification email sent! Check your inbox.",
           );
 
           showCustomSnackBar(context, "Signup successful! Please log in.");
-          // Show success message
 
+          // Ensure post-signup flag is false (redundant with default, but explicit)
+        await LocalStorageService.initHive(); // Ensure Hive is initialized
+        if (LocalStorageService.hasCompletedPostSignup()) {
+          await LocalStorageService.setPostSignupCompleted(); // Reset to false if somehow true
+        }
+          // Show success message
+print("Navigating to LoginView...");
           // Navigate to Login Screen
-          NavigationUtils.popUntil(LoginView.route);
+       //   NavigationUtils.popUntil(LoginView.route);
+
+       NavigationUtils.replaceWith(const LoginView()); 
+          print("Navigation triggered.");
         }
       } catch (e) {
         // Show error message if signup fails
@@ -158,7 +170,7 @@ class _SignupViewState extends State<SignupView> {
                       //email
                       CustomFormField(
                         focusNode: _focusNodeEmail,
-                        textInputAction:TextInputAction.next ,
+                        textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.emailAddress,
                         hintText: 'Enter your email address',
                         label: 'Email Address',
@@ -269,11 +281,16 @@ class _SignupViewState extends State<SignupView> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    _emailController.dispose();
-    _confirmPasswordController.dispose();
-    _passwordController.dispose();
-    _nameController.dispose();
-  }
+void dispose() {
+  _emailController.dispose();
+  _passwordController.dispose();
+  _confirmPasswordController.dispose();
+  _nameController.dispose();
+  _focusNodeName.dispose();
+  _focusNodeEmail.dispose();
+  _focusNodePassword.dispose();
+  _focusNodeConfirmPassword.dispose();
+  super.dispose();
+}
+ 
 }

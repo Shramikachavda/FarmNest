@@ -328,42 +328,40 @@ class _HomePageState extends State<HomePage> {
                               ? 2
                               : provider.prices.length;
 
-                      return SizedBox(
-                        height: 180.h,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount:
-                              displayCount, // No extra card, use existing count
-                          itemBuilder: (context, index) {
-                            final isLastCard = index == displayCount - 1;
-                            return Stack(
-                              children: [
-                                MarketPriceCard(record: provider.prices[index]),
-                                if (isLastCard) // Add "Search Now" only to the last card
-                                  Positioned(
-                                    top: 8.h,
-                                    right: 8.w,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder:
-                                                (context) =>
-                                                    const SearchScreen(),
-                                          ),
-                                        );
-                                      },
-                                      child: Text(
-                                        "Search more",
-                                        style: TextStyle(color: Colors.green),
-                                      ),
+                      return ListView.builder(
+                        shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                        itemCount:
+                            displayCount, // No extra card, use existing count
+                        itemBuilder: (context, index) {
+                          final isLastCard = index == displayCount - 1;
+                          return Stack(
+                            children: [
+                              MarketPriceCard(record: provider.prices[index]),
+                              if (isLastCard) // Add "Search Now" only to the last card
+                                Positioned(
+                                  top: 8.h,
+                                  right: 8.w,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) =>
+                                                  const SearchScreen(),
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      "Search more",
+                                      style: TextStyle(color: Colors.green),
                                     ),
                                   ),
-                              ],
-                            );
-                          },
-                        ),
+                                ),
+                            ],
+                          );
+                        },
                       );
                     },
                   ),

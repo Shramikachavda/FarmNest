@@ -1,52 +1,39 @@
 class DefaultFarmerAddress {
   final String address1;
   final String address2;
-  final String address3;
-  final String? landmark;
+  final String name;
+  final String landmark;
   final int contactNumber;
+  final bool isDefault;
 
   DefaultFarmerAddress({
     required this.address1,
     required this.address2,
-    required this.address3,
-    this.landmark,
+    required this.name,
+    required this.landmark,
     required this.contactNumber,
+    this.isDefault = false,
   });
-
-  factory DefaultFarmerAddress.fromJson(Map<String, dynamic> json) {
-    return DefaultFarmerAddress(
-      address1: json['address1'] ?? '',
-      address2: json['address2'] ?? '',
-      address3: json['address3'] ?? '',
-      landmark: json['landmark'],
-      contactNumber: json['contactNumber'] ?? 0,
-    );
-  }
 
   Map<String, dynamic> toJson() {
     return {
       'address1': address1,
       'address2': address2,
-      'address3': address3,
+      'name': name,
       'landmark': landmark,
       'contactNumber': contactNumber,
+      'isDefault': isDefault,
     };
   }
 
-  DefaultFarmerAddress copyWith({
-    String? address1,
-    String? address2,
-    String? address3,
-    String? landmark,
-    int? contactNumber,
-  }) {
+  factory DefaultFarmerAddress.fromJson(Map<String, dynamic> json) {
     return DefaultFarmerAddress(
-      address1: address1 ?? this.address1,
-      address2: address2 ?? this.address2,
-      address3: address3 ?? this.address3,
-      landmark: landmark ?? this.landmark,
-      contactNumber: contactNumber ?? this.contactNumber,
+      address1: json['address1'] ?? '',
+      address2: json['address2'] ?? '',
+      name: json['name'] ?? '',
+      landmark: json['landmark'] ?? '',
+      contactNumber: json['contactNumber'] ?? 0,
+      isDefault: json['isDefault'] ?? false,
     );
   }
-
 }

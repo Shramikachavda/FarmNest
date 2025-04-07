@@ -32,7 +32,7 @@ class _MyZoomDrawerState extends State<MyZoomDrawer> {
   Widget build(BuildContext context) {
     return ZoomDrawer(
       //  controller: _drawerController, // Ensure the controller is used correctly
-      mainScreen: HomePage (),
+      mainScreen: HomePage(),
       menuScreen: DrawerWidget(),
       borderRadius: 24.0,
       // showShadow: true,
@@ -40,12 +40,12 @@ class _MyZoomDrawerState extends State<MyZoomDrawer> {
 
       angle: 0.0,
       // No tilt effect
-      menuScreenTapClose: true,
+      //     menuScreenTapClose: true,
       // Close menu on tap
       duration: const Duration(milliseconds: 300),
       // Smooth transition
       //menuBackgroundColor: themeColor().primaryContainer,
-      slideWidth: MediaQuery.of(context).size.width * 0.7, // 70% width for menu
+      slideWidth: MediaQuery.of(context).size.width * 0.9, // 70% width for menu
     );
   }
 }

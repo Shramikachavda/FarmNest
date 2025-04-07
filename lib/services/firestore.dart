@@ -542,118 +542,204 @@ class FirestoreService {
     } catch (e) {
       rethrow;
     }
+  }
+  //farm address
 
-    //farm address
-
-    //add
-    Future<void> adaFarm(FarmDetail farm) async {
-      try {
-        await _db
-            .collection("users")
-            .doc(userId)
-            .collection("Farm")
-            .doc(farm.fieldName)
-            .set(farm.toJson());
-        print("✅ User added successfully");
-      } catch (e) {
-        print("❌ Error adding user: $e");
-        rethrow;
-      }
+  //add
+  Future<void> addFarm(FarmDetail farm) async {
+    try {
+      await _db
+          .collection("users")
+          .doc(userId)
+          .collection("Farm")
+          .doc(farm.fieldName)
+          .set(farm.toJson());
+      print("✅ User added successfully");
+    } catch (e) {
+      print("❌ Error adding user: $e");
+      rethrow;
     }
+  }
 
-    //get
-    Future<FarmDetail?> getFarm(String fieldName) async {
-      try {
-        final docSnapshot =
-            await _db
-                .collection("users")
-                .doc(userId)
-                .collection("Farm")
-                .doc(fieldName)
-                .get();
+  //get
+  Future<FarmDetail?> getFarm(String fieldName) async {
+    try {
+      final docSnapshot =
+          await _db
+              .collection("users")
+              .doc(userId)
+              .collection("Farm")
+              .doc(fieldName)
+              .get();
 
-        if (docSnapshot.exists) {
-          return FarmDetail.fromJson(docSnapshot.data()!);
-        } else {
-          print("❗ No farm found with field name: $fieldName");
-          return null;
-        }
-      } catch (e) {
-        print("❌ Error fetching farm: $e");
+      if (docSnapshot.exists) {
+        return FarmDetail.fromJson(docSnapshot.data()!);
+      } else {
+        print("❗ No farm found with field name: $fieldName");
         return null;
       }
+    } catch (e) {
+      print("❌ Error fetching farm: $e");
+      return null;
+    }
+  }
+
+  //update
+  Future<void> updateFarm(FarmDetail farm) async {
+    try {
+      await _db
+          .collection("users")
+          .doc(userId)
+          .collection("Farm")
+          .doc(farm.fieldName)
+          .update(farm.toJson());
+
+      print("✅ Farm updated successfully");
+    } catch (e) {
+      print("❌ Error updating farm: $e");
+      rethrow;
+    }
+  }
+
+  //farm address default
+
+  //add
+ /* Future<void> addDefaultLocation(DefaultFarmerAddress farm) async {
+    try {
+      await _db
+          .collection("users")
+          .doc(userId)
+          .collection("defaultAddress")
+          .doc(farm.name)
+          .set(farm.toJson());
+      print("✅ User added successfully");
+    } catch (e) {
+      print("❌ Error adding user: $e");
+      rethrow;
+    }
+  } */
+
+  Future<void> addNewAddress(DefaultFarmerAddress farm) async {
+  try {
+    final userRef = _db.collection("users").doc(userId);
+    await userRef
+        .collection("defaultAddress")
+        .doc(farm.name)
+        .set(farm.toJson());
+    print("✅ New address added");
+  } catch (e) {
+    print("❌ Error adding address: $e");
+    rethrow;
+  }
+}
+Future<DefaultFarmerAddress?> getDefaultAddress() async {
+  try {
+    final snapshot = await _db
+        .collection("users")
+        .doc(userId)
+        .collection("defaultAddress")
+        .where('isDefault', isEqualTo: true)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      return DefaultFarmerAddress.fromJson(snapshot.docs.first.data());
+    }
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+Future<List<DefaultFarmerAddress>> getAllAddresses() async {
+  try {
+    final snapshot = await _db
+        .collection("users")
+        .doc(userId)
+        .collection("defaultAddress")
+        .get();
+
+    return snapshot.docs
+        .map((doc) => DefaultFarmerAddress.fromJson(doc.data()))
+        .toList();
+  } catch (e) {
+    print("❌ Error fetching addresses: $e");
+    return [];
+  }
+}
+Future<void> updateAddress(DefaultFarmerAddress farm) async {
+  try {
+    await _db
+        .collection("users")
+        .doc(userId)
+        .collection("defaultAddress")
+        .doc(farm.name)
+        .update(farm.toJson());
+
+    print("✅ Address updated");
+  } catch (e) {
+    print("❌ Error updating address: $e");
+  }
+}
+Future<void> deleteAddress(String addressName) async {
+  try {
+    await _db
+        .collection("users")
+        .doc(userId)
+        .collection("defaultAddress")
+        .doc(addressName)
+        .delete();
+    print("🗑️ Address deleted");
+  } catch (e) {
+    print("❌ Error deleting address: $e");
+  }
+}
+
+
+
+  //get default address
+  
+ Future<void> addDefaultLocation(DefaultFarmerAddress farm) async {
+  try {
+    final addressRef = _db
+        .collection("users")
+        .doc(userId)
+        .collection("defaultAddress");
+
+    // Step 1: Reset all previous defaults
+    final allAddresses = await addressRef.get();
+    for (final doc in allAddresses.docs) {
+      await doc.reference.update({'isDefault': false});
     }
 
-    //update
-    Future<void> updateFarm(FarmDetail farm) async {
-      try {
-        await _db
-            .collection("users")
-            .doc(userId)
-            .collection("Farm")
-            .doc(farm.fieldName)
-            .update(farm.toJson());
+    // Step 2: Add/update the new one as default
+    await addressRef.doc(farm.name).set({
+      ...farm.toJson(),
+      'isDefault': true,
+    });
 
-        print("✅ Farm updated successfully");
-      } catch (e) {
-        print("❌ Error updating farm: $e");
-        rethrow;
-      }
-    }
+    print("✅ Default address saved.");
+  } catch (e) {
+    print("❌ Failed to save default address: $e");
+    rethrow;
+  }
+}
 
-    //farm address default
+   
 
-    //add
-    Future<void> adaDefaultLocation(DefaultFarmerAddress farm) async {
-      try {
-        await _db
-            .collection("users")
-            .doc(userId)
-            .collection("defaultAddress")
-            .doc("default")
-            .set(farm.toJson());
-        print("✅ User added successfully");
-      } catch (e) {
-        print("❌ Error adding user: $e");
-        rethrow;
-      }
-    }
+  //update
+  Future<void> updateDefaultAddress(DefaultFarmerAddress address) async {
+    try {
+      await _db
+          .collection("users")
+          .doc(userId)
+          .collection("defaultAddress")
+          .doc(address.name)
+          .update(address.toJson());
 
-    //get default address
-    Future<DefaultFarmerAddress?> getDefaultAddress() async {
-      try {
-        final data =
-            await _db
-                .collection("users")
-                .doc(userId)
-                .collection("defaultAddress")
-                .doc("default")
-                .get();
-        if (data.exists) {
-          return DefaultFarmerAddress.fromJson(data.data()!);
-        } else {
-          return null;
-        }
-      } catch (e) {
-        return null;
-      }
-    }
-
-    //update
-    Future<void> updateDefaultAddress(DefaultFarmerAddress address) async {
-      try {
-        await _db
-            .collection("users")
-            .doc(userId)
-            .collection("defaultAddress")
-            .doc("default")
-            .update(address.toJson());
-
-        print("✅ Default address updated successfully");
-      } catch (e) {
-        print("❌ Error updating default address: $e");
-        rethrow;
-      }
+      print("✅ Default address updated successfully");
+    } catch (e) {
+      print("❌ Error updating default address: $e");
+      rethrow;
     }
   }
 }

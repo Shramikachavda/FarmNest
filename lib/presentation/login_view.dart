@@ -1,9 +1,11 @@
 import 'package:agri_flutter/customs_widgets/custom_button.dart';
 import 'package:agri_flutter/customs_widgets/custom_form_field.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
+import 'package:agri_flutter/presentation/post_sign_up/post_signup_screen.dart';
 import 'package:agri_flutter/services/firebase_auth.dart';
 import 'package:agri_flutter/presentation/home_view.dart';
 import 'package:agri_flutter/presentation/signup_view.dart';
+import 'package:agri_flutter/services/local_storage/post_sign_up.dart';
 import 'package:agri_flutter/theme/theme.dart';
 import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -60,8 +62,20 @@ class _LoginViewState extends State<LoginView> {
         User? user = await _fireBaseAuth.login(email, password);
 
         if (user != null) {
-          NavigationUtils.goToHome();
+   
+
+// Check if this is the first login post-signup
+          bool hasCompletedPostSignup = LocalStorageService.hasCompletedPostSignup();
+          if (!hasCompletedPostSignup) {
+            print("First login detected, navigating to PostSignupScreen...");
+            NavigationUtils.replaceWith(const PostSignupScreen());
+          } else {
+            print("Returning user, navigating to HomeView...");
+            NavigationUtils.goToHome();
+          }
         }
+   
+     
       } on FirebaseAuthException catch (e) {
         String errorMessage = "Login failed. Please try again.";
 

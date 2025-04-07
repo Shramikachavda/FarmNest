@@ -1,3 +1,5 @@
+import 'package:agri_flutter/customs_widgets/reusable.dart';
+import 'package:agri_flutter/presentation/drawer/address_scrren.dart';
 import 'package:agri_flutter/presentation/drawer/change_password.dart';
 import 'package:agri_flutter/providers/user_provider.dart';
 import 'package:agri_flutter/services/firebase_auth.dart';
@@ -25,22 +27,45 @@ class DrawerWidget extends StatelessWidget {
       child: ListView(
         children: [
           DrawerHeader(
+
+            
             //    decoration: BoxDecoration(color: Colors.green.shade100),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(radius: 50.r, backgroundColor: theme.onPrimary),
-                SizedBox(height: 10.h),
+                CircleAvatar(
+                  radius: 44.r,
+                  backgroundColor: theme.onPrimary,
+                  child: Text(
+                    context.watch<UserProvider>().userName.isNotEmpty
+                        ? context
+                            .watch<UserProvider>()
+                            .userName[0]
+                            .toUpperCase()
+                        : '?',
+                    style: TextStyle(
+                      fontSize: 30.sp,
+                      color: theme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
 
+                //   SizedBox(height: 10.h),
                 Text(context.watch<UserProvider>().userName),
+                bodyText(context.watch<UserProvider>().userEmail),
               ],
             ),
           ),
           ListTile(
             leading: Icon(Icons.person),
             title: Text("Account"),
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => SelectAddressScreen()),
+              );
+            },
           ),
           ListTile(
             leading:

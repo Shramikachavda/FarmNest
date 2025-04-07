@@ -1,10 +1,8 @@
 
-import 'package:agri_flutter/presentation/post_sign_up/default_location.dart';
-
-import 'package:agri_flutter/presentation/post_sign_up/farm_detail2.dart';
-import 'package:agri_flutter/presentation/post_sign_up/post_signup_screen.dart';
 import 'package:agri_flutter/providers/api_provider/marker_price_provider.dart';
 import 'package:agri_flutter/providers/api_provider/weather_provider.dart';
+import 'package:agri_flutter/providers/drawer/address.dart';
+import 'package:agri_flutter/providers/drawer/selected_address.dart';
 import 'package:agri_flutter/providers/eventExpense.dart/event_expense_provider.dart';
 import 'package:agri_flutter/providers/farm_state_provider.dart/crop_details_provider.dart';
 import 'package:agri_flutter/providers/farm_state_provider.dart/liveStock_provider.dart';
@@ -13,7 +11,10 @@ import 'package:agri_flutter/providers/market_place_provider/cart_provider.dart'
 import 'package:agri_flutter/providers/market_place_provider/favorite_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/product_provider.dart';
 import 'package:agri_flutter/providers/password_provider.dart';
+import 'package:agri_flutter/providers/post_sign_up.dart';
+import 'package:agri_flutter/providers/post_sign_up_providers/default_farmer_address.dart';
 import 'package:agri_flutter/providers/user_provider.dart';
+import 'package:agri_flutter/services/local_storage/post_sign_up.dart';
 import 'package:agri_flutter/services/noti_service.dart';
 import 'package:agri_flutter/theme/app_theme_bloc.dart';
 import 'package:agri_flutter/theme/theme.dart';
@@ -21,7 +22,6 @@ import 'package:agri_flutter/theme/util.dart';
 import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
 import 'package:agri_flutter/utils/shared_prefs_util.dart';
 import 'package:agri_flutter/presentation/splash_screen.dart';
-import 'package:agri_flutter/presentation/post_sign_up/add_farmer_address.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -43,8 +43,9 @@ void main() async {
   await SpUtil.getInstance();
 
   await Hive.initFlutter();
+  await LocalStorageService.initHive();
 
- // Hive.registerAdapter(UserModelAdapter());
+  // Hive.registerAdapter(UserModelAdapter());
 
   // Initialize timezone
   tz.initializeTimeZones();
@@ -73,10 +74,19 @@ void main() async {
         ChangeNotifierProvider(create: (context) => WeatherViewModel()),
         ChangeNotifierProvider(create: (context) => PasswordProvider()),
         ChangeNotifierProvider(create: (context) => ConfirmPasswordProvider()),
+            ChangeNotifierProvider(create: (_) => PostSignupNotifier()),
+
+        ChangeNotifierProvider(
+          create: (context) => AppStateProvider()..loadInitialData(),
+        ),
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(
           create: (context) => MarkerPriceProvider()..loadInitialPrices(),
+        
         ),
+          ChangeNotifierProvider(create: (_) => AddressProvider()..loadAddresses()),
+          ChangeNotifierProvider(create: (_) => SelectedAddressProvider()),
+
       ],
       child: BlocProvider(create: (_) => appThemeBloc, child: MyApp()),
     ),

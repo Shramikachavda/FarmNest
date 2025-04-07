@@ -18,7 +18,9 @@ class UserProvider with ChangeNotifier {
       final user = await _firestore.getUserById(_firestore.userId);
       if (user != null) {
         _userName = user.name;
+        print(_userName);
         _email = user.email;
+        print(_email);
       }
       notifyListeners();
     } catch (e) {
