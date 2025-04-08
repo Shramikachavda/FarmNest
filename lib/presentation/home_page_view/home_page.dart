@@ -273,7 +273,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 trailing: const Icon(
                                   Icons.event,
-                                  color: Colors.green,
+                             
                                 ),
                               ),
                             );
@@ -286,7 +286,6 @@ class _HomePageState extends State<HomePage> {
               ),
               SizedBox(height: 16.h),
 
-              // Market Prices (Modified to include "Search Now" in the last card)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

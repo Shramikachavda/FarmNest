@@ -80,7 +80,7 @@ class FarmStateHomeView extends StatelessWidget {
             padding: EdgeInsets.all(10.r),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.r),
-              //  color: themeColor().cardColor,
+              //  color: themeColor(context: context).cardColor,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,7 +127,7 @@ class FarmStateHomeView extends StatelessWidget {
                               liveStockProvider.removeLiveStock(item);
                             }
                           },
-                          icon: Icon(Icons.delete, color: themeColor().primary),
+                          icon: Icon(Icons.delete, color: themeColor(context: context).primary),
                         ),
                       ],
                     ),
@@ -193,7 +193,7 @@ class FarmStateHomeView extends StatelessWidget {
             padding: EdgeInsets.all(10.r),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.r),
-              //  color: themeColor().cardColor,
+              //  color: themeColor(context: context).cardColor,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,7 +233,7 @@ class FarmStateHomeView extends StatelessWidget {
                           },
                           icon: Icon(
                             Icons.delete,
-                            color: themeColor().primary,
+                            color: themeColor(context: context).primary,
                           ), // 🗑 Delete Icon
                         ),
                       ],
@@ -334,7 +334,7 @@ class FarmStateHomeView extends StatelessWidget {
       children: [
         IconButton(
           onPressed: onEdit,
-          icon: Icon(Icons.edit, color: themeColor().primary),
+          icon: Icon(Icons.edit, color: themeColor(context: context).primary),
         ),
         SizedBox(width: 8.w), // Consistent spacing
         IconButton(
@@ -347,7 +347,7 @@ class FarmStateHomeView extends StatelessWidget {
               onDelete();
             }
           },
-          icon: Icon(Icons.delete, color: themeColor().primary),
+          icon: Icon(Icons.delete, color: themeColor(context: context).primary),
         ),
       ],
     );
@@ -370,7 +370,7 @@ class FarmStateHomeView extends StatelessWidget {
                 onPressed: () => Navigator.pop(context, true),
                 child: Text(
                   "Delete",
-                  style: TextStyle(color: themeColor().primary),
+                  style: TextStyle(color: themeColor(context: context).primary),
                 ),
               ),
             ],

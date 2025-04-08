@@ -1,3 +1,4 @@
+import 'package:agri_flutter/customs_widgets/custom_app_bar.dart';
 import 'package:agri_flutter/customs_widgets/custom_choice_chip.dart';
 import 'package:agri_flutter/customs_widgets/custom_form_field.dart';
 import 'package:agri_flutter/customs_widgets/custom_snackbar.dart';
@@ -98,29 +99,30 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
     final cartProvider = Provider.of<CartProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar:
+      CustomAppBar(
+        title:"Market place" ,
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (context) => CartView()));
-            },
-            icon: Icon(Icons.shopping_cart_outlined, size: 24.sp),
-          ),
-          IconButton(
-            onPressed: () {
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (context) => FavoriteView()));
-            },
-            icon: Icon(Icons.favorite_border, size: 24.sp),
-          ),
-        ],
-        title: Text("Market", style: TextStyle(fontSize: 20.sp)),
-      ),
+        IconButton(
+          onPressed: () {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => CartView()));
+          },
+          icon: Icon(Icons.shopping_cart_outlined, size: 24.sp),
+        ),
+        IconButton(
+          onPressed: () {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => FavoriteView()));
+          },
+          icon: Icon(Icons.favorite_border, size: 24.sp),
+        ),
+      ],)
+      ,
       body: Padding(
-        padding: EdgeInsets.only(left: 12.w, right: 12.w),
+        padding: EdgeInsets.only(left: 12.w, right: 12.w , top: 12.h) ,
         child: Column(
           children: [
             // Search Field
@@ -143,31 +145,37 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
                     label: 'Seeds',
                     selectedCategory: selectedCategory,
                     onSelected: filterProducts,
+                      context: context
                   ),
                   customChoiceChip(
                     label: 'Fertilizer',
                     selectedCategory: selectedCategory,
                     onSelected: filterProducts,
+                      context: context
                   ),
                   customChoiceChip(
                     label: 'Pesticide',
                     selectedCategory: selectedCategory,
                     onSelected: filterProducts,
+                      context: context
                   ),
                   customChoiceChip(
                     label: 'Vehicles',
                     selectedCategory: selectedCategory,
                     onSelected: filterProducts,
+                      context: context
                   ),
                   customChoiceChip(
                     label: 'Irrigation Supplies',
                     selectedCategory: selectedCategory,
                     onSelected: filterProducts,
+                      context: context
                   ),
                   customChoiceChip(
                     label: 'Storage & Packaging',
                     selectedCategory: selectedCategory,
                     onSelected: filterProducts,
+                    context: context
                   ),
                 ],
               ),
@@ -187,7 +195,7 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
                         itemCount: _filteredProducts.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
-                          childAspectRatio: 0.75,
+                          childAspectRatio: 0.76,
                           crossAxisSpacing: 8.w,
                           mainAxisSpacing: 8.h,
                         ),
@@ -206,18 +214,18 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
                             child: Card(
                               elevation: 2,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.r),
+                                borderRadius: BorderRadius.circular(12.r),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   ClipRRect(
                                     borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(15.r),
+                                      top: Radius.circular(12.r),
                                     ),
                                     child: Container(
                                       width: double.infinity,
-                                      height: 100.h,
+                                      height: 120.h,
                                       decoration: BoxDecoration(
                                         image: DecorationImage(
                                           image: NetworkImage(product.imageUrl),
@@ -228,7 +236,9 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
                                   ),
                                   Padding(
                                     padding: EdgeInsets.all(8.w),
-                                    child: Text(
+                                    child:
+
+                                    Text(
                                       product.name,
                                       style: TextStyle(fontSize: 14.sp),
                                       overflow: TextOverflow.ellipsis,
@@ -262,7 +272,7 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
                                           height: 35.w,
                                           decoration: BoxDecoration(
                                             color:
-                                                themeColor().secondaryContainer,
+                                                themeColor(context: context).primary,
                                             borderRadius: BorderRadius.circular(
                                               40.r,
                                             ), // Rounded corners
@@ -295,10 +305,12 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
                                                         product,
                                                       )
                                                       ? Icon(
+
                                                         Icons.favorite,
                                                         size: 24.sp,
                                                       )
                                                       : Icon(
+
                                                         Icons.favorite_border,
                                                         size: 24.sp,
                                                       ),
@@ -310,7 +322,7 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
                                           height: 35.w,
                                           decoration: BoxDecoration(
                                             color:
-                                                themeColor().secondaryContainer,
+                                                themeColor(context: context).primary,
                                             borderRadius: BorderRadius.circular(
                                               40.r,
                                             ), // Rounded corners

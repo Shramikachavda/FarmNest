@@ -99,7 +99,7 @@ class _DetailProductViewState extends State<DetailProductView> {
                     width: 27.h,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: themeColor().primary,
+                      color: themeColor(context: context).primary,
                     ),
                     child: Center(child: Icon(Icons.remove, size: 24.sp)),
                   ),
@@ -119,7 +119,7 @@ class _DetailProductViewState extends State<DetailProductView> {
                     width: 27.h,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: themeColor().primary,
+                      color: themeColor(context: context).primary,
                     ),
                     child: Center(child: Icon(Icons.add, size: 24.sp)),
                   ),
@@ -138,7 +138,7 @@ class _DetailProductViewState extends State<DetailProductView> {
             ),
             Text(
               product.description,
-              style: TextStyle(color: themeColor().surfaceContainerHighest),
+              style: TextStyle(color: themeColor(context: context).surfaceContainerHighest),
             ),
             Spacer(),
             Row(

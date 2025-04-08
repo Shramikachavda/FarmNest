@@ -6,7 +6,7 @@ void showCustomSnackBar(BuildContext context, String msg) {
     SnackBar(
       content: Text(msg),
       duration: const Duration(seconds: 2), // Optional: Set duration
-      backgroundColor: themeColor().onPrimaryContainer, // Optional: Customize background color
+      backgroundColor: themeColor(context: context).primary, // Optional: Customize background color
       behavior: SnackBarBehavior.floating, // Optional: Floating style
     ),
   );

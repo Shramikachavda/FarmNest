@@ -12,6 +12,9 @@
         android:label="agri_flutter"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- google map -->
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBkdT5XD9WyRvWIupFFiF15Tl8aERHhPYI"/>
         
         <!-- Local Notifications Foreground Service -->
         <service

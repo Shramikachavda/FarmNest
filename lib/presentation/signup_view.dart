@@ -60,7 +60,9 @@ class _SignupViewState extends State<SignupView> {
   //validation
   void _validateAndSignup() async {
     final validate = _formKey.currentState!.validate();
+
     if (validate) {
+      showLoadingDialog(context);
       try {
         User? user = await _fireBaseAuth.signUp(
           _emailController.text.trim(),
@@ -77,6 +79,7 @@ class _SignupViewState extends State<SignupView> {
               email: _emailController.text.trim(),
             ),
           );
+          Navigator.of(context).pop();
           print("User added to Firestore, preparing to navigate...");
           showCustomSnackBar(
             context,
@@ -86,19 +89,20 @@ class _SignupViewState extends State<SignupView> {
           showCustomSnackBar(context, "Signup successful! Please log in.");
 
           // Ensure post-signup flag is false (redundant with default, but explicit)
-        await LocalStorageService.initHive(); // Ensure Hive is initialized
-        if (LocalStorageService.hasCompletedPostSignup()) {
-          await LocalStorageService.setPostSignupCompleted(); // Reset to false if somehow true
-        }
+          await LocalStorageService.initHive(); // Ensure Hive is initialized
+          if (LocalStorageService.hasCompletedPostSignup()) {
+            await LocalStorageService.setPostSignupCompleted(); // Reset to false if somehow true
+          }
           // Show success message
-print("Navigating to LoginView...");
+          print("Navigating to LoginView...");
           // Navigate to Login Screen
-       //   NavigationUtils.popUntil(LoginView.route);
+          //   NavigationUtils.popUntil(LoginView.route);
 
-       NavigationUtils.replaceWith(const LoginView()); 
+          NavigationUtils.replaceWith(const LoginView());
           print("Navigation triggered.");
         }
       } catch (e) {
+        Navigator.of(context).pop();
         // Show error message if signup fails
         showCustomSnackBar(context, "Signup failed: ${e.toString()}");
       }
@@ -109,7 +113,7 @@ print("Navigating to LoginView...");
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(),
-      backgroundColor: themeColor().surface,
+      backgroundColor: themeColor(context: context).surface,
       body: Column(
         children: [
           Expanded(
@@ -117,6 +121,7 @@ print("Navigating to LoginView...");
               padding: EdgeInsets.only(bottom: 24.w, right: 30.w, left: 30.w),
               child: SingleChildScrollView(
                 child: Form(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,7 +132,7 @@ print("Navigating to LoginView...");
 
                       bodyLargeText(
                         "Create your account",
-                        color: themeColor().primary,
+                        color: themeColor(context: context).primary,
                       ),
 
                       //sign in
@@ -142,7 +147,7 @@ print("Navigating to LoginView...");
                             },
                             child: buttonText(
                               "Sign in",
-                              color: themeColor().primary,
+                              color: themeColor(context: context).primary,
                             ),
                           ),
                         ],
@@ -264,8 +269,8 @@ print("Navigating to LoginView...");
                       CustomButton(
                         onClick: _validateAndSignup,
                         buttonName: 'Sign up',
-                        buttonColor: themeColor().surface,
-                        textColor: themeColor().surface,
+                        buttonColor: themeColor(context: context).surface,
+                        textColor: themeColor(context: context).surface,
                       ),
                     ],
                   ),
@@ -273,7 +278,7 @@ print("Navigating to LoginView...");
               ),
             ),
           ),
-          footer(),
+          footer(context: context),
           SizedBox(height: 16.h),
         ],
       ),
@@ -281,16 +286,15 @@ print("Navigating to LoginView...");
   }
 
   @override
-void dispose() {
-  _emailController.dispose();
-  _passwordController.dispose();
-  _confirmPasswordController.dispose();
-  _nameController.dispose();
-  _focusNodeName.dispose();
-  _focusNodeEmail.dispose();
-  _focusNodePassword.dispose();
-  _focusNodeConfirmPassword.dispose();
-  super.dispose();
-}
- 
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _nameController.dispose();
+    _focusNodeName.dispose();
+    _focusNodeEmail.dispose();
+    _focusNodePassword.dispose();
+    _focusNodeConfirmPassword.dispose();
+    super.dispose();
+  }
 }

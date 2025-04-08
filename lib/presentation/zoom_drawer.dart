@@ -39,13 +39,14 @@ class _MyZoomDrawerState extends State<MyZoomDrawer> {
       mainScreenAbsorbPointer: true,
 
       angle: 0.0,
-      // No tilt effect
+
       //     menuScreenTapClose: true,
-      // Close menu on tap
+
       duration: const Duration(milliseconds: 300),
-      // Smooth transition
-      //menuBackgroundColor: themeColor().primaryContainer,
-      slideWidth: MediaQuery.of(context).size.width * 0.9, // 70% width for menu
+  showShadow: true,
+
+      menuBackgroundColor: themeColor(context: context).inversePrimary,
+      slideWidth: MediaQuery.of(context).size.width * 0.75, // 70% width for menu
     );
   }
 }

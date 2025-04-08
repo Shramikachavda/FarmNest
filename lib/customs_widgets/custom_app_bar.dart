@@ -37,11 +37,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   NavigationUtils.pop();
                 },
                 child: Padding(
-                  padding: EdgeInsets.only(left: 24.w, top: 16.h, right: 16.w),
+                  padding: EdgeInsets.only(left: 20.w, top: 24.h, right: 26.w),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     child: Container(
-                      color: themeColor().primary,
+                      color: themeColor(context: context).primary,
                       child: customIcon(context, ImageConst.icBack),
                     ),
                   ),

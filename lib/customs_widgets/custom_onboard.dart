@@ -21,7 +21,7 @@ class CustomOnboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: themeColor().surface,
+      backgroundColor: themeColor(context: context).surface,
       body: Center(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 30.w,),
@@ -32,7 +32,7 @@ class CustomOnboard extends StatelessWidget {
               Image.asset(ImageConst.logoName, width: 140.w, height: 140.h),
               SizedBox(height: 24.h),
               Container(
-                color: themeColor().surface,
+                color: themeColor(context: context).surface,
                 height: 300.h,
                 child: Image.asset(image, fit: BoxFit.fill),
               ),

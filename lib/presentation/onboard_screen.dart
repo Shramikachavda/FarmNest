@@ -84,8 +84,8 @@ class _OnboardScreenState extends State<OnboardScreen> {
                   effect: WormEffect(
                     dotHeight: 6.h,
                     dotWidth: 6.w,
-                    activeDotColor: themeColor().primary,
-                    dotColor: themeColor().secondary,
+                    activeDotColor: themeColor(context: context).primary,
+                    dotColor: themeColor(context: context).secondary,
                   ),
                 ),
                 ElevatedButton(

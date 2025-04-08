@@ -78,9 +78,9 @@ class _AddFarmerAddressState extends State<AddFarmerAddress> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 40.h),
+
               bodyLargeText("Add Farmer Details"),
-              SizedBox(height: 24.h),
+              SizedBox(height: 10.h),
               bodyText("This detailed address will help you manage and track resources allocated."),
               SizedBox(height: 24.h),
               CustomFormField(

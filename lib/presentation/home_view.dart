@@ -25,119 +25,63 @@ class HomeView extends BaseStatefulWidget {
 }
 
 class HomeViewState extends State<HomeView> {
-  int pageIndex = 0; // Track the selected index
-  final pages = [
-    const MyZoomDrawer(),
-    const MarketHomepageView(),
-    const CalenderView(),
-    const FarmStateHomeView(),
+  int pageIndex = 0;
+
+  final pages = const [
+    MyZoomDrawer(),
+    MarketHomepageView(),
+    CalenderView(),
+    FarmStateHomeView(),
   ];
 
   @override
   Widget build(BuildContext context) {
-    final theme = themeColor();
-    return Scaffold(
-      backgroundColor: themeColor().surface,
-      body: pages[pageIndex],
-      //  drawer: DrawerWidget(), // Show selected page
-      bottomNavigationBar: Container(
-        height: 60,
-        decoration: BoxDecoration(
-          color: theme.onPrimaryContainer,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  pageIndex = 0;
-                });
-              },
-              icon: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.graphic_eq,
-                    color: pageIndex == 0 ? theme.surface : theme.surface.withValues(alpha: 0.7),
-                    size: pageIndex == 0 ? 30 : 25, // Bigger icon when selected
-                  ),
-                  if (pageIndex == 0)
-                    Text(
-                      "home",
-                      style: TextStyle(color: theme.surface, fontSize: 10),
-                    ),
-                ],
-              ),
-            ),
+    final theme = themeColor(context: context);
 
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  pageIndex = 1;
-                });
-              },
-              icon: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.shop,
-                    color: pageIndex == 1 ? theme.surface : theme.surface,
-                    size: pageIndex == 1 ? 30 : 25, // Bigger icon when selected
-                  ),
-                  if (pageIndex == 1)
-                    Text(
-                      "Shop",
-                      style: TextStyle(color: theme.surface, fontSize: 10),
-                    ),
-                ],
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  pageIndex = 2;
-                });
-              },
-              icon: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.calendar_today,
-                    color: pageIndex == 2 ? theme.surface : theme.surface,
-                    size: pageIndex == 2 ? 30 : 25, // Bigger icon when selected
-                  ),
-                  if (pageIndex == 2)
-                    Text("Calendar", style: TextStyle(fontSize: 10)),
-                ],
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  pageIndex = 3;
-                });
-              },
-              icon: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.graphic_eq,
-                    color: pageIndex == 3 ? theme.surface : theme.surface,
-                    size: pageIndex == 3 ? 30 : 25, // Bigger icon when selected
-                  ),
-                  if (pageIndex == 3)
-                    Text("Stats", style: TextStyle(fontSize: 10)),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+    Color elevatedSurfaceColor = ElevationOverlay.applySurfaceTint(
+      theme.surface,
+      theme.surfaceTint,
+      3, // 3dp elevation for NavigationBar
     );
+
+    return Scaffold(
+      backgroundColor: theme.surface,
+      body: pages[pageIndex],
+      bottomNavigationBar: NavigationBar(
+        backgroundColor: elevatedSurfaceColor,
+      height: 70,
+      // backgroundColor: theme.tertiaryFixedDim,
+      selectedIndex: pageIndex,
+      labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+      onDestinationSelected: (int index) {
+    setState(() {
+    pageIndex = index;
+    });
+    },
+      destinations: const [
+        NavigationDestination(
+          icon: Icon(Icons.home_outlined),
+          selectedIcon: Icon(Icons.home),
+          label: 'Home',
+        ),
+        NavigationDestination(
+          tooltip: "Shop",
+          icon: Icon(Icons.shopping_cart_outlined),
+          selectedIcon: Icon(Icons.shopping_cart),
+          label: 'Shop',
+        ),
+        NavigationDestination(
+
+          icon: Icon(Icons.calendar_today_outlined),
+          selectedIcon: Icon(Icons.calendar_today),
+          label: 'Calendar',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.bar_chart_outlined),
+          selectedIcon: Icon(Icons.bar_chart),
+          label: 'Stats',
+        ),
+      ],
+    ),);
   }
 }

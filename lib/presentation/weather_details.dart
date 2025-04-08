@@ -57,7 +57,7 @@ class ForecastScreen extends StatelessWidget {
                 ).format(dateTime);
 
                 return Card(
-                  color: themeColor().onSecondary , 
+                  color: themeColor(context: context).onSecondary , 
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),

@@ -79,7 +79,7 @@ class _CalenderViewState extends State<CalenderView> {
             eventExpenseProvider.fetchAllData();
           }
         },
-        backgroundColor: themeColor().primary,
+        backgroundColor: themeColor(context: context).primary,
         child: const Icon(Icons.add),
       ),
       body: Column(
@@ -97,22 +97,22 @@ class _CalenderViewState extends State<CalenderView> {
             headerStyle: HeaderStyle(
               titleCentered: true,
               titleTextStyle: TextStyle(color: Colors.white, fontSize: 18),
-              decoration: BoxDecoration(color: themeColor().primary),
+              decoration: BoxDecoration(color: themeColor(context: context).primary),
               formatButtonShowsNext: false,
             ),
             calendarStyle: CalendarStyle(
               markerSize: 20,
-              selectedTextStyle: TextStyle(color: themeColor().onPrimary),
+              selectedTextStyle: TextStyle(color: themeColor(context: context).onPrimary),
               isTodayHighlighted: true,
               selectedDecoration: BoxDecoration(
-                color: themeColor().primary,
+                color: themeColor(context: context).primary,
                 shape: BoxShape.rectangle,
               ),
               tableBorder: TableBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
               todayDecoration: BoxDecoration(
-                color: themeColor().primary,
+                color: themeColor(context: context).primary,
                 shape: BoxShape.circle,
               ),
             ),
@@ -140,7 +140,7 @@ class _CalenderViewState extends State<CalenderView> {
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: themeColor().primary,
+                        color: themeColor(context: context).primary,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -209,7 +209,7 @@ class _CalenderViewState extends State<CalenderView> {
                             trailing: IconButton(
                               icon: Icon(
                                 Icons.delete,
-                                color: themeColor().primary,
+                                color: themeColor(context: context).primary,
                               ),
                               onPressed: () async {
                                 await provider.removeEventExpense(event);

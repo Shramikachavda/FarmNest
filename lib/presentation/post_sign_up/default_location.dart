@@ -79,9 +79,9 @@ class _DefaultFarmAddressState extends State<DefaultFarmAddress> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 40.h),
+
               bodyLargeText("Create your default address"),
-              SizedBox(height: 24.h),
+              SizedBox(height: 10.h),
               bodyText("A detailed address will help our delivery partner reach you easily."),
               SizedBox(height: 24.h),
               CustomFormField(
@@ -133,7 +133,7 @@ class _DefaultFarmAddressState extends State<DefaultFarmAddress> {
                 textInputAction: TextInputAction.done,
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Enter contact number';
-                  if (value.length < 10) return 'Enter valid phone number';
+                  if (value.length < 10  && value.length  > 10) return 'Enter valid phone number';
                   return null;
                 },
               ),

@@ -15,6 +15,7 @@ class CustomFormField extends StatelessWidget {
     this.onTogglePassword,
     required this.focusNode ,
     required this.textInputAction  ,
+    this.readOnly = false,
 
     super.key,
   });
@@ -32,6 +33,8 @@ class CustomFormField extends StatelessWidget {
   final VoidCallback?
   onTogglePassword;
   final FocusNode focusNode;// ✅ Function for toggling password visibility
+  final bool readOnly ;
+
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
@@ -50,15 +53,17 @@ class CustomFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+
       focusNode: focusNode,
       textInputAction : textInputAction ,
       keyboardType: keyboardType,
       obscureText: obscureText,
       controller: textEditingController,
       validator: validator,
-      readOnly: isDatePicker,
+        readOnly: readOnly || isDatePicker ,
       onTap: isDatePicker ? () => _selectDate(context) : null,
       decoration: InputDecoration(
+
         labelText: label,
         hintText: hintText,
         suffixIcon:
@@ -75,6 +80,8 @@ class CustomFormField extends StatelessWidget {
                 )
                 : icon, // ✅ Keeps normal icons as they are
       ),
+
+
     );
   }
 }

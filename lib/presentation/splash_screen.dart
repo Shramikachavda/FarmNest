@@ -52,14 +52,15 @@ class _SplashScreenState extends State<SplashScreen> {
     bool hasCompletedPostSignup = LocalStorageService.hasCompletedPostSignup();
 
     Future.delayed(const Duration(seconds: 2), () {
+
       if (!isOnboardingCompleted) {
         NavigationUtils.goToOnboardScreen();
       }
        else if (user != null && !hasCompletedPostSignup) {
-      // ✅ Show PostSignupScreen for first-time users
+
         NavigationUtils.pushReplacement(PostSignupScreen().buildRoute());
        }
-      else if (user != null) {
+      else if (user != null && user.emailVerified) {
         NavigationUtils.goToHome();
       } else {
         NavigationUtils.goToLogin();
@@ -70,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: themeColor().surface,
+      backgroundColor: themeColor(context: context).surface,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 97.5.w, vertical: 301.58.h),
         child: Center(

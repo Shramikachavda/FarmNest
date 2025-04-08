@@ -40,61 +40,62 @@ class _PostSignupScreenState extends State<PostSignupScreen> {
     final postSignup = Provider.of<PostSignupNotifier>(context);
 
     return Scaffold(
-      body: Column(
-        children: [
-          SizedBox(height: 24.h),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 30.w),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginView()),
-                    );
-                  },
-                  child: bodyText("Skip"),
-                ),
-                InkWell(
-                  onTap: () {
-                    if (postSignup.currentPage < 2) {
-                      postSignup.nextPage();
-                    } else {
-                      _completePostSignup();
-                    }
-                  },
-                  child: Text("${postSignup.currentPage + 1} / 3"),
-                ),
-              ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30.w),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginView()),
+                      );
+                    },
+                    child: bodyText("Skip"),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      if (postSignup.currentPage < 2) {
+                        postSignup.nextPage();
+                      } else {
+                        _completePostSignup();
+                      }
+                    },
+                    child: Text("${postSignup.currentPage + 1} / 3"),
+                  ),
+                ],
+              ),
             ),
-          ),
-          SizedBox(height: 24.h),
-          SmoothPageIndicator(
-            controller: postSignup.pageController,
-            count: 3,
-            effect: WormEffect(
-              dotHeight: 5.h,
-              dotWidth: MediaQuery.of(context).size.width * .27,
-              activeDotColor: themeColor().primary,
-              dotColor: themeColor().secondary,
-            ),
-          ),
-          SizedBox(height: 24.h),
-
-          Expanded(
-            child: PageView(
+            SizedBox(height: 10.h),
+            SmoothPageIndicator(
               controller: postSignup.pageController,
-              onPageChanged: postSignup.updatePage,
-              children: const [
-                DefaultFarmAddress(),
-                AddFarmerAddress(),
-                AddFarmFieldLocationScreen(),
-              ],
+              count: 3,
+              effect: WormEffect(
+                dotHeight: 5.h,
+                dotWidth: MediaQuery.of(context).size.width * .27,
+                activeDotColor: themeColor(context: context).primary,
+                dotColor: themeColor(context: context).secondary,
+              ),
             ),
-          ),
-        ],
+
+            SizedBox(height: 24.h),
+            Expanded(
+              child: PageView(
+                controller: postSignup.pageController,
+                onPageChanged: postSignup.updatePage,
+                children: const [
+                  DefaultFarmAddress(),
+                  AddFarmerAddress(),
+                  AddFarmFieldLocationScreen(),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

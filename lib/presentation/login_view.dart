@@ -41,7 +41,6 @@ class _LoginViewState extends State<LoginView> {
   final TextEditingController _passwordController = TextEditingController();
 
   //focusnode
-
   final FocusNode _focusNodeEmail = FocusNode();
   final FocusNode _focusNodePassword = FocusNode();
 
@@ -56,16 +55,20 @@ class _LoginViewState extends State<LoginView> {
     if (_formkey.currentState!.validate()) {
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
+      showLoadingDialog(context);
 
       try {
         // ✅ Attempt to sign in
         User? user = await _fireBaseAuth.login(email, password);
 
         if (user != null) {
-   
+          Navigator.of(context).pop();
 
-// Check if this is the first login post-signup
-          bool hasCompletedPostSignup = LocalStorageService.hasCompletedPostSignup();
+          FocusScope.of(context).unfocus();
+          // Check if this is the first login post-signup
+          bool hasCompletedPostSignup =
+              await LocalStorageService.hasCompletedPostSignup();
+
           if (!hasCompletedPostSignup) {
             print("First login detected, navigating to PostSignupScreen...");
             NavigationUtils.replaceWith(const PostSignupScreen());
@@ -74,9 +77,8 @@ class _LoginViewState extends State<LoginView> {
             NavigationUtils.goToHome();
           }
         }
-   
-     
       } on FirebaseAuthException catch (e) {
+        Navigator.of(context).pop();
         String errorMessage = "Login failed. Please try again.";
 
         if (e.code == 'wrong-password') {
@@ -106,6 +108,7 @@ class _LoginViewState extends State<LoginView> {
         showCustomSnackBar(context, errorMessage);
       } catch (e) {
         FocusScope.of(context).unfocus();
+        Navigator.of(context).pop();
 
         showCustomSnackBar(context, "Error: ${e.toString()}");
       }
@@ -115,7 +118,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: themeColor().surface,
+      backgroundColor: themeColor(context: context).surface,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 30.w),
         child: Column(
@@ -139,7 +142,10 @@ class _LoginViewState extends State<LoginView> {
                         SizedBox(height: 50.h),
 
                         //welcome back text
-                        headLine1("Welcome back", color: themeColor().primary),
+                        headLine1(
+                          "Welcome back",
+                          color: themeColor(context: context).primary,
+                        ),
                         SizedBox(height: 24.h),
 
                         //email
@@ -206,7 +212,7 @@ class _LoginViewState extends State<LoginView> {
                           },
                           child: buttonText(
                             "Forgot password",
-                            color: themeColor().primary,
+                            color: themeColor(context: context).primary,
                           ),
                         ),
                         SizedBox(height: 14.h),
@@ -224,7 +230,7 @@ class _LoginViewState extends State<LoginView> {
                               },
                               child: buttonText(
                                 "Sign up",
-                                color: themeColor().primary,
+                                color: themeColor(context: context).primary,
                               ),
                             ),
                           ],
@@ -242,11 +248,21 @@ class _LoginViewState extends State<LoginView> {
                 ),
               ),
             ),
-            footer(),
+
+            footer(context: context),
             SizedBox(height: 16.h),
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _focusNodeEmail.dispose();
+    _focusNodePassword.dispose();
+    super.dispose();
   }
 }

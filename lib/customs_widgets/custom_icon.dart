@@ -8,17 +8,10 @@ Widget customIcon(BuildContext context, String icon) {
 }
 
 Widget customIconButton(BuildContext context, String icon, VoidCallback onTap) {
-  final theme = themeColor();
-  final isDarkMode = theme.brightness == Brightness.dark;
-
   return Container(
-    padding: EdgeInsets.all(10.r), // 🏆 Responsive Padding
+    padding: EdgeInsets.all(10.r),
     decoration: BoxDecoration(
-      color:
-          isDarkMode
-              ? Colors.grey[800]
-              : Colors.grey[300], // 🌗 Adaptive Background
-      borderRadius: BorderRadius.circular(12.r), // 🟢 Rounded Corners
+      borderRadius: BorderRadius.circular(12.r),
     ),
     child: IconButton(
       onPressed: onTap,
@@ -26,8 +19,6 @@ Widget customIconButton(BuildContext context, String icon, VoidCallback onTap) {
         icon,
         width: 24.sp,
         height: 24.sp,
-        color:
-            isDarkMode ? Colors.white : Colors.black, // 🌙 Adaptive Icon Color
       ),
     ),
   );

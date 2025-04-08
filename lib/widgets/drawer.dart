@@ -17,118 +17,124 @@ class DrawerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = themeColor();
+    final theme = themeColor(context: context);
     return Drawer(
-      backgroundColor:
-          Theme.of(context).brightness == Brightness.light
-              ? Colors.green.shade100
-              : Color(0xff026666), // or any light theme color
-
-      child: ListView(
+      backgroundColor: theme.inversePrimary,
+     // or any light theme color
+      child: Column(
         children: [
-          DrawerHeader(
-
-            
-            //    decoration: BoxDecoration(color: Colors.green.shade100),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  radius: 44.r,
-                  backgroundColor: theme.onPrimary,
-                  child: Text(
-                    context.watch<UserProvider>().userName.isNotEmpty
-                        ? context
-                            .watch<UserProvider>()
-                            .userName[0]
-                            .toUpperCase()
-                        : '?',
-                    style: TextStyle(
-                      fontSize: 30.sp,
-                      color: theme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
+          Expanded(child:ListView(
+            children: [
+              Container(
+                height: 200.h,
+                child: DrawerHeader(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                        radius: 44.r,
+                        backgroundColor: theme.onPrimary,
+                        child: Text(
+                          context.watch<UserProvider>().userName.isNotEmpty
+                              ? context
+                              .watch<UserProvider>()
+                              .userName[0]
+                              .toUpperCase()
+                              : '?',
+                          style: TextStyle(
+                            fontSize: 30.sp,
+                            color: theme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                      //   SizedBox(height: 10.h),
+                      bodyText(context.watch<UserProvider>().userName),
+                      bodyText(context.watch<UserProvider>().userEmail),
+                    ],
                   ),
                 ),
+              ),
 
-                //   SizedBox(height: 10.h),
-                Text(context.watch<UserProvider>().userName),
-                bodyText(context.watch<UserProvider>().userEmail),
-              ],
-            ),
-          ),
-          ListTile(
-            leading: Icon(Icons.person),
-            title: Text("Account"),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => SelectAddressScreen()),
-              );
-            },
-          ),
-          ListTile(
-            leading:
+              ListTile(
+                leading: Icon(Icons.person),
+                title: Text("Account"),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => SelectAddressScreen()),
+                  );
+                },
+              ),
+
+              ListTile(
+                leading:
                 Theme.of(context).brightness == Brightness.light
                     ? Icon(Icons.light_mode)
                     : Icon(Icons.mode_night),
-            title:
+                title:
                 Theme.of(context).brightness == Brightness.light
                     ? Text("Light")
                     : Text("Dark"),
-            trailing: Switch.adaptive(
-              value:
+                trailing: Switch.adaptive(
+                  value:
                   context.watch<AppThemeBloc>().state.themeMode ==
-                  ThemeMode.dark,
-              onChanged: (value) {
-                context.read<AppThemeBloc>().add(ToggleTheme()); // Toggle theme
-              },
-            ),
-
-            onTap: () {
-              context.read<AppThemeBloc>().add(ToggleTheme());
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.lock),
-            title: Text("Change Password"),
-            onTap: () {
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (context) => ChangePassword()));
-            },
-          ),
-          SizedBox(),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              //logout
-              GestureDetector(
-                onTap: () async {
-                  await _fireBaseAuth.logout(
-                    context,
-                  ); // Ensure it runs when tapped
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade100, // Light green background
-                    shape: BoxShape.circle, // Makes it circular
-                  ),
-                  padding: EdgeInsets.all(10), // Padding inside the circle
-                  child: Icon(
-                    Icons.logout,
-                    size: 30.sp,
-                    color: theme.primary, // Icon color
-                  ),
+                      ThemeMode.dark,
+                  onChanged: (value) {
+                    context.read<AppThemeBloc>().add(ToggleTheme()); // Toggle theme
+                  },
                 ),
+
+                onTap: () {
+                  context.read<AppThemeBloc>().add(ToggleTheme());
+                },
               ),
-              SizedBox(height: 10.h), // Space between icon and text
-              Text(
-                "Sign Out",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+
+              ListTile(
+                leading: Icon(Icons.lock),
+                title: Text("Change Password"),
+                onTap: () {
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (context) => ChangePassword()));
+                },
               ),
             ],
+          )) ,
+
+          SizedBox(height:  100.h,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                //logout
+                GestureDetector(
+                  onTap: () async {
+                    await _fireBaseAuth.logout(
+                      context,
+                    ); // Ensure it runs when tapped
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                 color: Colors.green.shade100,
+                      shape: BoxShape.circle,
+                    ),
+                    padding: EdgeInsets.all(10),
+                    child: Icon(
+                      Icons.logout,
+                      size: 30.sp,
+                      color: theme.primary, // Icon color
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10.h),
+                Text(
+                  "Sign Out",
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
           ),
         ],
       ),

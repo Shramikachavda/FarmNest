@@ -101,7 +101,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: themeColor().surface,
+      backgroundColor: themeColor(context: context).surface,
       appBar: CustomAppBar(),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 30.w),
@@ -129,7 +129,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               SizedBox(height: 35.h),
               CustomButton(onClick: _resetPassword, buttonName: 'Send Email'),
               Spacer(),
-              footer(),
+              footer(context: context),
               SizedBox(height: 16.h),
             ],
           ),

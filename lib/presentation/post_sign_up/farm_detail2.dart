@@ -10,8 +10,12 @@ import 'package:agri_flutter/services/firestore.dart';
 import 'package:agri_flutter/services/local_storage/post_sign_up.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-import 'post_signup_screen.dart'; // Import for PostSignupNotifier
+
+import '../../providers/map.dart';
+import 'draw_boundary.dart';
+import 'post_signup_screen.dart';
 
 class AddFarmFieldLocationScreen extends BaseStatefulWidget {
   const AddFarmFieldLocationScreen({super.key});
@@ -37,7 +41,8 @@ class _AddFarmFieldLocationScreenState
   final TextEditingController _fieldSizeController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _locationDescriptionController =
-      TextEditingController();
+  TextEditingController();
+  final TextEditingController _boundaryController = TextEditingController();
 
   final FocusNode _focusNodeName = FocusNode();
   final FocusNode _focusNodeCropDetail = FocusNode();
@@ -60,7 +65,6 @@ class _AddFarmFieldLocationScreenState
             fieldName: _fieldNameController.text.trim(),
             ownershipType: selctedOwnerShip.name,
             farmBoundaries: _farmBoundaries,
-
             cropDetails: _cropDetailsController.text.trim(),
             fieldSize: double.tryParse(_fieldSizeController.text.trim()) ?? 0.0,
             state: _stateController.text.trim(),
@@ -72,17 +76,23 @@ class _AddFarmFieldLocationScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("✅ Farm details saved successfully")),
         );
-final postSignupNotifier = context.read<PostSignupNotifier>();
-await LocalStorageService.setPostSignupCompleted(); // to mark flow done
-postSignupNotifier.completeSignupAndNavigate();
 
-        // Signal to move to PostScreenDone
+        final postSignupNotifier = context.read<PostSignupNotifier>();
+        await LocalStorageService.setPostSignupCompleted();
+        postSignupNotifier.completeSignupAndNavigate();
       } catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("❌ Error: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("❌ Error: $e")),
+        );
       }
     }
+  }
+
+  String _formatBoundaryCoordinates(List<LatLng> points) {
+    return points
+        .map((point) =>
+    '[${point.latitude.toStringAsFixed(6)}, ${point.longitude.toStringAsFixed(6)}]')
+        .join(', ');
   }
 
   @override
@@ -95,13 +105,14 @@ postSignupNotifier.completeSignupAndNavigate();
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 40.h),
               bodyLargeText("Add Farms Field Location"),
-              SizedBox(height: 24.h),
+              SizedBox(height: 10.h),
               bodyText(
                 "This detailed information will help our soil tester partner reach your farm easily.",
               ),
               SizedBox(height: 24.h),
+
+              /// Field Name
               CustomFormField(
                 focusNode: _focusNodeName,
                 textInputAction: TextInputAction.next,
@@ -109,13 +120,14 @@ postSignupNotifier.completeSignupAndNavigate();
                 keyboardType: TextInputType.text,
                 label: 'Field Name',
                 textEditingController: _fieldNameController,
-                validator:
-                    (value) =>
-                        value == null || value.trim().isEmpty
-                            ? 'Please enter field name'
-                            : null,
+                validator: (value) =>
+                value == null || value.trim().isEmpty
+                    ? 'Please enter field name'
+                    : null,
               ),
               SizedBox(height: 24.h),
+
+              /// Ownership
               reusableDropdown<FarmOwnershipType>(
                 label: 'Ownership Type',
                 selectedValue: selctedOwnerShip,
@@ -127,44 +139,48 @@ postSignupNotifier.completeSignupAndNavigate();
                 },
               ),
               SizedBox(height: 24.h),
+
+              /// Farm Boundaries
               CustomFormField(
                 focusNode: _focusNodeBoundary,
-
                 hintText: 'Select boundaries from map',
                 label: 'Farm Boundaries',
-                textEditingController: TextEditingController(
-                  text:
-                      _farmBoundaries.isNotEmpty
-                          ? _farmBoundaries.join(', ')
-                          : '',
-                ),
-              /*  validator:
-                    (value) =>
-                        _farmBoundaries.isEmpty
-                            ? 'Please select boundaries'
-                            : null, */
+                textEditingController: _boundaryController,
+                readOnly: true, // Make it read-only since it's populated from the map
                 icon: IconButton(
                   onPressed: () async {
-                    // TODO: Replace with your map picking logic
-                    // Simulate boundaries like [22.5726, 88.3639]
-                    final result = await Navigator.push<List<double>>(
+                    final boundary = await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => HomePage()),
+                      MaterialPageRoute(
+                        builder: (_) => const SelectBoundaryScreen(),
+                      ),
                     );
 
-                    if (result != null) {
+                    if (boundary != null && boundary is List<LatLng>) {
+                      print("✅ Selected boundary: $boundary");
                       setState(() {
-                        _farmBoundaries = result;
+                        _farmBoundaries = boundary
+                            .expand((latlng) => [latlng.latitude, latlng.longitude])
+                            .toList();
+
+                        _boundaryController.text = _formatBoundaryCoordinates(boundary);
+
+                        _boundaryController.selection = TextSelection.fromPosition(
+                          TextPosition(offset: _boundaryController.text.length),
+                        );
                       });
+                    } else {
+                      print("❌ No boundary returned");
                     }
                   },
-                  icon: Icon(Icons.map),
+                  icon: const Icon(Icons.map),
                 ),
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.next,
               ),
-
               SizedBox(height: 24.h),
+
+              /// Crop Details
               CustomFormField(
                 focusNode: _focusNodeCropDetail,
                 textInputAction: TextInputAction.next,
@@ -172,13 +188,14 @@ postSignupNotifier.completeSignupAndNavigate();
                 keyboardType: TextInputType.text,
                 label: 'Crop Details',
                 textEditingController: _cropDetailsController,
-                validator:
-                    (value) =>
-                        value == null || value.trim().isEmpty
-                            ? 'Please enter crop details'
-                            : null,
+                validator: (value) =>
+                value == null || value.trim().isEmpty
+                    ? 'Please enter crop details'
+                    : null,
               ),
               SizedBox(height: 24.h),
+
+              /// Field Size
               CustomFormField(
                 focusNode: _focusNodeFieldSize,
                 textInputAction: TextInputAction.next,
@@ -186,13 +203,14 @@ postSignupNotifier.completeSignupAndNavigate();
                 keyboardType: TextInputType.number,
                 label: 'Field Size',
                 textEditingController: _fieldSizeController,
-                validator:
-                    (value) =>
-                        value == null || value.trim().isEmpty
-                            ? 'Please enter field size'
-                            : null,
+                validator: (value) =>
+                value == null || value.trim().isEmpty
+                    ? 'Please enter field size'
+                    : null,
               ),
               SizedBox(height: 24.h),
+
+              /// State
               CustomFormField(
                 focusNode: _focusNodeState,
                 textInputAction: TextInputAction.next,
@@ -200,13 +218,14 @@ postSignupNotifier.completeSignupAndNavigate();
                 keyboardType: TextInputType.text,
                 label: 'State',
                 textEditingController: _stateController,
-                validator:
-                    (value) =>
-                        value == null || value.trim().isEmpty
-                            ? 'Please enter state'
-                            : null,
+                validator: (value) =>
+                value == null || value.trim().isEmpty
+                    ? 'Please enter state'
+                    : null,
               ),
               SizedBox(height: 24.h),
+
+              /// Location Description
               CustomFormField(
                 focusNode: _focusNodeLocation,
                 textInputAction: TextInputAction.done,
@@ -214,13 +233,14 @@ postSignupNotifier.completeSignupAndNavigate();
                 keyboardType: TextInputType.text,
                 label: 'Location Description',
                 textEditingController: _locationDescriptionController,
-                validator:
-                    (value) =>
-                        value == null || value.trim().isEmpty
-                            ? 'Please enter location description'
-                            : null,
+                validator: (value) =>
+                value == null || value.trim().isEmpty
+                    ? 'Please enter location description'
+                    : null,
               ),
               SizedBox(height: 24.h),
+
+              /// Farmers Allocated
               reusableDropdown<FarmersAllocated>(
                 label: 'Farmers Allocated',
                 selectedValue: selectedFarmer,
@@ -232,10 +252,13 @@ postSignupNotifier.completeSignupAndNavigate();
                 },
               ),
               SizedBox(height: 24.h),
+
+              /// Submit Button
               CustomButton(
                 onClick: _submitFarmDetails,
                 buttonName: "Save and Proceed",
               ),
+              SizedBox(height: 24.h),
             ],
           ),
         ),
@@ -250,6 +273,7 @@ postSignupNotifier.completeSignupAndNavigate();
     _fieldSizeController.dispose();
     _stateController.dispose();
     _locationDescriptionController.dispose();
+    _boundaryController.dispose();
 
     _focusNodeName.dispose();
     _focusNodeCropDetail.dispose();

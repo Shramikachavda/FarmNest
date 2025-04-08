@@ -1,9 +1,15 @@
 import 'package:agri_flutter/theme/theme.dart';
+import 'package:agri_flutter/theme/util.dart';
 import 'package:agri_flutter/utils/text_style_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-Widget footer() {
-  return Align(
+Widget footer({required BuildContext context}) {
+  final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+     return isKeyboardOpen ? Container() :
+
+
+   Align(
     alignment: Alignment.bottomCenter,
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -18,7 +24,7 @@ Widget footer() {
             captionStyleText(
               "By continuing, you conform you've read and agree to our",
               textAlign: TextAlign.center,
-              color: Colors.black,
+
             ),
             InkWell(
               onTap: () {
@@ -26,17 +32,17 @@ Widget footer() {
               },
               child: captionStyleText(
                 "Terms Of Service",
-                color: themeColor().primary,
+                color: themeColor(context: context).primary,
               ),
             ),
-            Text(" and ", style: TextStyle(fontSize: 14, color: Colors.black)),
+            captionStyleText(" and "),
             InkWell(
               onTap: () {
                 // Handle Privacy Policy tap
               },
               child: captionStyleText(
                 "Privacy Policy",
-                color: themeColor().primary,
+                color: themeColor(context: context).primary,
               ),
             ),
           ],
@@ -50,9 +56,7 @@ Widget customText(String text, Color color, double size) {
   return Text(text, style: TextStyle(fontSize: size, color: color));
 }
 
-Widget customAlertBox() {
-  return AlertDialog(actions: [customText("isvali", Colors.black, 16)]);
-}
+
 
 // drop dwon
 
@@ -91,6 +95,28 @@ Widget reusableDropdown<T>({
     onChanged: onChanged,
   );
 }
+
+void showLoadingDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      child: Padding(
+        padding:  EdgeInsets.all(24.r),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            CircularProgressIndicator(),
+            SizedBox(height: 20),
+            Text("Loading...", style: TextStyle(fontSize: 16)),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
 
 //
 
@@ -132,6 +158,7 @@ Widget smallText(String text, {Color? color, TextAlign? textAlign}) => Text(
 Widget captionStyleText(String text, {Color? color, TextAlign? textAlign}) =>
     Text(
       text,
+      overflow : TextOverflow.ellipsis ,
       textAlign: textAlign,
       style: AppTextStyles.captionStyle.copyWith(color: color),
     );
@@ -157,7 +184,7 @@ Widget buttonText(String text, {Color? color}) =>
 
 // 16  normal
 Widget bodyText(String text, {Color? color}) =>
-    Text(text, style: AppTextStyles.bodyStyle.copyWith(color: color));
+    Text(text,   overflow : TextOverflow.ellipsis, style: AppTextStyles.bodyStyle.copyWith(color: color) , );
 
 //extension
 extension StringNullableExtension on String? {

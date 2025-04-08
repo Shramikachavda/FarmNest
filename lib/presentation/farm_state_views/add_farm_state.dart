@@ -23,10 +23,10 @@ class AddFarmState extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Add your Crop/Livestock"),
           bottom: TabBar(
-            indicatorColor: themeColor().primary,
+            indicatorColor: themeColor(context: context).primary,
             indicatorWeight: 3,
             indicatorSize: TabBarIndicatorSize.tab,
-            labelColor: themeColor().primary,
+            labelColor: themeColor(context: context).primary,
             indicatorAnimation: TabIndicatorAnimation.elastic,
             enableFeedback: true,
             automaticIndicatorColorAdjustment: true,

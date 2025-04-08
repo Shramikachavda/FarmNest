@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:agri_flutter/customs_widgets/custom_app_bar.dart';
 import 'package:agri_flutter/customs_widgets/custom_form_field.dart';
 import 'package:agri_flutter/providers/market_place_provider/favorite_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/product_provider.dart';
@@ -8,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../core/widgets/BaseStateFullWidget.dart';
+import '../../customs_widgets/reusable.dart';
 import '../../theme/theme.dart';
 
 class FavoriteView extends BaseStatefulWidget {
@@ -28,7 +30,6 @@ class FavoriteView extends BaseStatefulWidget {
 }
 
 class _FavoriteViewState extends State<FavoriteView> {
-
   //textEditingController
   final TextEditingController _searchController = TextEditingController();
 
@@ -90,17 +91,12 @@ class _FavoriteViewState extends State<FavoriteView> {
     final selectedProd = Provider.of<ProductProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Favorites",
-          style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.bold),
-        ),
-      ),
+      appBar: CustomAppBar(title: "Favorites"),
       body: Padding(
-        padding: EdgeInsets.only(left: 12.w, right: 12.w),
+        padding: EdgeInsets.only(left: 12.w, right: 12.w, top: 12.h),
         child: Column(
           children: [
-            // 🟢 Search Field
+
             CustomFormField(
               focusNode: _focusNodeSearch,
               textInputAction: TextInputAction.done,
@@ -143,18 +139,18 @@ class _FavoriteViewState extends State<FavoriteView> {
                             child: Card(
                               elevation: 2,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.r),
+                                borderRadius: BorderRadius.circular(12.r),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Container(
                                     width: double.infinity,
-                                    height: 100.h,
+                                    height: 120.h,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(15.r),
-                                        topRight: Radius.circular(15.r),
+                                        topLeft: Radius.circular(12.r),
+                                        topRight: Radius.circular(12.r),
                                       ),
                                       image: DecorationImage(
                                         image: NetworkImage(
@@ -175,11 +171,11 @@ class _FavoriteViewState extends State<FavoriteView> {
                                             //  _filterFavorites(); // Re-filter after removal
                                           },
                                           child: Container(
-                                            height: 35.w,
-                                            width: 35.w,
+                                            height: 30.w,
+                                            width: 30.w,
                                             decoration: BoxDecoration(
                                               shape: BoxShape.circle,
-                                              color: themeColor().primary,
+                                              color: themeColor(context: context).primary,
                                             ),
                                             child: Icon(
                                               Icons.favorite,
@@ -193,25 +189,14 @@ class _FavoriteViewState extends State<FavoriteView> {
                                   ),
                                   Padding(
                                     padding: EdgeInsets.all(8.w),
-                                    child: Text(
-                                      favoriteProduct.name,
-                                      style: TextStyle(fontSize: 14.sp),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                                    child: bodyText(favoriteProduct.name),
                                   ),
                                   Padding(
                                     padding: EdgeInsets.symmetric(
                                       horizontal: 8.w,
                                     ),
-                                    child: Text(
+                                    child: captionStyleText(
                                       favoriteProduct.description,
-                                      style: TextStyle(
-                                        fontSize: 12.sp,
-                                        color:
-                                            themeColor()
-                                                .surfaceContainerHighest,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                   Spacer(),
@@ -223,23 +208,10 @@ class _FavoriteViewState extends State<FavoriteView> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
-                                          favoriteProduct.category,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 12.sp,
-                                            fontWeight: FontWeight.w500,
-                                            color: themeColor().primary,
-                                          ),
-                                        ),
-                                        Text(
-                                          "₹${favoriteProduct.price}",
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
+                                        captionStyleText(favoriteProduct.category , color: themeColor(context: context).primary) ,
+                                        bodyText( "₹${favoriteProduct.price}",)
+
+
                                       ],
                                     ),
                                   ),
