@@ -165,6 +165,21 @@ Widget headLine3(String text, {Color? color, TextAlign? textAlign}) => Text(
   style: AppTextStyles.bodySemiLargeStyle.copyWith(color: color),
 );
 
+//semi bold  22
+Widget bodySemiLargeBoldText(String text, {Color? color, TextAlign? textAlign}) => Text(
+  text,
+  textAlign: textAlign,
+  style: AppTextStyles.bodySemiLargeBoldStyle.copyWith(color: color),
+);
+
+
+//semi bold  22
+Widget bodySemiLargeExtraBoldText(String text, {Color? color, TextAlign? textAlign}) => Text(
+  text,
+  textAlign: textAlign,
+  style: AppTextStyles.bodySemiLargeExtraBoldStyle.copyWith(color: color),
+);
+
 // Small text (Font size: 14)
 Widget smallText(String text, {Color? color, TextAlign? textAlign}) => Text(
   text,
@@ -189,8 +204,8 @@ Widget bodyBoldMediumText(String text, {Color? color}) =>
     Text(text, style: AppTextStyles.headline2Style);
 
 //18 normal
-Widget bodyMediumText(String text, {Color? color}) =>
-    Text(text, style: AppTextStyles.bodyLargeStyle);
+Widget bodyMediumText(String text, {Color? color , bool? softWrap , int? maxLine} ) =>
+    Text(text , maxLines: maxLine , softWrap: softWrap, overflow: TextOverflow.ellipsis, style: AppTextStyles.bodyLargeStyle.copyWith(color: color));
 
 //bodylarge 32
 Widget bodyLargeText(String text, {Color? color}) =>
@@ -201,10 +216,11 @@ Widget buttonText(String text, {Color? color}) =>
     Text(text, style: AppTextStyles.buttonStyle.copyWith(color: color));
 
 // 16  normal
-Widget bodyText(String text, {Color? color}) => Text(
+Widget bodyText(String text, {Color? color , int? maxLine }) => Text(
   text,
   overflow: TextOverflow.ellipsis,
-  style: AppTextStyles.bodyStyle.copyWith(color: color),
+    maxLines: maxLine ,
+    style: AppTextStyles.bodyStyle.copyWith(color: color),
 );
 
 //extension

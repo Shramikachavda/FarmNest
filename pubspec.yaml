@@ -64,6 +64,7 @@ dependencies:
   geocoding: 
   geolocator:
   flutter_html: ^3.0.0
+  dotlottie_loader: ^0.0.5
 
 
 dev_dependencies:
@@ -94,6 +95,7 @@ flutter:
     - assets/image/
     - assets/icons/
     - assets/html/
+    - assets/anim/
 
   #   - images/a_dot_ham.jpeg
 

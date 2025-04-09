@@ -76,48 +76,60 @@ class DrawerWidget extends StatelessWidget {
                   leading: Icon(Icons.shopping_bag),
                   title: bodyText("Order"),
                   onTap: () {
-                    Navigator.of(context).push(
+               /*     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => SelectAddressScreen(),
                       ),
-                    );
+                    );*/
                   },
                 ),
                 ListTile(
                   leading: Icon(Icons.location_on),
                   title: bodyText("Address"),
                   onTap: () {
-                    Navigator.of(context).push(
+                    /*Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => SelectAddressScreen(),
                       ),
-                    );
+                    );*/
                   },
                 ),
                 ListTile(
                   leading: Icon(Icons.eco),
                   title: bodyText("Farm"),
                   onTap: () {
-                    Navigator.of(context).push(
+               /*     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => SelectAddressScreen(),
                       ),
+                    );*/
+                  },
+                ),
+
+
+
+                ListTile(
+                  leading: Icon(Icons.lock),
+                  title: bodyText("Change Password"),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => ChangePassword()),
                     );
                   },
                 ),
 
                 ListTile(
                   leading:
-                      Theme.of(context).brightness == Brightness.light
-                          ? Icon(Icons.light_mode)
-                          : Icon(Icons.mode_night),
+                  Theme.of(context).brightness == Brightness.light
+                      ? Icon(Icons.light_mode)
+                      : Icon(Icons.mode_night),
                   title:
-                      Theme.of(context).brightness == Brightness.light
-                          ? Text("Light")
-                          : Text("Dark"),
+                  Theme.of(context).brightness == Brightness.light
+                      ? Text("Light")
+                      : Text("Dark"),
                   trailing: Switch.adaptive(
                     value:
-                        context.watch<AppThemeBloc>().state.themeMode ==
+                    context.watch<AppThemeBloc>().state.themeMode ==
                         ThemeMode.dark,
                     onChanged: (value) {
                       context.read<AppThemeBloc>().add(
@@ -130,18 +142,10 @@ class DrawerWidget extends StatelessWidget {
                     context.read<AppThemeBloc>().add(ToggleTheme());
                   },
                 ),
-
-                ListTile(
-                  leading: Icon(Icons.lock),
-                  title: bodyText("Change Password"),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => ChangePassword()),
-                    );
-                  },
-                ),
               ],
             ),
+
+
           ),
 
           SizedBox(

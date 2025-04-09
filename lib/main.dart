@@ -24,6 +24,8 @@ import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
 import 'package:agri_flutter/utils/shared_prefs_util.dart';
 import 'package:agri_flutter/presentation/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
@@ -38,15 +40,20 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 void main() async {
+
+ // debugPaintSizeEnabled = true;
   WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent, // Custom color for HomePageScreen
+    statusBarIconBrightness: Brightness.light, // Light icons
+  ));
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await SpUtil.getInstance();
 
   await Hive.initFlutter();
   await LocalStorageService.initHive();
-
-  // Hive.registerAdapter(UserModelAdapter());
 
   // Initialize timezone
   tz.initializeTimeZones();

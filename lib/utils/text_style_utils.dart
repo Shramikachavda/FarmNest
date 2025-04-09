@@ -35,6 +35,18 @@ class AppTextStyles {
     fontWeight: FontWeight.w600,
   );
 
+  //22 semi bold
+  static const TextStyle bodySemiLargeBoldStyle = TextStyle(
+    fontSize: titleFontSize,
+    fontWeight: FontWeight.w900,
+  );
+
+  //18 semi bold
+  static const TextStyle bodySemiLargeExtraBoldStyle = TextStyle(
+    fontSize: bodyLargeFontSize,
+    fontWeight: FontWeight.w900,
+  );
+
   //18 semi bold
   static const TextStyle bodySemiLargeStyle = TextStyle(
     fontSize: bodyLargeFontSize,

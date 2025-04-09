@@ -2,6 +2,13 @@ class ImageConst {
   //logo
   static const String logoName = "assets/image/logo.png";
   static const String logo = "assets/image/farmnest_logo.png";
+
+  //home page
+  static  const String welcome = "assets/image/welcome.png";
+  static  const String welcome2 = "assets/image/welcome2.png";
+  static  const String lightThemeAnimation = "assets/anim/dark_anim.lottie";
+  static  const String darkThemeAniamtion = "assets/anim/light_anim.lottie";
+
   //onboarding
   static const String intro2 = "assets/image/i2.png";
   static const String intro3 = "assets/image/i3.png";

@@ -7,19 +7,25 @@ Widget customIcon(BuildContext context, String icon) {
   return SvgPicture.asset(icon, width: 24.sp, height: 24.sp);
 }
 
-Widget customIconButton(BuildContext context, String icon, VoidCallback onTap) {
+Widget customIconButton({ required BuildContext context,   required VoidCallback onTap  , Icon? assetIcon  , String? icon,}) {
   return Container(
-    padding: EdgeInsets.all(10.r),
+ height: 40.h,
+    width: 40.h,
+
     decoration: BoxDecoration(
+      color: themeColor().onSurfaceVariant,
       borderRadius: BorderRadius.circular(12.r),
     ),
-    child: IconButton(
+    child:IconButton(
       onPressed: onTap,
-      icon: Image.asset(
-        icon,
-        width: 24.sp,
-        height: 24.sp,
-      ),
+      icon:assetIcon  ??
+          (icon != null
+              ? Image.asset(
+            icon,
+            width: 24.sp,
+            height: 24.sp,
+          )
+              : const SizedBox()), // fallback if nothing passed
     ),
   );
 }

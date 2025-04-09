@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../core/widgets/BaseStateFullWidget.dart';
 import '../theme/theme.dart';
+import 'home_page_view/home_page_screen.dart';
 
 class HomeView extends BaseStatefulWidget {
   const HomeView({super.key});
@@ -32,6 +33,7 @@ class HomeViewState extends State<HomeView> {
     MarketHomepageView(),
     CalenderView(),
     FarmStateHomeView(),
+    HomePageScreen() ,
   ];
 
   @override
@@ -64,6 +66,7 @@ class HomeViewState extends State<HomeView> {
           selectedIcon: Icon(Icons.home),
           label: 'Home',
         ),
+
         NavigationDestination(
           tooltip: "Shop",
           icon: Icon(Icons.shopping_cart_outlined),
@@ -80,6 +83,12 @@ class HomeViewState extends State<HomeView> {
           icon: Icon(Icons.bar_chart_outlined),
           selectedIcon: Icon(Icons.bar_chart),
           label: 'Stats',
+        ),
+
+        NavigationDestination(
+          icon: Icon(Icons.home_outlined),
+          selectedIcon: Icon(Icons.home),
+          label: 'Home',
         ),
       ],
     ),);
