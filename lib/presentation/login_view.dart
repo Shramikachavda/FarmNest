@@ -250,7 +250,6 @@ class _LoginViewState extends State<LoginView> {
             ),
 
             footer(context: context),
-            SizedBox(height: 16.h),
           ],
         ),
       ),

@@ -1,9 +1,11 @@
 import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/presentation/drawer/address_scrren.dart';
 import 'package:agri_flutter/presentation/drawer/change_password.dart';
+import 'package:agri_flutter/presentation/drawer/update_user_info.dart';
 import 'package:agri_flutter/providers/user_provider.dart';
 import 'package:agri_flutter/services/firebase_auth.dart';
 import 'package:agri_flutter/services/firestore.dart';
+import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,90 +22,130 @@ class DrawerWidget extends StatelessWidget {
     final theme = themeColor(context: context);
     return Drawer(
       backgroundColor: theme.inversePrimary,
-     // or any light theme color
+
       child: Column(
         children: [
-          Expanded(child:ListView(
-            children: [
-              Container(
-                height: 200.h,
-                child: DrawerHeader(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CircleAvatar(
-                        radius: 44.r,
-                        backgroundColor: theme.onPrimary,
-                        child: Text(
-                          context.watch<UserProvider>().userName.isNotEmpty
-                              ? context
-                              .watch<UserProvider>()
-                              .userName[0]
-                              .toUpperCase()
-                              : '?',
-                          style: TextStyle(
-                            fontSize: 30.sp,
-                            color: theme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
+          Expanded(
+            child: ListView(
+              children: [
+                Container(
+                  height: 200.h,
+                  child: DrawerHeader(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CircleAvatar(
+                              radius: 44.r,
+
+                              child: bodyText(
+                                context
+                                        .watch<UserProvider>()
+                                        .userName
+                                        .isNotEmpty
+                                    ? context
+                                        .watch<UserProvider>()
+                                        .userName[0]
+                                        .toUpperCase()
+                                    : '?',
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                NavigationUtils.push(
+                                  EditProfileScreen().buildRoute(),
+                                );
+                              },
+                              icon: Icon(Icons.edit),
+                            ),
+                          ],
                         ),
-                      ),
-                      SizedBox(height: 10.h),
-                      //   SizedBox(height: 10.h),
-                      bodyText(context.watch<UserProvider>().userName),
-                      bodyText(context.watch<UserProvider>().userEmail),
-                    ],
+                        SizedBox(height: 10.h),
+
+                        bodyText(context.watch<UserProvider>().userName),
+                        bodyText(context.watch<UserProvider>().userEmail),
+                      ],
+                    ),
                   ),
                 ),
-              ),
 
-              ListTile(
-                leading: Icon(Icons.person),
-                title: Text("Account"),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => SelectAddressScreen()),
-                  );
-                },
-              ),
-
-              ListTile(
-                leading:
-                Theme.of(context).brightness == Brightness.light
-                    ? Icon(Icons.light_mode)
-                    : Icon(Icons.mode_night),
-                title:
-                Theme.of(context).brightness == Brightness.light
-                    ? Text("Light")
-                    : Text("Dark"),
-                trailing: Switch.adaptive(
-                  value:
-                  context.watch<AppThemeBloc>().state.themeMode ==
-                      ThemeMode.dark,
-                  onChanged: (value) {
-                    context.read<AppThemeBloc>().add(ToggleTheme()); // Toggle theme
+                ListTile(
+                  leading: Icon(Icons.shopping_bag),
+                  title: bodyText("Order"),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => SelectAddressScreen(),
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.location_on),
+                  title: bodyText("Address"),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => SelectAddressScreen(),
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.eco),
+                  title: bodyText("Farm"),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => SelectAddressScreen(),
+                      ),
+                    );
                   },
                 ),
 
-                onTap: () {
-                  context.read<AppThemeBloc>().add(ToggleTheme());
-                },
-              ),
+                ListTile(
+                  leading:
+                      Theme.of(context).brightness == Brightness.light
+                          ? Icon(Icons.light_mode)
+                          : Icon(Icons.mode_night),
+                  title:
+                      Theme.of(context).brightness == Brightness.light
+                          ? Text("Light")
+                          : Text("Dark"),
+                  trailing: Switch.adaptive(
+                    value:
+                        context.watch<AppThemeBloc>().state.themeMode ==
+                        ThemeMode.dark,
+                    onChanged: (value) {
+                      context.read<AppThemeBloc>().add(
+                        ToggleTheme(),
+                      ); // Toggle theme
+                    },
+                  ),
 
-              ListTile(
-                leading: Icon(Icons.lock),
-                title: Text("Change Password"),
-                onTap: () {
-                  Navigator.of(
-                    context,
-                  ).push(MaterialPageRoute(builder: (context) => ChangePassword()));
-                },
-              ),
-            ],
-          )) ,
+                  onTap: () {
+                    context.read<AppThemeBloc>().add(ToggleTheme());
+                  },
+                ),
 
-          SizedBox(height:  100.h,
+                ListTile(
+                  leading: Icon(Icons.lock),
+                  title: bodyText("Change Password"),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => ChangePassword()),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+
+          SizedBox(
+            height: 100.h,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -117,22 +159,19 @@ class DrawerWidget extends StatelessWidget {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                 color: Colors.green.shade100,
                       shape: BoxShape.circle,
+                      color: themeColor().primaryContainer,
                     ),
-                    padding: EdgeInsets.all(10),
+                    padding: EdgeInsets.all(10.h),
                     child: Icon(
                       Icons.logout,
                       size: 30.sp,
-                      color: theme.primary, // Icon color
+                      // Icon color
                     ),
                   ),
                 ),
                 SizedBox(height: 10.h),
-                Text(
-                  "Sign Out",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
+                bodyMediumText("Sign Out"),
               ],
             ),
           ),

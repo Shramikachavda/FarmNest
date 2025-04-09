@@ -1,3 +1,4 @@
+import 'package:agri_flutter/presentation/html_footer.dart';
 import 'package:agri_flutter/theme/theme.dart';
 import 'package:agri_flutter/theme/util.dart';
 import 'package:agri_flutter/utils/text_style_utils.dart';
@@ -6,57 +7,72 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Widget footer({required BuildContext context}) {
   final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
-     return isKeyboardOpen ? Container() :
-
-
-   Align(
-    alignment: Alignment.bottomCenter,
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        bodyMediumText("Farmnest"),
-        const SizedBox(height: 6),
-        Wrap(
-          alignment: WrapAlignment.center,
+  return isKeyboardOpen
+      ? Container()
+      : Align(
+        alignment: Alignment.bottomCenter,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            captionStyleText(
-              "By continuing, you conform you've read and agree to our",
-              textAlign: TextAlign.center,
-
+            bodyMediumText("Farmnest"),
+            const SizedBox(height: 6),
+            Wrap(
+              alignment: WrapAlignment.center,
+              children: [
+                captionStyleText(
+                  "By continuing, you confirm you've read and agree to our ",
+                  textAlign: TextAlign.center,
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (_) => const HtmlViewerScreen(
+                              title: "Terms of Service",
+                              assetPath: "assets/html/terms.html",
+                            ),
+                      ),
+                    );
+                  },
+                  child: captionStyleText(
+                    "Terms Of Service",
+                    color: themeColor(context: context).primary,
+                  ),
+                ),
+                captionStyleText(" and "),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (_) => const HtmlViewerScreen(
+                              title: "Privacy Policy",
+                              assetPath: "assets/html/privacy_policy.html",
+                            ),
+                      ),
+                    );
+                  },
+                  child: captionStyleText(
+                    "Privacy Policy",
+                    color: themeColor(context: context).primary,
+                  ),
+                ),
+              ],
             ),
-            InkWell(
-              onTap: () {
-                // Handle Terms of Service tap
-              },
-              child: captionStyleText(
-                "Terms Of Service",
-                color: themeColor(context: context).primary,
-              ),
-            ),
-            captionStyleText(" and "),
-            InkWell(
-              onTap: () {
-                // Handle Privacy Policy tap
-              },
-              child: captionStyleText(
-                "Privacy Policy",
-                color: themeColor(context: context).primary,
-              ),
-            ),
+            SizedBox(height: 16.h),
           ],
         ),
-      ],
-    ),
-  );
+      );
 }
 
 Widget customText(String text, Color color, double size) {
   return Text(text, style: TextStyle(fontSize: size, color: color));
 }
-
-
 
 // drop dwon
 
@@ -100,23 +116,25 @@ void showLoadingDialog(BuildContext context) {
   showDialog(
     context: context,
     barrierDismissible: false,
-    builder: (context) => Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-      child: Padding(
-        padding:  EdgeInsets.all(24.r),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: const [
-            CircularProgressIndicator(),
-            SizedBox(height: 20),
-            Text("Loading...", style: TextStyle(fontSize: 16)),
-          ],
+    builder:
+        (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(24.r),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                CircularProgressIndicator(),
+                SizedBox(height: 20),
+                Text("Loading...", style: TextStyle(fontSize: 16)),
+              ],
+            ),
+          ),
         ),
-      ),
-    ),
   );
 }
-
 
 //
 
@@ -158,7 +176,7 @@ Widget smallText(String text, {Color? color, TextAlign? textAlign}) => Text(
 Widget captionStyleText(String text, {Color? color, TextAlign? textAlign}) =>
     Text(
       text,
-      overflow : TextOverflow.ellipsis ,
+      overflow: TextOverflow.ellipsis,
       textAlign: textAlign,
       style: AppTextStyles.captionStyle.copyWith(color: color),
     );
@@ -183,8 +201,11 @@ Widget buttonText(String text, {Color? color}) =>
     Text(text, style: AppTextStyles.buttonStyle.copyWith(color: color));
 
 // 16  normal
-Widget bodyText(String text, {Color? color}) =>
-    Text(text,   overflow : TextOverflow.ellipsis, style: AppTextStyles.bodyStyle.copyWith(color: color) , );
+Widget bodyText(String text, {Color? color}) => Text(
+  text,
+  overflow: TextOverflow.ellipsis,
+  style: AppTextStyles.bodyStyle.copyWith(color: color),
+);
 
 //extension
 extension StringNullableExtension on String? {

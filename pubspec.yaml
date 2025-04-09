@@ -63,6 +63,7 @@ dependencies:
   google_maps_flutter: ^2.12.1
   geocoding: 
   geolocator:
+  flutter_html: ^3.0.0
 
 
 dev_dependencies:
@@ -92,6 +93,7 @@ flutter:
   assets:
     - assets/image/
     - assets/icons/
+    - assets/html/
 
   #   - images/a_dot_ham.jpeg
 

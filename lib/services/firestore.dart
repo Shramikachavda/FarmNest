@@ -13,10 +13,10 @@ import '../models/user_data.dart';
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
   // **Get Current User ID**
   String get userId {
     final user = _auth.currentUser;
+
     if (user == null) {
       throw Exception("User not authenticated. Please sign in.");
     }

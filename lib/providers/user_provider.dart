@@ -27,4 +27,11 @@ class UserProvider with ChangeNotifier {
       debugPrint("Error fetching user details: $e");
     }
   }
+
+  void setUserNameEmail(String name, String email) {
+    _userName = name;
+    _email = email;
+     notifyListeners();
+  }
+ 
 }

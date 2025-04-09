@@ -118,7 +118,7 @@ class _SignupViewState extends State<SignupView> {
         children: [
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(bottom: 24.w, right: 30.w, left: 30.w),
+              padding: EdgeInsets.only(right: 30.w, left: 30.w),
               child: SingleChildScrollView(
                 child: Form(
                   autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -279,7 +279,6 @@ class _SignupViewState extends State<SignupView> {
             ),
           ),
           footer(context: context),
-          SizedBox(height: 16.h),
         ],
       ),
     );
