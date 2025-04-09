@@ -65,6 +65,7 @@ dependencies:
   geolocator:
   flutter_html: ^3.0.0
   dotlottie_loader: ^0.0.5
+  intl:
 
 
 dev_dependencies:

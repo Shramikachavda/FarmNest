@@ -29,6 +29,7 @@ class PostSignupScreen extends BaseStatefulWidget {
   @override
   String get routeName => route;
 }
+
 class _PostSignupScreenState extends State<PostSignupScreen> {
   void _completePostSignup() async {
     await LocalStorageService.setPostSignupCompleted();
@@ -50,10 +51,7 @@ class _PostSignupScreenState extends State<PostSignupScreen> {
                 children: [
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginView()),
-                      );
+                      NavigationUtils.goToHome();
                     },
                     child: bodyText("Skip"),
                   ),

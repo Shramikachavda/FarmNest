@@ -4,10 +4,15 @@ class ImageConst {
   static const String logo = "assets/image/farmnest_logo.png";
 
   //home page
-  static  const String welcome = "assets/image/welcome.png";
-  static  const String welcome2 = "assets/image/welcome2.png";
-  static  const String lightThemeAnimation = "assets/anim/dark_anim.lottie";
-  static  const String darkThemeAniamtion = "assets/anim/light_anim.lottie";
+  static const String welcome = "assets/image/welcome.png";
+  static const String welcome2 = "assets/image/welcome2.png";
+  static const String bg = "assets/image/bg.png";
+  static const String lightThemeAnimation = "assets/anim/dark_anim.lottie";
+  static const String darkThemeAniamtion = "assets/anim/light_anim.lottie";
+  static const String anim1 = "assets/anim/anim1.lottie";
+  static const String anim2 = "assets/anim/anim2.lottie";
+  static const String anim3 = "assets/anim/anim3.lottie";
+  static const String anim4 = "assets/anim/anim4.lottie";
 
   //onboarding
   static const String intro2 = "assets/image/i2.png";

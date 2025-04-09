@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:agri_flutter/customs_widgets/custom_icon.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
+import 'package:agri_flutter/presentation/calender_view/add_event_expense.dart';
 import 'package:agri_flutter/presentation/home_page_view/market_price_widget.dart'; // Assuming MarketPriceCard is here
 import 'package:agri_flutter/presentation/search.dart';
 import 'package:agri_flutter/presentation/weather_details.dart';
@@ -9,6 +12,7 @@ import 'package:agri_flutter/providers/eventExpense.dart/event_expense_provider.
 import 'package:agri_flutter/providers/user_provider.dart';
 import 'package:agri_flutter/services/location.dart';
 import 'package:agri_flutter/utils/comman.dart';
+import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
 import 'package:dotlottie_loader/dotlottie_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +21,7 @@ import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:geocoding/geocoding.dart';
-
+import 'package:intl/intl.dart';
 import '../../core/image.dart';
 import '../../core/widgets/BaseStateFullWidget.dart';
 import '../../providers/location_provider.dart';
@@ -90,7 +94,16 @@ class _HomePageScreenState extends State<HomePageScreen> {
     if (hour >= 5 && hour < 12) return "Good Morning 🌞";
     if (hour >= 12 && hour < 17) return "Good Afternoon ☀️";
     if (hour >= 17 && hour < 21) return "Good Evening 🌆";
-    return " Good Night 🌙";
+    return "Good Night 🌙";
+  }
+
+  String getAnimation() {
+    final now = DateTime.now();
+    final hour = now.hour;
+    if (hour >= 5 && hour < 12) return ImageConst.anim1;
+    if (hour >= 12 && hour < 17) return ImageConst.anim1;
+    if (hour >= 17 && hour < 21) return ImageConst.anim2;
+    return ImageConst.anim4;
   }
 
   @override
@@ -106,10 +119,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
 
-            children: [welcomeHeader(), weatherCard(),    upComingEventCard() ,
+            children: [
+              welcomeHeader(),
+              weatherCard(),
+              upComingEventCard(),
+              marketPlaceCard(),
             ],
-
-
           ),
         ),
       ),
@@ -132,7 +147,9 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   alignment: Alignment.topLeft,
                   child: customIconButton(
                     context: context,
-                    onTap: () {},
+                    onTap: () {
+                      ZoomDrawer.of(context)?.toggle();
+                    },
                     assetIcon: Icon(
                       Icons.menu,
                       color: themeColor().onInverseSurface,
@@ -150,12 +167,14 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   children: [
                     Expanded(
                       child: Padding(
-                        padding: EdgeInsets.only(left: 24.w , bottom: 8.h),
+                        padding: EdgeInsets.only(left: 24.w, bottom: 8.h),
                         child: Container(
                           padding: EdgeInsets.all(12.w),
                           decoration: BoxDecoration(
                             color: themeColor().surface.withValues(alpha: 0.4),
-                            borderRadius: BorderRadius.all(Radius.circular(30.r),),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(30.r),
+                            ),
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -170,7 +189,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                               bodySemiLargeExtraBoldText(getGreeting()),
 
                               //welcome msg
-                              bodyText("Welcome to FarmNest!" , maxLine: 2),
+                              bodyText("Welcome to FarmNest!", maxLine: 2),
 
                               //location
                               Expanded(
@@ -186,8 +205,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                                                     .read<LocationProvider>()
                                                     .currentAddress ??
                                                 "location unavailable...",
-maxLine: 2
-
+                                            maxLine: 2,
                                           ),
                                         ],
                                       ),
@@ -204,7 +222,7 @@ maxLine: 2
                     // Right Image Section
                     SizedBox(
                       height: 150.h,
-                   //   width: 150.h,
+                      //   width: 150.h,
                       child: Padding(
                         padding: EdgeInsets.only(right: 24.w),
                         child: Image.asset(
@@ -352,12 +370,7 @@ maxLine: 2
           bottomRight: Radius.circular(30.r),
         ),
       ),
-      child: Stack(
-          children: [
-            lottieAnimation(),
-            welcomeCard()
-          ]
-      ),
+      child: Stack(children: [lottieAnimationNew(), welcomeCard()]),
     );
   }
 
@@ -383,61 +396,261 @@ maxLine: 2
     );
   }
 
+  Widget lottieAnimationNew() {
+    String getAnim = getAnimation();
+    return Container(
+      alignment: Alignment.topRight,
+      height: MediaQuery.of(context).size.height * 0.3,
+      child: DotLottieLoader.fromAsset(
+        getAnim,
+        frameBuilder: (BuildContext ctx, DotLottie? dotlottie) {
+          if (dotlottie != null) {
+            return Lottie.memory(dotlottie.animations.values.single);
+          } else {
+            return Container();
+          }
+        },
+      ),
+    );
+  }
+
   Widget upComingEventCard() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 8.h),
-      child: Row(
+      padding: EdgeInsets.symmetric(horizontal: 24.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // First card
-          Expanded(
-            child: Card(
-              elevation: 3,
-              color: themeColor().surfaceContainerHighest,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.r),
-              ),
-              child: Container(
-                padding: EdgeInsets.all(16.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    bodyBoldMediumText("Event 1"),
-                    SizedBox(height: 4.h),
-                    bodyMediumText("Details about the upcoming event."),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          bodyMediumText("Market Price(Gujarat)"),
+          Consumer<EventExpenseProvider>(
+            builder: (context, event, child) {
+              final upComingEvent = event.upcomingTwoEvents;
 
-          SizedBox(width: 12.w),
+              final upComingEventLength = upComingEvent.length;
 
-          // Second card
-          Expanded(
-            child: Card(
-              elevation: 3,
-              color: themeColor().surfaceContainerHighest,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.r),
-              ),
-              child: Container(
-                padding: EdgeInsets.all(16.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    bodyBoldMediumText("Event 2"),
-                    SizedBox(height: 4.h),
-                    bodyMediumText("Another upcoming event description."),
-                  ],
-                ),
-              ),
-            ),
+              print(upComingEventLength);
+
+              if (upComingEvent.isEmpty) {
+                return SizedBox(
+                  width: double.infinity,
+                  child: Card(
+                    color: themeColor().surfaceContainerHighest,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24.r),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(12.w),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: bodyText(
+                              "No events added yet.Tap [+] to get started!",
+                              maxLine: 2,
+                            ),
+                          ),
+                          customIconButton(
+                            context: context,
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return Stack(
+                                    children: [
+                                      // Blurred Background
+                                      BackdropFilter(
+                                        filter: ImageFilter.blur(
+                                          sigmaX: 2.0,
+                                          sigmaY: 2.0,
+                                        ),
+                                        child: Container(),
+                                      ),
+                                      Center(
+                                        child: AddEventExpenseDialog(
+                                          DateTime.now().add(Duration(days: 1)),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            assetIcon: Icon(
+                              Icons.add,
+                              color: themeColor().onInverseSurface,
+                              size: 24.sp,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }
+
+              if (upComingEventLength == 1) {
+                return Padding(
+                  padding: EdgeInsets.only(right: 24.w, left: 24.w),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Card(
+                      color: themeColor().surfaceContainerHighest,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24.r),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Tooltip(
+                              message: upComingEvent[0].title,
+                              child: bodyBoldMediumText(upComingEvent[0].title),
+                            ),
+                            bodyText(upComingEvent[0].category),
+                            bodyText(
+                              DateFormat(
+                                'dd-MM-yyyy',
+                              ).format(upComingEvent[0].date),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }
+
+              //2 events
+              return Row(
+                children: [
+                  // First card
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 24.w),
+                      child: Card(
+                        color: themeColor().surfaceContainerHighest,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24.r),
+                        ),
+                        child: Container(
+                          padding: EdgeInsets.all(12.w),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Tooltip(
+                                message: upComingEvent[0].title,
+                                child: bodyBoldMediumText(
+                                  upComingEvent[0].title,
+                                ),
+                              ),
+                              bodyText(upComingEvent[0].category),
+                              bodyText(
+                                DateFormat(
+                                  'dd-MM-yyyy',
+                                ).format(upComingEvent[0].date),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Second card
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 24.w),
+                      child: Card(
+                        color: themeColor().surfaceContainerHighest,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24.r),
+                        ),
+                        child: Container(
+                          padding: EdgeInsets.all(12.w),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Tooltip(
+                                message: upComingEvent[1].title,
+                                child: bodyBoldMediumText(
+                                  upComingEvent[1].title,
+                                ),
+                              ),
+                              bodyText(upComingEvent[1].category),
+                              bodyText(
+                                DateFormat(
+                                  'dd-MM-yyyy',
+                                ).format(upComingEvent[1].date),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
     );
   }
 
+  Widget marketPlaceCard() {
+    return Container(
+      // color: Colors.amber,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24.h),
+        child: Column(
+          // mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            bodyMediumText("Market Price(Gujarat)"),
+
+            Consumer<MarkerPriceProvider>(
+              builder: (context, value, child) {
+                //length of market price
+                final marketPriceLength =
+                    value.prices.length > 2 ? 2 : value.prices.length;
+
+                if (value.isLoading) {
+                  return SizedBox(
+                    height: 180.h,
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                if (value.errorMessage != null) {
+                  return SizedBox(
+                    height: 180.h,
+                    child: Center(child: Text(value.errorMessage!)),
+                  );
+                }
+                if (value.prices.isEmpty) {
+                  return SizedBox(
+                    height: 180.h,
+                    child: const Center(
+                      child: Text('No market data available.'),
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: marketPriceLength,
+                  itemBuilder:
+                      (context, index) =>
+                          MarketPriceCard(record: value.prices[index]),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   void dispose() {

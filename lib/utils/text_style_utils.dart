@@ -64,11 +64,22 @@ class AppTextStyles {
     fontSize: bodyFontSize,
     fontWeight: FontWeight.normal,
   );
+  //16 and semi bold
+  static const TextStyle bodyBoldStyle = TextStyle(
+    fontSize: bodyFontSize,
+    fontWeight: FontWeight.w600,
+  );
 
   //14
   static const TextStyle bodySmallStyle = TextStyle(
     fontSize: bodySmallFontSize,
     fontWeight: FontWeight.normal,
+  );
+
+  //14 nd semi bold
+  static const TextStyle bodySmallBoldStyle = TextStyle(
+    fontSize: bodySmallFontSize,
+    fontWeight: FontWeight.w600,
   );
 
   //12
