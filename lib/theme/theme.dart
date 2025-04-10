@@ -78,6 +78,14 @@ class MaterialTheme {
       labelStyle: TextStyle(color: colorScheme.outline),
       suffixIconColor: colorScheme.outline,
     ),
+
+    cardTheme: CardTheme(
+      elevation: 0.4,
+      color: colorScheme.surfaceContainerLow,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.r),
+      ),
+    )
   );
 
   List<ExtendedColor> get extendedColors => [

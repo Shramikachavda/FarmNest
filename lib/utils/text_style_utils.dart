@@ -52,6 +52,11 @@ class AppTextStyles {
     fontSize: bodyLargeFontSize,
     fontWeight: FontWeight.w600,
   );
+  //18 bold
+  static const TextStyle bodyBoldLargeStyle = TextStyle(
+    fontSize: bodyLargeFontSize,
+    fontWeight: FontWeight.bold,
+  );
 
   //18
   static const TextStyle bodyLargeStyle = TextStyle(

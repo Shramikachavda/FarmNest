@@ -33,7 +33,7 @@ class HomeViewState extends State<HomeView> {
     MarketHomepageView(),
     CalenderView(),
     FarmStateHomeView(),
-    HomePageScreen() ,
+
   ];
 
   @override
@@ -69,8 +69,8 @@ class HomeViewState extends State<HomeView> {
 
         NavigationDestination(
           tooltip: "Shop",
-          icon: Icon(Icons.shopping_cart_outlined),
-          selectedIcon: Icon(Icons.shopping_cart),
+          icon: Icon(Icons.shopping_bag) ,
+          selectedIcon:Icon(Icons.shopping_bag) ,
           label: 'Shop',
         ),
         NavigationDestination(
@@ -85,11 +85,7 @@ class HomeViewState extends State<HomeView> {
           label: 'Stats',
         ),
 
-        NavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          selectedIcon: Icon(Icons.home),
-          label: 'Home',
-        ),
+
       ],
     ),);
   }

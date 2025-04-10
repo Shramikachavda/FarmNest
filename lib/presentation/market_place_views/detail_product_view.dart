@@ -1,14 +1,20 @@
+import 'package:agri_flutter/customs_widgets/custom_app_bar.dart';
 import 'package:agri_flutter/customs_widgets/custom_button.dart';
 import 'package:agri_flutter/customs_widgets/custom_snackbar.dart';
+import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/providers/market_place_provider/cart_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/favorite_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/product_provider.dart';
 import 'package:agri_flutter/theme/theme.dart';
+import 'package:agri_flutter/utils/comman.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:lottie/lottie.dart';
 
+import '../../core/image.dart';
 import '../../core/widgets/BaseStateFullWidget.dart';
+import '../../customs_widgets/custom_icon.dart';
 
 class DetailProductView extends BaseStatefulWidget {
   const DetailProductView({super.key});
@@ -28,25 +34,54 @@ class DetailProductView extends BaseStatefulWidget {
 }
 
 class _DetailProductViewState extends State<DetailProductView> {
+  void showSuccessAnimationAndNavigate(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Lottie.asset(
+              ImageConst.buyNowAnim , // ✅ Your Lottie file
+height: 400.h ,
+              width: 500.w
+
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              "Order Placed Successfully!",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    Future.delayed(const Duration(seconds: 5), () {
+      Navigator.of(context).pop(); // close dialog
+     // Navigator.of(context).pushReplacementNamed('/OrderScreen'); // ✅ Navigate
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
     final favoriteProvider = Provider.of<FavoriteProvider>(context);
 
-    // ✅ Fetch the latest version of the product from CartProvider
     final product = cartProvider.cartItems.firstWhere(
-      (item) => item.id == cartProvider.cartItems.first.id,
+          (item) => item.id == cartProvider.cartItems.first.id,
       orElse: () => Provider.of<ProductProvider>(context).selectedProduct!,
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(product.name)),
+      backgroundColor: themeColor(context: context).surface,
+      appBar: CustomAppBar(title: product.name),
       body: Padding(
-        padding: EdgeInsets.all(12.r),
+        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
         child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start, // Align items to the start
-          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               width: double.infinity,
@@ -62,13 +97,7 @@ class _DetailProductViewState extends State<DetailProductView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  product.name,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.sp,
-                  ),
-                ),
+                bodySemiLargeExtraBoldText(product.name),
                 IconButton(
                   onPressed: () {
                     favoriteProvider.isFavorite(product)
@@ -81,64 +110,42 @@ class _DetailProductViewState extends State<DetailProductView> {
                           : 'Item removed from favorite list',
                     );
                   },
-                  icon:
-                      favoriteProvider.isFavorite(product)
-                          ? Icon(Icons.favorite, size: 24.sp)
-                          : Icon(Icons.favorite_outline, size: 24.sp),
+                  icon: favoriteProvider.isFavorite(product)
+                      ? Icon(Icons.favorite, size: 24.sp)
+                      : Icon(Icons.favorite_border_outlined, size: 24.sp),
                 ),
               ],
             ),
             Row(
               children: [
-                InkWell(
-                  onTap: () {
-                    cartProvider.decreaseQuantity(product);
+                customRoundIconButton(
+                  context: context,
+                  icon: Icons.remove,
+                  onPressed: () async {
+                    await cartProvider.decreaseQuantity(product);
                   },
-                  child: Container(
-                    height: 27.h,
-                    width: 27.h,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: themeColor(context: context).primary,
-                    ),
-                    child: Center(child: Icon(Icons.remove, size: 24.sp)),
-                  ),
                 ),
                 Padding(
                   padding: EdgeInsets.all(5.r),
-                  child: Text(
-                    '${product.quantity}', // ✅ Now dynamically updates
-                  ),
+                  child: bodyText('${product.quantity}'),
                 ),
-                InkWell(
-                  onTap: () {
-                    cartProvider.increaseQuantity(product);
+                customRoundIconButton(
+                  context: context,
+                  icon: Icons.add,
+                  onPressed: () async {
+                    await cartProvider.increaseQuantity(product);
                   },
-                  child: Container(
-                    height: 27.h,
-                    width: 27.h,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: themeColor(context: context).primary,
-                    ),
-                    child: Center(child: Icon(Icons.add, size: 24.sp)),
-                  ),
                 ),
                 Spacer(),
                 SizedBox(height: 5.h),
-                Text(
-                  "₹ ${cartProvider.getProductTotalPrice(product).toString()}",
-                ),
+                Text("₹ ${cartProvider.getProductTotalPrice(product).toString()}"),
               ],
             ),
             SizedBox(height: 5.h),
-            Text(
-              "Product Description",
-              style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w600),
-            ),
+            bodyMediumBoldText("Product Description"),
             Text(
               product.description,
-              style: TextStyle(color: themeColor(context: context).surfaceContainerHighest),
+              style: TextStyle(color: themeColor().onSurfaceVariant),
             ),
             Spacer(),
             Row(
@@ -152,12 +159,38 @@ class _DetailProductViewState extends State<DetailProductView> {
                     buttonName: "Add to cart",
                   ),
                 ),
+                SizedBox(width: 8.w),
                 Expanded(
-                  child: CustomButton(onClick: () {}, buttonName: "Buy Now"),
+                  child: CustomButton(
+                    onClick: () async {
+                      final result = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text("Confirm Purchase"),
+                          content: const Text("Are you sure you want to buy this item now?"),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(false),
+                              child: const Text("Cancel"),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(true),
+                              child: const Text("Buy Now"),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (result == true) {
+                        showSuccessAnimationAndNavigate(context);
+                      }
+                    },
+                    buttonName: "Buy Now",
+                  ),
                 ),
               ],
             ),
-          ],
+          ].separator(SizedBox(height: 3.h)).toList(),
         ),
       ),
     );

@@ -31,3 +31,25 @@ Widget customIconButton({
     ),
   );
 }
+
+//icon button with round
+
+Widget customRoundIconButton({ required BuildContext context , required IconData icon, required VoidCallback onPressed}) {
+  return Container(
+    width: 30.w,
+    height: 30.w,
+    decoration: BoxDecoration(
+      color: themeColor(context : context).secondaryContainer,
+      borderRadius: BorderRadius.circular(40.r),
+    ),
+    child: Center(
+      child: IconButton(
+        padding: EdgeInsets.zero,
+        icon: Icon(icon, size: 20.sp),
+        onPressed: onPressed,
+      ),
+    ),
+  );
+}
+
+

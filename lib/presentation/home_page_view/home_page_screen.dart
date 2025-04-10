@@ -10,6 +10,7 @@ import 'package:agri_flutter/providers/api_provider/marker_price_provider.dart';
 import 'package:agri_flutter/providers/api_provider/weather_provider.dart';
 import 'package:agri_flutter/providers/eventExpense.dart/event_expense_provider.dart';
 import 'package:agri_flutter/providers/user_provider.dart';
+import 'package:agri_flutter/services/firestore.dart';
 import 'package:agri_flutter/services/location.dart';
 import 'package:agri_flutter/utils/comman.dart';
 import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
@@ -50,6 +51,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
   final MarkerPriceProvider viewModel = MarkerPriceProvider();
   final LocationService locationService = LocationService();
   WeatherViewModel? weatherViewModel;
+  final FirestoreService _fireStoreService = FirestoreService();
 
   @override
   void initState() {
@@ -69,8 +71,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
     // Update status bar style when dependencies (like theme) change
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        statusBarColor:
-            themeColor().inversePrimary, // Access theme with context
+        statusBarColor: themeColor(context: context).inversePrimary,
+        // Access theme with context
         statusBarIconBrightness:
             Theme.of(context).brightness == Brightness.dark
                 ? Brightness.light
@@ -100,7 +102,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
   String getAnimation() {
     final now = DateTime.now();
     final hour = now.hour;
-    if (hour >= 5 && hour < 12) return ImageConst.anim1;
+    if (hour >= 5 && hour < 12) return ImageConst.anim3;
     if (hour >= 12 && hour < 17) return ImageConst.anim1;
     if (hour >= 17 && hour < 21) return ImageConst.anim2;
     return ImageConst.anim4;
@@ -114,6 +116,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
         ) ??
         "Fetching...";
     return Scaffold(
+      backgroundColor: themeColor().surface,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -133,7 +136,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   Widget welcomeCard() {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.3,
+      height: MediaQuery.of(context).size.height * 0.35,
       width: MediaQuery.of(context).size.width,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -142,7 +145,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
             [
               //drawer
               Padding(
-                padding: EdgeInsets.only(left: 24.w, top: 8.h, bottom: 8.h),
+                padding: EdgeInsets.only(left: 24.w, top: 24.h, bottom: 12.h),
                 child: Align(
                   alignment: Alignment.topLeft,
                   child: customIconButton(
@@ -167,7 +170,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   children: [
                     Expanded(
                       child: Padding(
-                        padding: EdgeInsets.only(left: 24.w, bottom: 8.h),
+                        padding: EdgeInsets.only(left: 24.w, bottom: 24.h),
                         child: Container(
                           padding: EdgeInsets.all(12.w),
                           decoration: BoxDecoration(
@@ -181,7 +184,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.max,
                             children: [
-                              bodySemiLargeExtraBoldText(
+                              bodyMediumBoldText(
                                 "Hy , ${context.watch<UserProvider>().userName}!",
                               ),
 
@@ -222,7 +225,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
                     // Right Image Section
                     SizedBox(
                       height: 150.h,
-                      //   width: 150.h,
                       child: Padding(
                         padding: EdgeInsets.only(right: 24.w),
                         child: Image.asset(
@@ -243,28 +245,35 @@ class _HomePageScreenState extends State<HomePageScreen> {
     return Consumer<WeatherViewModel>(
       builder: (context, weatherViewModel, _) {
         if (weatherViewModel.isLoading) {
-          return SizedBox(
-            height: 180.h,
-            child: const Card(
-              child: Center(child: CircularProgressIndicator()),
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+            child: SizedBox(
+              height: 180.h,
+              child: Card(child: Center(child: CircularProgressIndicator())),
             ),
           );
         }
         if (weatherViewModel.errorMessage != null) {
-          return SizedBox(
-            height: 180.h,
-            child: Card(
-              child: Center(
-                child: errorText(weatherViewModel.errorMessage.orEmpty()),
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+            child: SizedBox(
+              height: 180.h,
+              child: Card(
+                child: Center(
+                  child: errorText(weatherViewModel.errorMessage.orEmpty()),
+                ),
               ),
             ),
           );
         }
         if (weatherViewModel.currentWeather == null) {
-          return SizedBox(
-            height: 180.h,
-            child: const Card(
-              child: Center(child: Text('No weather data available.')),
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+            child: SizedBox(
+              height: 180.h,
+              child: Card(
+                child: Center(child: Text('No weather data available.')),
+              ),
             ),
           );
         }
@@ -363,6 +372,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   Widget welcomeHeader() {
     return Container(
+      height: MediaQuery.of(context).size.height * 0.35,
       decoration: BoxDecoration(
         color: themeColor().inversePrimary,
         borderRadius: BorderRadius.only(
@@ -370,282 +380,297 @@ class _HomePageScreenState extends State<HomePageScreen> {
           bottomRight: Radius.circular(30.r),
         ),
       ),
-      child: Stack(children: [lottieAnimationNew(), welcomeCard()]),
-    );
-  }
-
-  Widget lottieAnimation() {
-    final isDark =
-        context.read<AppThemeBloc>().state.themeMode == ThemeMode.dark;
-
-    final lottiePath =
-        isDark ? ImageConst.darkThemeAniamtion : ImageConst.lightThemeAnimation;
-
-    return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.3,
-      child: DotLottieLoader.fromAsset(
-        lottiePath,
-        frameBuilder: (BuildContext ctx, DotLottie? dotlottie) {
-          if (dotlottie != null) {
-            return Lottie.memory(dotlottie.animations.values.single);
-          } else {
-            return Container();
-          }
-        },
+      child: Stack(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [welcomeCardBackGroundImage()],
+          ),
+          welcomeCard(),
+        ],
       ),
     );
   }
 
-  Widget lottieAnimationNew() {
-    String getAnim = getAnimation();
-    return Container(
-      alignment: Alignment.topRight,
-      height: MediaQuery.of(context).size.height * 0.3,
-      child: DotLottieLoader.fromAsset(
-        getAnim,
-        frameBuilder: (BuildContext ctx, DotLottie? dotlottie) {
-          if (dotlottie != null) {
-            return Lottie.memory(dotlottie.animations.values.single);
-          } else {
-            return Container();
-          }
-        },
+  Widget welcomeCardBackGroundImage() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: ClipRRect(
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(30.r),
+          bottomRight: Radius.circular(30.r),
+        ),
+        child: Image.asset(
+          ImageConst.night,
+          fit: BoxFit.fill,
+          width: MediaQuery.of(context).size.width,
+        ),
       ),
     );
   }
 
   Widget upComingEventCard() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24.h),
+      padding: EdgeInsets.only(left: 24.w, right: 24.h, bottom: 24.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          bodyMediumText("Market Price(Gujarat)"),
-          Consumer<EventExpenseProvider>(
-            builder: (context, event, child) {
-              final upComingEvent = event.upcomingTwoEvents;
+        children:
+            [
+              bodyMediumText("Upcoming Events"),
+              Consumer<EventExpenseProvider>(
+                builder: (context, event, child) {
+                  final upComingEvent = event.upcomingTwoEvents;
+                  final upComingEventLength = upComingEvent.length;
 
-              final upComingEventLength = upComingEvent.length;
-
-              print(upComingEventLength);
-
-              if (upComingEvent.isEmpty) {
-                return SizedBox(
-                  width: double.infinity,
-                  child: Card(
-                    color: themeColor().surfaceContainerHighest,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24.r),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(12.w),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: bodyText(
-                              "No events added yet.Tap [+] to get started!",
-                              maxLine: 2,
-                            ),
+                  if (upComingEvent.isEmpty) {
+                    return SizedBox(
+                      width: double.infinity,
+                      child: Card(
+                        color: themeColor().surface,
+                        shape: RoundedRectangleBorder(
+                         borderRadius: BorderRadius.circular(12.r),
+                          side: BorderSide(
+                            color: themeColor().outlineVariant,
+                            width: 2,
                           ),
-                          customIconButton(
-                            context: context,
-                            onTap: () {
-                              showDialog(
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(12.w),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: bodyText(
+                                  "No events added yet. Tap ➕ to get started!",
+                                  maxLine: 2,
+                                ),
+                              ),
+                              customIconButton(
                                 context: context,
-                                builder: (context) {
-                                  return Stack(
-                                    children: [
-                                      // Blurred Background
-                                      BackdropFilter(
-                                        filter: ImageFilter.blur(
-                                          sigmaX: 2.0,
-                                          sigmaY: 2.0,
-                                        ),
-                                        child: Container(),
-                                      ),
-                                      Center(
-                                        child: AddEventExpenseDialog(
-                                          DateTime.now().add(Duration(days: 1)),
-                                        ),
-                                      ),
-                                    ],
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return Stack(
+                                        children: [
+                                          BackdropFilter(
+                                            filter: ImageFilter.blur(
+                                              sigmaX: 2.0,
+                                              sigmaY: 2.0,
+                                            ),
+                                            child: Container(),
+                                          ),
+                                          Center(
+                                            child: AddEventExpenseDialog(
+                                              DateTime.now().add(
+                                                Duration(days: 1),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
                                 },
-                              );
-                            },
-                            assetIcon: Icon(
-                              Icons.add,
-                              color: themeColor().onInverseSurface,
-                              size: 24.sp,
-                            ),
+                                assetIcon: Icon(
+                                  Icons.add,
+                                  color: themeColor().onInverseSurface,
+                                  size: 24.sp,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                );
-              }
+                    );
+                  }
 
-              if (upComingEventLength == 1) {
-                return Padding(
-                  padding: EdgeInsets.only(right: 24.w, left: 24.w),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: Card(
-                      color: themeColor().surfaceContainerHighest,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24.r),
-                      ),
+                  if (upComingEventLength == 1) {
+                    return Card(
                       child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        padding: EdgeInsets.all(12.w),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Tooltip(
-                              message: upComingEvent[0].title,
-                              child: bodyBoldMediumText(upComingEvent[0].title),
+                            // Event details
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Tooltip(
+                                  message: upComingEvent[0].title,
+                                  child: bodyBoldMediumText(
+                                    upComingEvent[0].title,
+                                  ),
+                                ),
+                                bodyText(upComingEvent[0].category),
+                                bodyText(
+                                  DateFormat(
+                                    'dd-MM-yyyy',
+                                  ).format(upComingEvent[0].date),
+                                ),
+                              ],
                             ),
-                            bodyText(upComingEvent[0].category),
-                            bodyText(
-                              DateFormat(
-                                'dd-MM-yyyy',
-                              ).format(upComingEvent[0].date),
+
+                            // Edit & delete icons
+                            Column(
+                              children: [
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.edit),
+                                ),
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.delete),
+                                ),
+                              ],
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ),
-                );
-              }
+                    );
+                  }
 
-              //2 events
-              return Row(
-                children: [
-                  // First card
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 24.w),
-                      child: Card(
-                        color: themeColor().surfaceContainerHighest,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24.r),
-                        ),
-                        child: Container(
-                          padding: EdgeInsets.all(12.w),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Tooltip(
-                                message: upComingEvent[0].title,
-                                child: bodyBoldMediumText(
-                                  upComingEvent[0].title,
-                                ),
-                              ),
-                              bodyText(upComingEvent[0].category),
-                              bodyText(
-                                DateFormat(
-                                  'dd-MM-yyyy',
-                                ).format(upComingEvent[0].date),
-                              ),
-                            ],
-                          ),
+                  // For 2 events
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: eventCard(
+                          upComingEvent: upComingEvent,
+                          index: 0,
                         ),
                       ),
-                    ),
-                  ),
-
-                  // Second card
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 24.w),
-                      child: Card(
-                        color: themeColor().surfaceContainerHighest,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24.r),
-                        ),
-                        child: Container(
-                          padding: EdgeInsets.all(12.w),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Tooltip(
-                                message: upComingEvent[1].title,
-                                child: bodyBoldMediumText(
-                                  upComingEvent[1].title,
-                                ),
-                              ),
-                              bodyText(upComingEvent[1].category),
-                              bodyText(
-                                DateFormat(
-                                  'dd-MM-yyyy',
-                                ).format(upComingEvent[1].date),
-                              ),
-                            ],
-                          ),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: eventCard(
+                          upComingEvent: upComingEvent,
+                          index: 1,
                         ),
                       ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
+                    ],
+                  );
+                },
+              ),
+            ].separator(SizedBox(height: 12)).toList(),
       ),
     );
   }
 
   Widget marketPlaceCard() {
-    return Container(
-      // color: Colors.amber,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.h),
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            bodyMediumText("Market Price(Gujarat)"),
-
-            Consumer<MarkerPriceProvider>(
-              builder: (context, value, child) {
-                //length of market price
-                final marketPriceLength =
-                    value.prices.length > 2 ? 2 : value.prices.length;
-
-                if (value.isLoading) {
-                  return SizedBox(
-                    height: 180.h,
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                }
-
-                if (value.errorMessage != null) {
-                  return SizedBox(
-                    height: 180.h,
-                    child: Center(child: Text(value.errorMessage!)),
-                  );
-                }
-                if (value.prices.isEmpty) {
-                  return SizedBox(
-                    height: 180.h,
-                    child: const Center(
-                      child: Text('No market data available.'),
+    return Padding(
+      padding: EdgeInsets.only(left: 24.w, right: 24.h, bottom: 12.h),
+      child: Column(
+        // mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children:
+            [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  bodyMediumText("Market Price(Gujarat)"),
+                  InkWell(
+                    onTap: () {
+                      NavigationUtils.push(SearchScreen().buildRoute());
+                    },
+                    child: bodyText(
+                      "Explore more > ",
+                      color: themeColor().primary,
                     ),
-                  );
-                }
+                  ),
+                ],
+              ),
 
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: marketPriceLength,
-                  itemBuilder:
-                      (context, index) =>
+              Consumer<MarkerPriceProvider>(
+                builder: (context, value, child) {
+                  //length of market price
+                  final marketPriceLength =
+                      value.prices.length > 2 ? 2 : value.prices.length;
+
+                  if (value.isLoading) {
+                    return SizedBox(
+                      height: 150.h,
+                      child: Card(
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                    );
+                  }
+
+                  if (value.errorMessage != null) {
+                    return SizedBox(
+                      height: 150.h,
+                      child: Card(
+                        child: Center(child: Text(value.errorMessage!)),
+                      ),
+                    );
+                  }
+                  if (value.prices.isEmpty) {
+                    return SizedBox(
+                      height: 150.h,
+                      child: Card(
+                        child: Center(child: Text('No market data available.')),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: marketPriceLength,
+                    itemBuilder: (context, index) {
+                      return Column(
+                        children: [
                           MarketPriceCard(record: value.prices[index]),
-                );
-              },
+                          SizedBox(height: 12.h),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+            ].separator(SizedBox(height: 12.h)).toList(),
+      ),
+    );
+  }
+
+  Widget eventCard({required List upComingEvent, required int index}) {
+    final event = upComingEvent[index]; // Cleaner access
+    return Card(
+      child: Container(
+        padding: EdgeInsets.all(12.w),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Tooltip(
+                    message: event.title,
+                    child: bodyMediumBoldText(event.title),
+                  ),
+                  bodyText(event.category),
+                  bodyText(DateFormat('dd-MM-yyyy').format(event.date)),
+                ],
+              ),
             ),
+
+            Column(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    //_fireStoreService.up
+                  },
+                  icon: Icon(Icons.edit),
+                ),
+                IconButton(
+                  onPressed: () {
+
+                 //   _fireStoreService.deleteEvent(upComingEvent[index]);
+                  },
+                  icon: Icon(Icons.delete),
+                ),
+              ],
+            ),
+
           ],
         ),
       ),

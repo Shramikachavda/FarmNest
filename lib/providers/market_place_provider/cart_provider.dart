@@ -77,29 +77,35 @@ class CartProvider with ChangeNotifier {
       final index = _cartList.indexWhere((item) => item.id == product.id);
 
       if (index != -1) {
-        // ✅ Increase quantity in the cart
+        // ✅ Product already in cart → increase quantity
         _cartList[index].quantity++;
 
-        // ✅ Update Firestore
         await _firestoreService.updateCartItemQuantity(
           userId,
           _cartList[index].id,
           _cartList[index].quantity,
         );
 
-        notifyListeners(); // ✅ Notify UI about the change
+        notifyListeners();
         print(
           "✅ Quantity increased: ${_cartList[index].name}, New quantity: ${_cartList[index].quantity}",
         );
       } else {
-        print(
-          "🚨 Cannot increase quantity. Product not in cart: ${product.name}",
-        );
+        // 🆕 Product not in cart → add to cart with quantity 1
+        final newProduct = product.copyWith(quantity: 1);
+
+        _cartList.add(newProduct);
+
+        await _firestoreService.addToCart(newProduct);
+
+        notifyListeners();
+        print("🛒 Product added to cart: ${newProduct.name}");
       }
     } catch (e) {
       print("❌ Error increasing quantity: $e");
     }
   }
+
 
   // **Decrease quantity**
   Future<void> decreaseQuantity(Product product) async {

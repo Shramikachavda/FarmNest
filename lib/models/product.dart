@@ -42,4 +42,25 @@ class Product {
       quantity: json['quantity'] ?? 1,
     );
   }
+
+  Product copyWith({
+    String? id,
+    String? name,
+    String? category,
+    double? price,
+    String? imageUrl,
+    String? description,
+    int? quantity,
+  }) {
+    return Product(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      category: category ?? this.category,
+      price: price ?? this.price,
+      imageUrl: imageUrl ?? this.imageUrl,
+      description: description ?? this.description,
+      quantity: quantity ?? this.quantity,
+    );
+  }
 }
+

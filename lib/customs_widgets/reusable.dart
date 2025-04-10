@@ -197,7 +197,12 @@ Widget captionStyleText(String text, {Color? color, TextAlign? textAlign}) =>
     );
 
 //font 16 error
-Widget errorText(String text) => Text(text, style: AppTextStyles.errorStyle);
+Widget errorText(String text) => Text(
+  text,
+  textAlign: TextAlign.center,
+  style: AppTextStyles.errorStyle,
+);
+
 
 //24 semi bold
 Widget bodyBoldMediumText(String text, {Color? color}) =>
@@ -206,6 +211,10 @@ Widget bodyBoldMediumText(String text, {Color? color}) =>
 //18 normal
 Widget bodyMediumText(String text, {Color? color , bool? softWrap , int? maxLine} ) =>
     Text(text , maxLines: maxLine , softWrap: softWrap, overflow: TextOverflow.ellipsis, style: AppTextStyles.bodyLargeStyle.copyWith(color: color));
+
+//18 bold semi
+Widget bodyMediumBoldText(String text, {Color? color , bool? softWrap , int? maxLine} ) =>
+    Text(text , maxLines: maxLine , softWrap: softWrap, overflow: TextOverflow.ellipsis, style: AppTextStyles.bodyBoldLargeStyle.copyWith(color: color));
 
 //bodylarge 32
 Widget bodyLargeText(String text, {Color? color}) =>

@@ -13,9 +13,9 @@ class MarketPriceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: themeColor().surfaceContainerHighest,
+      color: themeColor().surfaceContainerLow,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24.r),
+        borderRadius: BorderRadius.circular(20.r),
       ),
       child: Padding(
         padding: EdgeInsets.all(12.w),

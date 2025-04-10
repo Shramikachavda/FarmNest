@@ -7,6 +7,14 @@ class ImageConst {
   static const String welcome = "assets/image/welcome.png";
   static const String welcome2 = "assets/image/welcome2.png";
   static const String bg = "assets/image/bg.png";
+  static const String sunset = "assets/image/sunrise.png";
+  static const String sunrise = "assets/image/sunset.png";
+  static const String night = "assets/image/nightt.png";
+
+
+  //buy  now
+  static const String buyNowAnim = "assets/anim/buy_confirmation.lottie";
+
   static const String lightThemeAnimation = "assets/anim/dark_anim.lottie";
   static const String darkThemeAniamtion = "assets/anim/light_anim.lottie";
   static const String anim1 = "assets/anim/anim1.lottie";
