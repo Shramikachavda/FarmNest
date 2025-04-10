@@ -106,7 +106,6 @@ class CartProvider with ChangeNotifier {
     }
   }
 
-
   // **Decrease quantity**
   Future<void> decreaseQuantity(Product product) async {
     try {

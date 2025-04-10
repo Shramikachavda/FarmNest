@@ -2,6 +2,7 @@ import 'package:agri_flutter/presentation/post_sign_up/post_signup_screen.dart';
 import 'package:agri_flutter/providers/api_provider/marker_price_provider.dart';
 import 'package:agri_flutter/providers/api_provider/weather_provider.dart';
 import 'package:agri_flutter/providers/drawer/address.dart';
+import 'package:agri_flutter/providers/drawer/order_provider.dart';
 import 'package:agri_flutter/providers/drawer/selected_address.dart';
 import 'package:agri_flutter/providers/eventExpense.dart/event_expense_provider.dart';
 import 'package:agri_flutter/providers/farm_state_provider.dart/crop_details_provider.dart';
@@ -40,14 +41,15 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 void main() async {
-
- // debugPaintSizeEnabled = true;
+  // debugPaintSizeEnabled = true;
   WidgetsFlutterBinding.ensureInitialized();
 
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent, // Custom color for HomePageScreen
-    statusBarIconBrightness: Brightness.light, // Light icons
-  ));
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent, // Custom color for HomePageScreen
+      statusBarIconBrightness: Brightness.light, // Light icons
+    ),
+  );
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await SpUtil.getInstance();
@@ -95,6 +97,7 @@ void main() async {
         ),
         ChangeNotifierProvider(create: (_) => SelectedAddressProvider()),
         ChangeNotifierProvider(create: (_) => BoundaryProvider()),
+        ChangeNotifierProvider(create: (_) => OrderProvider()),
       ],
       child: BlocProvider(create: (_) => appThemeBloc, child: MyApp()),
     ),
@@ -116,7 +119,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return BlocBuilder<AppThemeBloc, AppThemeState>(
           bloc: context.read<AppThemeBloc>(),
-          builder: (context, state) {
+          builder: (context, state) { 
             return MaterialApp(
               title: 'Farm Nest',
               debugShowCheckedModeBanner: false,

@@ -2,6 +2,9 @@ import 'package:agri_flutter/customs_widgets/custom_app_bar.dart';
 import 'package:agri_flutter/customs_widgets/custom_button.dart';
 import 'package:agri_flutter/customs_widgets/custom_snackbar.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
+import 'package:agri_flutter/models/product.dart';
+import 'package:agri_flutter/presentation/drawer/order_screen.dart';
+import 'package:agri_flutter/providers/drawer/order_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/cart_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/favorite_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/product_provider.dart';
@@ -34,7 +37,10 @@ class DetailProductView extends BaseStatefulWidget {
 }
 
 class _DetailProductViewState extends State<DetailProductView> {
-  void showSuccessAnimationAndNavigate(BuildContext context) {
+  void showSuccessAnimationAndNavigate(BuildContext context  ,  Product product) {
+
+      final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+  orderProvider.addOrder(product);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -44,7 +50,7 @@ class _DetailProductViewState extends State<DetailProductView> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Lottie.asset(
-              ImageConst.buyNowAnim , // ✅ Your Lottie file
+              ImageConst.buyNowAnim ,
 height: 400.h ,
               width: 500.w
 
@@ -60,8 +66,8 @@ height: 400.h ,
     );
 
     Future.delayed(const Duration(seconds: 5), () {
-      Navigator.of(context).pop(); // close dialog
-     // Navigator.of(context).pushReplacementNamed('/OrderScreen'); // ✅ Navigate
+      Navigator.of(context).pop();
+     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => OrderScreen(),)); 
     });
   }
 
@@ -182,7 +188,7 @@ height: 400.h ,
                       );
 
                       if (result == true) {
-                        showSuccessAnimationAndNavigate(context);
+                        showSuccessAnimationAndNavigate(context , product);
                       }
                     },
                     buttonName: "Buy Now",

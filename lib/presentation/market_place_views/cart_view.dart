@@ -2,6 +2,7 @@ import 'package:agri_flutter/customs_widgets/custom_app_bar.dart';
 import 'package:agri_flutter/customs_widgets/custom_button.dart';
 import 'package:agri_flutter/customs_widgets/custom_snackbar.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
+import 'package:agri_flutter/presentation/market_place_views/check_out.dart';
 import 'package:agri_flutter/providers/market_place_provider/cart_provider.dart';
 import 'package:agri_flutter/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,17 @@ class _CartViewState extends State<CartView> {
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
     cartProvider.fetchCart();
   }
+  /*
+  @override
+  void didChangeDependencies() async {
+    showLoadingDialog(context);
+
+    await Provider.of<CartProvider>(context, listen: false).fetchCart();
+
+    Navigator.of(context).pop();
+
+    super.didChangeDependencies();
+  }   */
 
   @override
   Widget build(BuildContext context) {
@@ -217,7 +229,12 @@ class _CartViewState extends State<CartView> {
                             child: CustomButton(
                               buttonName: 'Checkout',
                               onClick: () {
-                                // Handle Checkout
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => CheckoutView(),
+                                  ),
+                                );
                               },
                             ),
                           ),

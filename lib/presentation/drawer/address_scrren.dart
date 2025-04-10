@@ -1,12 +1,14 @@
-import 'package:agri_flutter/providers/drawer/address.dart';
-import 'package:agri_flutter/providers/drawer/selected_address.dart';
+import 'package:agri_flutter/customs_widgets/custom_app_bar.dart';
+import 'package:agri_flutter/customs_widgets/reusable.dart';
+import 'package:agri_flutter/theme/theme.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:agri_flutter/models/post_sign_up/default_farmer_address.dart';
 import 'package:agri_flutter/services/firestore.dart';
 import 'package:agri_flutter/presentation/drawer/add_address.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:agri_flutter/providers/drawer/address.dart';
+import 'package:agri_flutter/providers/drawer/selected_address.dart';
 
 class SelectAddressScreen extends StatefulWidget {
   const SelectAddressScreen({Key? key}) : super(key: key);
@@ -16,286 +18,331 @@ class SelectAddressScreen extends StatefulWidget {
 }
 
 class _SelectAddressScreenState extends State<SelectAddressScreen> {
-  final FirestoreService _firestor = FirestoreService();
+  final FirestoreService _firestore = FirestoreService();
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
+    _loadAddresses();
+  }
 
+  Future<void> _loadAddresses() async {
+    setState(() => _isLoading = true);
     final addressProvider = Provider.of<AddressProvider>(
       context,
       listen: false,
     );
-    addressProvider.loadAddresses();
+    await addressProvider.loadAddresses();
+    if (addressProvider.addresses.isNotEmpty &&
+        !addressProvider.addresses.any((addr) => addr.isDefault)) {
+      final firstAddress = addressProvider.addresses.first;
+      await _addDefaultLocation(firstAddress);
+    }
+    setState(() => _isLoading = false);
   }
 
-  // Helper function to add a new address
   Future<void> _addNewAddress(DefaultFarmerAddress farm) async {
     try {
-      await _firestor.addNewAddress(farm);
-      print("✅ New address added");
-      Provider.of<AddressProvider>(
+      await _firestore.addNewAddress(farm);
+      final addressProvider = Provider.of<AddressProvider>(
         context,
         listen: false,
-      ).loadAddresses(); // Refresh addresses
+      );
+      await addressProvider.loadAddresses();
+      if (addressProvider.addresses.length == 1) {
+        await _addDefaultLocation(farm);
+      }
     } catch (e) {
-      print("❌ Error adding address: $e");
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Error adding address: $e")));
     }
   }
 
-  // Helper function to update an address
   Future<void> _updateAddress(DefaultFarmerAddress farm) async {
     try {
-      await _firestor.updateAddress(farm);
-      print("✅ Address updated");
-      Provider.of<AddressProvider>(
-        context,
-        listen: false,
-      ).loadAddresses(); // Refresh addresses
+      await _firestore.updateAddress(farm);
+      Provider.of<AddressProvider>(context, listen: false).loadAddresses();
     } catch (e) {
-      print("❌ Error updating address: $e");
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Error updating address: $e")));
     }
   }
 
-  // Helper function to delete an address
   Future<void> _deleteAddress(String addressName) async {
     try {
-      await _firestor.deleteAddress(addressName);
-      print("🗑️ Address deleted");
-      Provider.of<AddressProvider>(
-        context,
-        listen: false,
-      ).loadAddresses(); // Refresh addresses
+      await _firestore.deleteAddress(addressName);
+      Provider.of<AddressProvider>(context, listen: false).loadAddresses();
     } catch (e) {
-      print("❌ Error deleting address: $e");
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Error deleting address: $e")));
     }
   }
 
-  // Helper function to set default address
   Future<void> _addDefaultLocation(DefaultFarmerAddress farm) async {
     try {
-      await _firestor.addDefaultLocation(farm);
-      print("✅ Default address saved.");
-      Provider.of<AddressProvider>(
-        context,
-        listen: false,
-      ).loadAddresses(); // Refresh addresses
+      await _firestore.addDefaultLocation(farm);
+      Provider.of<AddressProvider>(context, listen: false).loadAddresses();
     } catch (e) {
-      print("❌ Failed to save default address: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error saving default address: $e")),
       );
     }
   }
 
+  void _showUpdateDialog(DefaultFarmerAddress address) {
+    final nameController = TextEditingController(text: address.name);
+    final address1Controller = TextEditingController(text: address.address1);
+    final address2Controller = TextEditingController(text: address.address2);
+    final landmarkController = TextEditingController(text: address.landmark);
+    final contactNumberController = TextEditingController(
+      text: address.contactNumber.toString(),
+    );
+
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            title: Text(
+              "Edit Address",
+              style: TextStyle(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.bold,
+                color: Colors.green[800],
+              ),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildTextField("Name", nameController),
+                  _buildTextField("Address Line 1", address1Controller),
+                  _buildTextField("Address Line 2", address2Controller),
+                  _buildTextField("Landmark", landmarkController),
+                  _buildTextField(
+                    "Contact Number",
+                    contactNumberController,
+                    keyboardType: TextInputType.phone,
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  final updatedAddress = DefaultFarmerAddress(
+                    name: nameController.text,
+                    address1: address1Controller.text,
+                    address2: address2Controller.text,
+                    landmark: landmarkController.text,
+                    contactNumber: int.parse(contactNumberController.text),
+                    isDefault: address.isDefault,
+                  );
+                  _updateAddress(updatedAddress);
+                  Navigator.pop(context);
+                },
+                child: Text("Save", style: TextStyle(color: Colors.green[600])),
+              ),
+              TextButton(
+                onPressed: () {
+                  final updatedAddress = DefaultFarmerAddress(
+                    name: nameController.text,
+                    address1: address1Controller.text,
+                    address2: address2Controller.text,
+                    landmark: landmarkController.text,
+                    contactNumber: int.parse(contactNumberController.text),
+                    isDefault: true,
+                  );
+                  _addDefaultLocation(updatedAddress);
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  "Set as Default",
+                  style: TextStyle(color: Colors.blue[600]),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  Widget _buildTextField(
+    String label,
+    TextEditingController controller, {
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 8.h),
+      child: TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(color: Colors.grey[600]),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.r)),
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 12.w,
+            vertical: 10.h,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _navigateToAddAddress() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AddAddressScreen()),
+    );
+    if (result is DefaultFarmerAddress) {
+      _addNewAddress(result);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final addressProvider = Provider.of<AddressProvider>(
-      context,
-      listen: false,
-    );
+    final addressProvider = Provider.of<AddressProvider>(context);
     final selectedProvider = Provider.of<SelectedAddressProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Select Address')),
-      body: FutureBuilder(
-        future: addressProvider.loadAddresses(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          return Consumer<AddressProvider>(
-            builder: (_, provider, __) {
-              if (provider.addresses.isEmpty) {
-                return const Center(child: Text("No address found."));
-              }
-              return ListView.separated(
-                padding: const EdgeInsets.all(16),
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemCount: provider.addresses.length,
-                itemBuilder: (context, index) {
-                  final address = provider.addresses[index];
-                  final isSelected =
-                      selectedProvider.selected?.name == address.name;
-
-                  return Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+      appBar: CustomAppBar(title: 'Select Address'),
+      backgroundColor: themeColor().surface,
+      body:
+          _isLoading
+              ? const Center(
+                child: CircularProgressIndicator(color: Colors.green),
+              )
+              : addressProvider.addresses.isEmpty
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.location_off,
+                      size: 40.sp,
+                      color: Colors.grey[400],
                     ),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(16),
-                      leading: Icon(
-                        isSelected ? Icons.check_circle : Icons.location_on,
-                        color: isSelected ? Colors.green : Colors.grey,
-                      ),
-                      title: Text(
-                        address.name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                    SizedBox(height: 16.h),
+                    bodyMediumText("No addresses found", color: Colors.grey),
+                    SizedBox(height: 16.h),
+                    ElevatedButton.icon(
+                      onPressed: _navigateToAddAddress,
+                      icon: const Icon(Icons.add),
+                      label: const Text("Add an Address"),
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
                       ),
-                      subtitle: Text(
-                        '${address.address2}, ${address.landmark}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
+                    ),
+                  ],
+                ),
+              )
+              : RefreshIndicator(
+                onRefresh: _loadAddresses,
+                color: Colors.green,
+                child: ListView.separated(
+                  padding: EdgeInsets.all(16.w),
+                  separatorBuilder: (_, __) => SizedBox(height: 12.h),
+                  itemCount: addressProvider.addresses.length,
+                  itemBuilder: (context, index) {
+                    final address = addressProvider.addresses[index];
+                    final isSelected =
+                        selectedProvider.selected?.name == address.name;
+
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.green[50] : Colors.white,
+                        border: Border.all(
+                          color:
+                              isSelected
+                                  ? Colors.green[600]!
+                                  : Colors.grey[300]!,
+                          width: 1.5,
                         ),
+                        borderRadius: BorderRadius.circular(12.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () {
-                          _deleteAddress(address.name);
+                      child: RadioListTile<DefaultFarmerAddress>(
+                        value: address,
+                        groupValue: addressProvider.addresses.firstWhere(
+                          (addr) => addr.isDefault,
+                          orElse: () => addressProvider.addresses.first,
+                        ),
+                        onChanged: (value) {
+                          if (value != null) {
+                            _addDefaultLocation(value);
+                          }
                         },
-                      ),
-                      onTap: () {
-                        selectedProvider.setAddress(address);
-                        // Show dialog for update
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            final nameController = TextEditingController(
-                              text: address.name,
-                            );
-                            final address1Controller = TextEditingController(
-                              text: address.address1,
-                            );
-                            final address2Controller = TextEditingController(
-                              text: address.address2,
-                            );
-                            final landmarkController = TextEditingController(
-                              text: address.landmark,
-                            );
-                            final contactNumberController =
-                                TextEditingController(
-                                  text: address.contactNumber.toString(),
-                                );
-                            return AlertDialog(
-                              title: const Text("Update Address"),
-                              content: SingleChildScrollView(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    TextField(
-                                      controller: nameController,
-                                      decoration: const InputDecoration(
-                                        labelText: "Name",
-                                      ),
-                                    ),
-                                    TextField(
-                                      controller: address1Controller,
-                                      decoration: const InputDecoration(
-                                        labelText: "Address Line 1",
-                                      ),
-                                    ),
-                                    TextField(
-                                      controller: address2Controller,
-                                      decoration: const InputDecoration(
-                                        labelText: "Address Line 2",
-                                      ),
-                                    ),
-                                    TextField(
-                                      controller: landmarkController,
-                                      decoration: const InputDecoration(
-                                        labelText: "Landmark",
-                                      ),
-                                    ),
-                                    TextField(
-                                      controller: contactNumberController,
-                                      decoration: const InputDecoration(
-                                        labelText: "Contact Number",
-                                      ),
-                                      keyboardType: TextInputType.phone,
-                                    ),
-                                  ],
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 8.h,
+                        ),
+                        title: Text(
+                          address.name,
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 4.h),
+                            Text("${address.address1}, ${address.address2}"),
+                            if (address.landmark.isNotEmpty)
+                              Text("Landmark: ${address.landmark}"),
+                            Text("Contact: ${address.contactNumber}"),
+                          ],
+                        ),
+                        secondary: PopupMenuButton<String>(
+                          onSelected: (value) {
+                            if (value == 'edit') {
+                              _showUpdateDialog(address);
+                            } else if (value == 'delete') {
+                              _deleteAddress(address.name);
+                            }
+                          },
+                          itemBuilder:
+                              (context) => [
+                                const PopupMenuItem(
+                                  value: 'edit',
+                                  child: Text('Edit'),
                                 ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text("Cancel"),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    final updatedAddress = DefaultFarmerAddress(
-                                      name: nameController.text,
-                                      address1: address1Controller.text,
-                                      address2: address2Controller.text,
-                                      landmark: landmarkController.text,
-                                      contactNumber: int.parse(
-                                        contactNumberController.text,
-                                      ),
-                                      isDefault:
-                                          address
-                                              .isDefault, // Preserve isDefault
-                                    );
-                                    _updateAddress(updatedAddress);
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text("Save"),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    final updatedAddress = DefaultFarmerAddress(
-                                      name: nameController.text,
-                                      address1: address1Controller.text,
-                                      address2: address2Controller.text,
-                                      landmark: landmarkController.text,
-                                      contactNumber: int.parse(
-                                        contactNumberController.text,
-                                      ),
-                                      isDefault: true, // Set as default
-                                    );
-                                    _addDefaultLocation(updatedAddress);
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text("Set as Default"),
+                                const PopupMenuItem(
+                                  value: 'delete',
+                                  child: Text('Delete'),
                                 ),
                               ],
-                            );
-                          },
-                        );
-                        // Close drawer if open, else pop current screen
-                        if (Scaffold.of(context).isDrawerOpen) {
-                          Navigator.pop(context); // closes drawer
-                        } else {
-                          Navigator.pop(context); // closes screen
-                        }
-                      },
-                    ),
-                  );
-                },
-              );
-            },
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddAddressScreen()),
-          ).then((newAddress) {
-            if (newAddress != null && newAddress is DefaultFarmerAddress) {
-              _addNewAddress(newAddress);
-            }
-          });
-        },
-        label: const Text("Add Address"),
-        icon: const Icon(Icons.add_location_alt),
-      ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
     );
   }
 }

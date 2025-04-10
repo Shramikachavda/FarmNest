@@ -1,6 +1,7 @@
 import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/presentation/drawer/address_scrren.dart';
 import 'package:agri_flutter/presentation/drawer/change_password.dart';
+import 'package:agri_flutter/presentation/drawer/order_screen.dart';
 import 'package:agri_flutter/presentation/drawer/update_user_info.dart';
 import 'package:agri_flutter/providers/user_provider.dart';
 import 'package:agri_flutter/services/firebase_auth.dart';
@@ -76,11 +77,9 @@ class DrawerWidget extends StatelessWidget {
                   leading: Icon(Icons.shopping_bag),
                   title: bodyText("Order"),
                   onTap: () {
-               /*     Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => SelectAddressScreen(),
-                      ),
-                    );*/
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => OrderScreen()),
+                    );
                   },
                 ),
                 ListTile(
@@ -98,15 +97,13 @@ class DrawerWidget extends StatelessWidget {
                   leading: Icon(Icons.eco),
                   title: bodyText("Farm"),
                   onTap: () {
-               /*     Navigator.of(context).push(
+                    /*     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => SelectAddressScreen(),
                       ),
                     );*/
                   },
                 ),
-
-
 
                 ListTile(
                   leading: Icon(Icons.lock),
@@ -120,16 +117,16 @@ class DrawerWidget extends StatelessWidget {
 
                 ListTile(
                   leading:
-                  Theme.of(context).brightness == Brightness.light
-                      ? Icon(Icons.light_mode)
-                      : Icon(Icons.mode_night),
+                      Theme.of(context).brightness == Brightness.light
+                          ? Icon(Icons.light_mode)
+                          : Icon(Icons.mode_night),
                   title:
-                  Theme.of(context).brightness == Brightness.light
-                      ? Text("Light")
-                      : Text("Dark"),
+                      Theme.of(context).brightness == Brightness.light
+                          ? Text("Light")
+                          : Text("Dark"),
                   trailing: Switch.adaptive(
                     value:
-                    context.watch<AppThemeBloc>().state.themeMode ==
+                        context.watch<AppThemeBloc>().state.themeMode ==
                         ThemeMode.dark,
                     onChanged: (value) {
                       context.read<AppThemeBloc>().add(
@@ -144,8 +141,6 @@ class DrawerWidget extends StatelessWidget {
                 ),
               ],
             ),
-
-
           ),
 
           SizedBox(
