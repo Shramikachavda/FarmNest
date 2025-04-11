@@ -111,6 +111,13 @@ class _FavoriteViewState extends State<FavoriteView> {
                       ));
                     },
                     child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.r),
+                        side: BorderSide(
+                          color: themeColor().outlineVariant,
+                          width: 2,
+                        ),
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -119,7 +126,7 @@ class _FavoriteViewState extends State<FavoriteView> {
 
                               //image
                               ClipRRect(
-                                borderRadius: BorderRadius.vertical(top: Radius.circular(18.r)),
+                                borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
                                 child: Container(
                                   width: double.infinity,
                                   height: 120.h,

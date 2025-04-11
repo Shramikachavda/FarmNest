@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:agri_flutter/customs_widgets/custom_choice_chip.dart';
 import 'package:agri_flutter/customs_widgets/custom_form_field.dart';
 import 'package:agri_flutter/customs_widgets/custom_snackbar.dart';
@@ -17,7 +16,6 @@ import 'package:agri_flutter/utils/comman.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-
 import '../../core/widgets/BaseStateFullWidget.dart';
 import '../../customs_widgets/custom_icon.dart';
 import '../../data/choice_chips_value.dart';
@@ -89,7 +87,7 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
 
   @override
   Widget build(BuildContext context) {
-    final productProvider = Provider.of<ProductProvider>(context);
+    final productProvider = Provider.of<ProductProvider>(context , listen:  false);
     final favoriteProvider = Provider.of<FavoriteProvider>(context);
     final cartProvider = Provider.of<CartProvider>(context);
 
@@ -163,22 +161,34 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
                   return InkWell(
                     onTap: () {
                       productProvider.setDetailProduct(product.id);
+
+                      print(product.id);  print(product.name);
+
+                      print("marke price page\n");
                       Navigator.of(context).push(MaterialPageRoute(builder: (_) => DetailProductView()));
                     },
                     child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.r),
+                        side: BorderSide(
+                          color: themeColor().outlineVariant,
+                          width: 2,
+                        ),
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Image
                           ClipRRect(
-                            borderRadius: BorderRadius.vertical(top: Radius.circular(18.r)),
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
                             child: Container(
                               width: double.infinity,
                               height: 120.h,
                               decoration: BoxDecoration(
+                                color: Colors.white70,
                                 image: DecorationImage(
                                   image: NetworkImage(product.imageUrl),
-                                  fit: BoxFit.fill,
+                                  fit: BoxFit.contain,
                                 ),
                               ),
                             ),

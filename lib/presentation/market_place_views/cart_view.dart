@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../customs_widgets/custom_icon.dart';
+import '../../providers/market_place_provider/product_provider.dart';
 import '../../utils/navigation/navigation_utils.dart';
 import 'detail_product_view.dart';
 
@@ -24,21 +25,8 @@ class _CartViewState extends State<CartView> {
   @override
   void initState() {
     super.initState();
-    final cartProvider = Provider.of<CartProvider>(context, listen: false);
-    cartProvider.fetchCart();
+   Provider.of<CartProvider>(context, listen: false).fetchCart();
   }
-  /*
-  @override
-  void didChangeDependencies() async {
-    showLoadingDialog(context);
-
-    await Provider.of<CartProvider>(context, listen: false).fetchCart();
-
-    Navigator.of(context).pop();
-
-    super.didChangeDependencies();
-  }   */
-
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
@@ -49,9 +37,8 @@ class _CartViewState extends State<CartView> {
       body:
           cartProvider.cartItems.isEmpty
               ? Center(
-                child: Text(
+                child: bodyText(
                   "No item in cart yet",
-                  style: TextStyle(fontSize: 16.sp),
                 ),
               )
               : Padding(
@@ -75,6 +62,9 @@ class _CartViewState extends State<CartView> {
                                 ),
                                 title: bodyText(product.name),
                                 onTap: () {
+
+                                  final productProvider = context.read<ProductProvider>();
+                                  productProvider.setDetailProduct(product.id);
                                   NavigationUtils.push(
                                     DetailProductView().buildRoute(),
                                   );

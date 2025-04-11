@@ -16,6 +16,7 @@ class CustomFormField extends StatelessWidget {
     required this.focusNode ,
     required this.textInputAction  ,
     this.readOnly = false,
+    this.maxLine  ,
 
     super.key,
   });
@@ -30,8 +31,8 @@ class CustomFormField extends StatelessWidget {
   final bool isDatePicker;
   final bool isPasswordField; // ✅ New flag for password fields
   final String? Function(String?)? validator;
-  final VoidCallback?
-  onTogglePassword;
+  final VoidCallback?  onTogglePassword;
+  final  int? maxLine;
   final FocusNode focusNode;// ✅ Function for toggling password visibility
   final bool readOnly ;
 
@@ -53,7 +54,7 @@ class CustomFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-
+maxLines:  maxLine,
       focusNode: focusNode,
       textInputAction : textInputAction ,
       keyboardType: keyboardType,

@@ -4,7 +4,7 @@ class DefaultFarmerAddress {
   final String name;
   final String landmark;
   final int contactNumber;
-  final bool isDefault;
+   bool isDefault;
 
   DefaultFarmerAddress({
     required this.address1,

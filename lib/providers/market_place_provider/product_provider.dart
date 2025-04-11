@@ -12,9 +12,10 @@ class ProductProvider with ChangeNotifier {
   Product? get selectedProduct => _selectedProduct;
 
   //get product in new page
-
   void setDetailProduct(String id) {
     _selectedProduct = _products.firstWhere((product) => product.id == id);
+    print(_selectedProduct?.id.toString());   print(_selectedProduct?.name);
+    print("provider value\n");
     notifyListeners();
   }
 }

@@ -1,5 +1,5 @@
 import 'package:agri_flutter/customs_widgets/reusable.dart';
-import 'package:agri_flutter/presentation/drawer/address_scrren.dart';
+import 'package:agri_flutter/presentation/drawer/selected_address.dart';
 import 'package:agri_flutter/presentation/drawer/change_password.dart';
 import 'package:agri_flutter/presentation/drawer/order_screen.dart';
 import 'package:agri_flutter/presentation/drawer/update_user_info.dart';
@@ -86,11 +86,11 @@ class DrawerWidget extends StatelessWidget {
                   leading: Icon(Icons.location_on),
                   title: bodyText("Address"),
                   onTap: () {
-                    /*Navigator.of(context).push(
+                    Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => SelectAddressScreen(),
                       ),
-                    );*/
+                    );
                   },
                 ),
                 ListTile(

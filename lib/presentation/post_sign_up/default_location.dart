@@ -49,22 +49,22 @@ class _DefaultFarmAddressState extends State<DefaultFarmAddress> {
             address1: _address1.text.trim(),
             address2: _address2.text.trim(),
             contactNumber: int.tryParse(_phoneNumber.text.trim()) ?? 0,
-            name: _address3.text.trim(), // Using address3 as name
+            name: _address3.text.trim(),
             landmark: _landmarkAddress.text.trim(),
+            isDefault: false,
           ),
         );
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("✅ Address saved successfully")),
+          const SnackBar(content: Text("Address saved successfully")),
         );
-   // ✅ Move to next page using Provider
-      final postSignupNotifier = context.read<PostSignupNotifier>();
-      postSignupNotifier.nextPage();
-
+        // ✅ Move to next page using Provider
+        final postSignupNotifier = context.read<PostSignupNotifier>();
+        postSignupNotifier.nextPage();
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("❌ Error: $e")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("❌ Error: $e")));
       }
     }
   }
@@ -79,10 +79,26 @@ class _DefaultFarmAddressState extends State<DefaultFarmAddress> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               bodyLargeText("Create your default address"),
               SizedBox(height: 10.h),
-              bodyText("A detailed address will help our delivery partner reach you easily."),
+              bodyText(
+                "A detailed address will help our delivery partner reach you easily.",
+              ),
+              SizedBox(height: 24.h),
+
+              CustomFormField(
+                hintText: "Enter your address name",
+                keyboardType: TextInputType.text,
+                label: "Address Name",
+                textEditingController: _address3,
+                focusNode: _focusNodeAddress3,
+                textInputAction: TextInputAction.next,
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty
+                            ? 'Enter city/state/pin'
+                            : null,
+              ),
               SizedBox(height: 24.h),
               CustomFormField(
                 hintText: "House / Flat / Block No.",
@@ -91,7 +107,11 @@ class _DefaultFarmAddressState extends State<DefaultFarmAddress> {
                 textEditingController: _address1,
                 focusNode: _focusNodeAddress1,
                 textInputAction: TextInputAction.next,
-                validator: (value) => value == null || value.isEmpty ? 'Enter address line 1' : null,
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty
+                            ? 'Enter address line 1'
+                            : null,
               ),
               SizedBox(height: 24.h),
               CustomFormField(
@@ -101,18 +121,13 @@ class _DefaultFarmAddressState extends State<DefaultFarmAddress> {
                 textEditingController: _address2,
                 focusNode: _focusNodeAddress2,
                 textInputAction: TextInputAction.next,
-                validator: (value) => value == null || value.isEmpty ? 'Enter address line 2' : null,
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty
+                            ? 'Enter address line 2'
+                            : null,
               ),
-              SizedBox(height: 24.h),
-              CustomFormField(
-                hintText: "City / State / PIN",
-                keyboardType: TextInputType.text,
-                label: "Address Line 3",
-                textEditingController: _address3,
-                focusNode: _focusNodeAddress3,
-                textInputAction: TextInputAction.next,
-                validator: (value) => value == null || value.isEmpty ? 'Enter city/state/pin' : null,
-              ),
+
               SizedBox(height: 24.h),
               CustomFormField(
                 hintText: "Pick your address",
@@ -121,7 +136,11 @@ class _DefaultFarmAddressState extends State<DefaultFarmAddress> {
                 textEditingController: _landmarkAddress,
                 focusNode: _focusNodeLandmark,
                 textInputAction: TextInputAction.next,
-                validator: (value) => value == null || value.isEmpty ? 'Enter landmark' : null,
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty
+                            ? 'Enter landmark'
+                            : null,
               ),
               SizedBox(height: 24.h),
               CustomFormField(
@@ -132,15 +151,20 @@ class _DefaultFarmAddressState extends State<DefaultFarmAddress> {
                 focusNode: _focusNodePhoneNumber,
                 textInputAction: TextInputAction.done,
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Enter contact number';
-                  if (value.length < 10  && value.length  > 10) return 'Enter valid phone number';
+                  if (value == null || value.isEmpty)
+                    return 'Enter contact number';
+                  if (value.length < 10 && value.length > 10)
+                    return 'Enter valid phone number';
                   return null;
                 },
               ),
               SizedBox(height: 24.h),
               bodyText("Your products will be delivered to this address."),
               SizedBox(height: 24.h),
-              CustomButton(onClick: _submitAddress, buttonName: "Save and Proceed"),
+              CustomButton(
+                onClick: _submitAddress,
+                buttonName: "Save and Proceed",
+              ),
               SizedBox(height: 24.h),
             ],
           ),

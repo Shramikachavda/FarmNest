@@ -696,35 +696,36 @@ Future<void> deleteAddress(String addressName) async {
 
 
 
-  //get default address
-  
- Future<void> addDefaultLocation(DefaultFarmerAddress farm) async {
-  try {
-    final addressRef = _db
-        .collection("users")
-        .doc(userId)
-        .collection("defaultAddress");
+  //add default address
 
-    // Step 1: Reset all previous defaults
-    final allAddresses = await addressRef.get();
-    for (final doc in allAddresses.docs) {
-      await doc.reference.update({'isDefault': false});
+  Future<void> addDefaultLocation(DefaultFarmerAddress farm) async {
+    try {
+      final addressRef = _db
+          .collection("users")
+          .doc(userId)
+          .collection("defaultAddress");
+
+      final allAddresses = await addressRef.get();
+      final isFirst = allAddresses.docs.isEmpty;
+
+      await addressRef.doc(farm.name).set({
+        'name': farm.name,
+        'address1': farm.address1,
+        'address2': farm.address2,
+        'landmark': farm.landmark,
+        'contactNumber': farm.contactNumber,
+        'isDefault': isFirst,
+      });
+
+      print("✅ Address saved. Default: $isFirst");
+    } catch (e) {
+      print("❌ Failed to save address: $e");
+      rethrow;
     }
-
-    // Step 2: Add/update the new one as default
-    await addressRef.doc(farm.name).set({
-      ...farm.toJson(),
-      'isDefault': true,
-    });
-
-    print("✅ Default address saved.");
-  } catch (e) {
-    print("❌ Failed to save default address: $e");
-    rethrow;
   }
-}
 
-   
+
+
 
   //update
   Future<void> updateDefaultAddress(DefaultFarmerAddress address) async {
