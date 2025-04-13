@@ -5,8 +5,8 @@ import 'package:geocoding/geocoding.dart';
 
 class LocationProvider with ChangeNotifier {
   final LocationService _locationRepository = LocationService();
-  double? _latitude;
-  double? _longitude;
+  double? latitude;
+  double? longitude;
   String? _currentAddress;
 
 
@@ -17,9 +17,9 @@ class LocationProvider with ChangeNotifier {
     Map<String, double>? location = await _locationRepository.fetchLocation();
     if (location != null &&  location['latitude'] != null &&
     location['longitude'] != null) {
-      _latitude = location['latitude'];
-      _longitude = location['longitude'];
-      await _fetchAddressFromLatLng(_latitude!, _longitude!);
+      latitude = location['latitude'];
+      longitude = location['longitude'];
+      await _fetchAddressFromLatLng(latitude!, longitude!);
       notifyListeners(); // Notify UI when data updates
     }
   }

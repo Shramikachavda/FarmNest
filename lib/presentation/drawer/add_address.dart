@@ -2,6 +2,7 @@ import 'package:agri_flutter/core/widgets/BaseStateFullWidget.dart';
 import 'package:agri_flutter/customs_widgets/custom_app_bar.dart';
 import 'package:agri_flutter/customs_widgets/custom_snackbar.dart';
 import 'package:agri_flutter/providers/drawer/address_provider.dart';
+import 'package:agri_flutter/theme/theme.dart';
 import 'package:agri_flutter/utils/comman.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -51,11 +52,9 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
           landmark: _landmarkAddress.text.trim(),
         );
 
-        await Provider.of<AddressProvider>(context, listen: false)
-            .addAddress(address);
+        await Provider.of<AddressProvider>(context, listen: false).addAddress(address);
 
         showCustomSnackBar(context, "Address saved successfully");
-
         Navigator.of(context).pop();
       } catch (e) {
         showCustomSnackBar(context, "Error: $e");
@@ -66,6 +65,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+         backgroundColor: themeColor(context: context).surface,
       appBar: CustomAppBar(),
       body: SafeArea(
         child: Padding(
@@ -89,7 +89,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                     focusNode: _focusNodeAddress3,
                     textInputAction: TextInputAction.next,
                     validator: (value) =>
-                    value == null || value.isEmpty ? 'Enter city/state/pin' : null,
+                        value == null || value.isEmpty ? 'Enter city/state/pin' : null,
                   ),
                   CustomFormField(
                     hintText: "House / Flat / Block No.",
@@ -99,7 +99,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                     focusNode: _focusNodeAddress1,
                     textInputAction: TextInputAction.next,
                     validator: (value) =>
-                    value == null || value.isEmpty ? 'Enter address line 1' : null,
+                        value == null || value.isEmpty ? 'Enter address line 1' : null,
                   ),
                   CustomFormField(
                     hintText: "Apartment / Road / Area",
@@ -109,7 +109,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                     focusNode: _focusNodeAddress2,
                     textInputAction: TextInputAction.next,
                     validator: (value) =>
-                    value == null || value.isEmpty ? 'Enter address line 2' : null,
+                        value == null || value.isEmpty ? 'Enter address line 2' : null,
                   ),
                   CustomFormField(
                     hintText: "Pick your address",
@@ -119,7 +119,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                     focusNode: _focusNodeLandmark,
                     textInputAction: TextInputAction.next,
                     validator: (value) =>
-                    value == null || value.isEmpty ? 'Enter landmark' : null,
+                        value == null || value.isEmpty ? 'Enter landmark' : null,
                   ),
                   CustomFormField(
                     hintText: "98xxxxxxxx",
@@ -129,10 +129,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                     focusNode: _focusNodePhoneNumber,
                     textInputAction: TextInputAction.done,
                     validator: (value) {
-                      if (value == null || value.isEmpty)
-                        return 'Enter contact number';
-                      if (value.length != 10)
-                        return 'Enter valid phone number';
+                      if (value == null || value.isEmpty) return 'Enter contact number';
+                      if (value.length != 10) return 'Enter valid phone number';
                       return null;
                     },
                   ),

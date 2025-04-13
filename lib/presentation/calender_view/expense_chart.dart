@@ -1,4 +1,5 @@
 import 'package:agri_flutter/providers/eventExpense.dart/event_expense_provider.dart';
+import 'package:agri_flutter/theme/theme.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -40,6 +41,7 @@ class _ExpenseBarChartState extends State<ExpenseBarChart> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+         backgroundColor: themeColor(context: context).surface,
       body: Consumer<EventExpenseProvider>(
         builder: (context, eventExpenseProvider, child) {
           if (isLoading) {

@@ -6,11 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:agri_flutter/models/post_sign_up/default_farmer_address.dart';
-import 'package:agri_flutter/services/firestore.dart';
 import 'package:agri_flutter/presentation/drawer/add_address.dart';
 import 'package:agri_flutter/providers/drawer/address_provider.dart';
 import 'package:agri_flutter/providers/drawer/selected_address.dart';
-import '../../utils/navigation/navigation_utils.dart';
 
 class SelectAddressScreen extends StatefulWidget {
   const SelectAddressScreen({Key? key}) : super(key: key);
@@ -20,7 +18,8 @@ class SelectAddressScreen extends StatefulWidget {
 }
 
 class _SelectAddressScreenState extends State<SelectAddressScreen> {
-
+  List<DefaultFarmerAddress> _addresses = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -29,211 +28,343 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
   }
 
   Future<void> _loadAddresses() async {
-    final addressProvider = Provider.of<AddressProvider>(context, listen: false);
-    final selectedAddressProvider = Provider.of<SelectedAddressProvider>(context, listen: false);
-
-    await addressProvider.loadAddresses();
-    final addresses = addressProvider.addresses;
-
-    if (addresses.isNotEmpty) {
-      // Automatically select the default address
-      final defaultAddress = addresses.firstWhere(
-            (addr) => addr.isDefault,
-        orElse: () => addresses.first,
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final addressProvider = Provider.of<AddressProvider>(
+        context,
+        listen: false,
       );
-      selectedAddressProvider.setAddress(defaultAddress);
+      await addressProvider.loadAddressesSilently();
+      setState(() {
+        _addresses = addressProvider.addresses;
+        _isLoading = false;
+      });
+      print(
+        "Loaded Addresses: ${_addresses.map((a) => '${a.name}: ${a.isDefault}').toList()}",
+      );
+    } catch (e) {
+      print("Error loading addresses: $e");
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Failed to load addresses: $e")));
     }
   }
 
+  Future<void> _setDefaultAddress(DefaultFarmerAddress address) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final addressProvider = Provider.of<AddressProvider>(
+        context,
+        listen: false,
+      );
+      final selectedAddressProvider = Provider.of<SelectedAddressProvider>(
+        context,
+        listen: false,
+      );
+      await addressProvider.setDefault(address);
+      selectedAddressProvider.setAddress(address);
+      await _loadAddresses();
+      print("Default set to: ${address.name}. Screen should NOT pop.");
+    } catch (e) {
+      print("Error setting default address: $e");
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Failed to set default: $e")));
+    }
+  }
 
   Future<void> _addNewAddress(DefaultFarmerAddress farm) async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
-      final addressProvider = Provider.of<AddressProvider>(context, listen: false);
-      await addressProvider.addAddress(farm);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error adding address: $e")),
+      final addressProvider = Provider.of<AddressProvider>(
+        context,
+        listen: false,
       );
+      await addressProvider.addAddress(farm);
+      await _loadAddresses();
+    } catch (e) {
+      print("Error adding address: $e");
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Failed to add address: $e")));
     }
   }
 
   Future<void> _updateAddress(DefaultFarmerAddress farm) async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
-      final addressProvider = Provider.of<AddressProvider>(context, listen: false);
-      await addressProvider.updateAddress(farm);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error updating address: $e")),
+      final addressProvider = Provider.of<AddressProvider>(
+        context,
+        listen: false,
       );
+      await addressProvider.updateAddress(farm);
+      await _loadAddresses();
+    } catch (e) {
+      print("Error updating address: $e");
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Failed to update address: $e")));
     }
   }
 
   Future<void> _deleteAddress(String addressName) async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
-      final addressProvider = Provider.of<AddressProvider>(context, listen: false);
-      await addressProvider.deleteAddress(addressName);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error deleting address: $e")),
+      final addressProvider = Provider.of<AddressProvider>(
+        context,
+        listen: false,
       );
+      final selectedAddressProvider = Provider.of<SelectedAddressProvider>(
+        context,
+        listen: false,
+      );
+
+      // Check if the deleted address is the selected one
+      if (selectedAddressProvider.selected?.name == addressName) {
+        selectedAddressProvider.clear();
+        print("Deleted address was selected, cleared SelectedAddressProvider.");
+      }
+
+      await addressProvider.deleteAddress(addressName);
+      await _loadAddresses();
+
+      // If addresses remain, set a new default if none exists
+      if (_addresses.isNotEmpty && !_addresses.any((addr) => addr.isDefault)) {
+        final newDefault = _addresses.first;
+        await addressProvider.setDefault(newDefault);
+        selectedAddressProvider.setAddress(newDefault);
+        print("Set new default after delete: ${newDefault.name}");
+      }
+    } catch (e) {
+      print("Error deleting address: $e");
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Failed to delete address: $e")));
     }
   }
 
-  void _navigateToAddAddress({bool isEdit = false}) async {
-    final addressProvider = Provider.of<AddressProvider>(context, listen: false); // <-- Add this
-    final selectedAddressProvider =
-    Provider.of<SelectedAddressProvider>(context, listen: false);
+  void _navigateToAddAddress({
+    bool isEdit = false,
+    DefaultFarmerAddress? address,
+  }) {
+    final selectedAddressProvider = Provider.of<SelectedAddressProvider>(
+      context,
+      listen: false,
+    );
 
-    if (isEdit) {
-      final currentAddress = addressProvider.addresses
-          .firstWhere((addr) => addr.name == selectedAddressProvider.selected?.name);
-      selectedAddressProvider.setAddress(currentAddress);
+    if (isEdit && address != null) {
+      selectedAddressProvider.setAddress(address);
     } else {
       selectedAddressProvider.clear();
     }
 
-    final result = await Navigator.push(
+    Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const AddAddressScreen()),
-    );
-    if (result is DefaultFarmerAddress) {
-      if (isEdit) {
-        await _updateAddress(result);
-      } else {
-        await _addNewAddress(result);
+    ).then((result) async {
+      if (result is DefaultFarmerAddress) {
+        if (isEdit) {
+          await _updateAddress(result);
+        } else {
+          await _addNewAddress(result);
+        }
       }
-    }
+    });
   }
-
 
   @override
   Widget build(BuildContext context) {
-    final addressProvider = Provider.of<AddressProvider>(context);
-    final selectedAddressProvider = Provider.of<SelectedAddressProvider>(context);
-
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'Select Address',
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => _navigateToAddAddress(isEdit: false),
-          ),
-        ],
-      ),
-      backgroundColor: themeColor().surface,
-      body: addressProvider.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : addressProvider.addresses.isEmpty
-          ? Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.location_off,
-              size: 40.sp,
-              color: Colors.grey,
-            ),
-            bodyMediumText(
-              "No addresses found",
-              color: Colors.grey,
-            ),
-            ElevatedButton.icon(
-              onPressed: () => _navigateToAddAddress(isEdit: false),
-              icon: Icon(Icons.add, size: 24.sp),
-              label: const Text("Add an Address"),
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-              ),
-            ),
-          ].separator(SizedBox(height: 10.h)).toList(),
-        ),
-      )
-          : Padding(
-        padding: EdgeInsets.only(
-          top: 12.h,
-          left: 24.w,
-          right: 24.w,
-          bottom: 24.h,
-        ),
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: addressProvider.addresses.length,
-          itemBuilder: (context, index) {
-            final address = addressProvider.addresses[index];
-            final isSelected =
-                selectedAddressProvider.selected?.name == address.name;
+      appBar: CustomAppBar(title: 'Select Address'),
 
-            return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.r),
-                side: BorderSide(
-                  color: isSelected
-                      ? themeColor(context: context).outlineVariant
-                      : themeColor(context: context).primary,
-                  width: 2,
-                ),
-              ),
-              child: RadioListTile<DefaultFarmerAddress>(
-                value: address,
-                  groupValue: selectedAddressProvider.selected ,
-                onChanged: (value) async {
-                  if (value != null) {
-                    selectedAddressProvider.setAddress(value);
-                    final addressProvider =
-                    Provider.of<AddressProvider>(context, listen: false);
-                    await addressProvider.setDefault(value);
-                    Navigator.pop(context); // Return to CheckoutView
-                  }
-                },
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 16.w,
-                  vertical: 8.h,
-                ),
-                title: bodyMediumBoldText(address.name),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 4.h),
-                    Text(
-                      "${address.address1}, ${address.address2}",
-                    ),
-                    if (address.landmark.isNotEmpty)
-                      captionStyleText(
-                        "Landmark: ${address.landmark}",
+      floatingActionButton:
+          _addresses.isNotEmpty
+              ? FloatingActionButton(
+                onPressed: () => _navigateToAddAddress(isEdit: false),
+                child: Icon(Icons.add),
+              )
+              : null,
+
+      backgroundColor: themeColor(context: context).surface,
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Consumer<AddressProvider>(
+                builder: (context, provider, _) {
+                  final addresses = provider.addresses;
+
+                  if (addresses.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.location_off,
+                            size: 40.sp,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(height: 10.h),
+                          bodyMediumText(
+                            "No addresses found",
+                            color: Colors.grey,
+                          ),
+                          SizedBox(height: 10.h),
+                          ElevatedButton.icon(
+                            onPressed:
+                                () => _navigateToAddAddress(isEdit: false),
+                            icon: Icon(Icons.add, size: 24.sp),
+                            label: const Text("Add an Address"),
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    captionStyleText(
-                      "Contact: ${address.contactNumber}",
+                    );
+                  }
+
+                  return Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 24.w,
+                      vertical: 12.h,
                     ),
-                  ],
-                ),
-                secondary: PopupMenuButton<String>(
-                  onSelected: (value) {
-                    if (value == 'edit') {
-                      _navigateToAddAddress(isEdit: true);
-                    } else if (value == 'delete') {
-                      _deleteAddress(address.name);
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'edit',
-                      child: Text('Edit'),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: addresses.length,
+                            itemBuilder: (context, index) {
+                              final address = addresses[index];
+                              final isDefault = address.isDefault;
+
+                              return Card(
+                                elevation: 2,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.r),
+                                  side: BorderSide(
+                                    color:
+                                        isDefault
+                                            ? themeColor(
+                                              context: context,
+                                            ).primary
+                                            : themeColor(
+                                              context: context,
+                                            ).secondaryContainer,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: InkWell(
+                                  onTap: () => _setDefaultAddress(address),
+                                  borderRadius: BorderRadius.circular(15.r),
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 8.h,
+                                      horizontal: 16.w,
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              bodyMediumBoldText(address.name),
+                                              SizedBox(height: 4.h),
+                                              Text(
+                                                "${address.address1}, ${address.address2}",
+                                              ),
+                                              if (address.landmark.isNotEmpty)
+                                                captionStyleText(
+                                                  "Landmark: ${address.landmark}",
+                                                ),
+                                              captionStyleText(
+                                                "Contact: ${address.contactNumber}",
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            if (isDefault)
+                                              Padding(
+                                                padding: EdgeInsets.only(
+                                                  right: 8.w,
+                                                ),
+                                                child: Icon(
+                                                  Icons.check_circle,
+                                                  color: Colors.green,
+                                                  size: 24.sp,
+                                                ),
+                                              ),
+                                            PopupMenuButton<String>(
+                                              onSelected: (value) {
+                                                if (value == 'edit') {
+                                                  _navigateToAddAddress(
+                                                    isEdit: true,
+                                                    address: address,
+                                                  );
+                                                } else if (value == 'delete') {
+                                                  _deleteAddress(address.name);
+                                                }
+                                              },
+                                              itemBuilder:
+                                                  (context) => const [
+                                                    PopupMenuItem(
+                                                      value: 'edit',
+                                                      child: Text('Edit'),
+                                                    ),
+                                                    PopupMenuItem(
+                                                      value: 'delete',
+                                                      child: Text('Delete'),
+                                                    ),
+                                                  ],
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                    const PopupMenuItem(
-                      value: 'delete',
-                      child: Text('Delete'),
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
-            );
-          },
-        ),
-      ),
     );
   }
 }
-

@@ -1,7 +1,7 @@
+import 'package:agri_flutter/customs_widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
-
 
 class HtmlViewerScreen extends StatelessWidget {
   final String title;
@@ -20,7 +20,7 @@ class HtmlViewerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: CustomAppBar(title: title),
       body: FutureBuilder<String>(
         future: _loadHtml(),
         builder: (context, snapshot) {
@@ -30,9 +30,7 @@ class HtmlViewerScreen extends StatelessWidget {
           if (snapshot.hasError) {
             return const Center(child: Text("Failed to load document."));
           }
-          return SingleChildScrollView(
-            child:Html(data: snapshot.data,)
-          );
+          return SingleChildScrollView(child: Html(data: snapshot.data));
         },
       ),
     );

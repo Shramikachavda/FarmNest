@@ -62,10 +62,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         );
         NavigationUtils.popUntil(LoginView.route);
       } else {
-        showCustomSnackBar(
-          context,
-          "No account found with this email.",
-        );
+        showCustomSnackBar(context, "No account found with this email.");
       }
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
@@ -90,13 +87,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     }
   }
 
-    void _showLoadingDialog() {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => Center(child: CircularProgressIndicator()),
-      );
-    }
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(child: CircularProgressIndicator()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +115,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               bodyMediumText("Enter your registered email address"),
               SizedBox(height: 40.h),
               CustomFormField(
+                maxLine: 1,
                 focusNode: _focusNodeEmail,
                 textInputAction: TextInputAction.done,
                 hintText: 'Enter your email address',
@@ -130,7 +128,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               CustomButton(onClick: _resetPassword, buttonName: 'Send Email'),
               Spacer(),
               footer(context: context),
-              SizedBox(height: 16.h),
+            
             ],
           ),
         ),

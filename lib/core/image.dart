@@ -21,6 +21,7 @@ class ImageConst {
   static const String anim2 = "assets/anim/anim2.lottie";
   static const String anim3 = "assets/anim/anim3.lottie";
   static const String anim4 = "assets/anim/anim4.lottie";
+  static const String anim = "assets/anim/order.lottie";
 
   //onboarding
   static const String intro2 = "assets/image/i2.png";

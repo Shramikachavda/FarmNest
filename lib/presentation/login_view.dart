@@ -185,6 +185,7 @@ class _LoginViewState extends State<LoginView> {
                               textEditingController: _passwordController,
                               obscureText: isObscure,
                               isPasswordField: true,
+                              maxLine: 1,
                               icon: Icon(
                                 isObscure
                                     ? Icons.visibility_off

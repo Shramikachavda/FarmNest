@@ -4,8 +4,8 @@ import 'dart:convert';
 class MarketPricesRepository {
   static const String _baseUrl =
       'https://api.data.gov.in/resource/35985678-0d79-46b4-9ed6-6f13308a1d24';
-  static const String _apiKey =
- '579b464db66ec23bdd0000016efb0dcc79954ce86609a7759283ee23';
+  static const String _apiKey = "";
+  //'579b464db66ec23bdd0000016efb0dcc79954ce86609a7759283ee23';
 
   Future<List<dynamic>> fetchMarketPrices({
     String? state,

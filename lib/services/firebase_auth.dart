@@ -100,43 +100,26 @@ class FireBaseAuth {
     }
   }
 
-  Future<void> reAuthenticateAndChangePassword({
-    required String email,
-    required String oldPassword,
-    required String newPassword,
-  }) async {
-    try {
-      User? user = _auth.currentUser;
-      if (user == null) {
-        print('No user is logged in');
-        return;
-      }
-      if (user.email != email.trim()) {
-        print('Email mismatch: provided $email, expected ${user.email}');
-        return;
-      }
-      final credential = EmailAuthProvider.credential(
-        email: email.trim(),
-        password: oldPassword,
-      );
-      await user.reauthenticateWithCredential(credential);
-      print('User re-authenticated successfully');
-      await user.reload();
-      user = _auth.currentUser;
-      if (user != null && !user.emailVerified) {
-        print('Email not verified for user: ${user.uid}');
-        await user.sendEmailVerification();
-        print('Verification email sent to $email');
-        return;
-      }
-      await user!.updatePassword(newPassword);
-      print('Password updated successfully for user: ${user.uid}');
-    } on FirebaseAuthException catch (e) {
-      print('Password Change Error: ${e.code} - ${e.message}');
-      rethrow;
-    } catch (e) {
-      print('Unexpected Password Change Error: $e');
-      rethrow;
+ Future<void> reAuthenticateAndChangePassword({
+  required String email,
+  required String oldPassword,
+  required String newPassword,
+}) async {
+  try {
+    User? user = _auth.currentUser;
+    if (user == null) {
+      throw FirebaseAuthException(code: 'no-user', message: 'No user is logged in');
     }
+    if (user.email != email.trim()) {
+      throw FirebaseAuthException(code: 'email-mismatch', message: 'Email mismatch');
+    }
+    final credential = EmailAuthProvider.credential(email: email.trim(), password: oldPassword);
+    await user.reauthenticateWithCredential(credential);
+    await user.updatePassword(newPassword);
+  } catch (e) {
+    rethrow;
   }
+}
+  
+    
 }

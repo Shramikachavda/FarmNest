@@ -51,7 +51,7 @@ class _DefaultFarmAddressState extends State<DefaultFarmAddress> {
             contactNumber: int.tryParse(_phoneNumber.text.trim()) ?? 0,
             name: _address3.text.trim(),
             landmark: _landmarkAddress.text.trim(),
-            isDefault: false,
+            isDefault: true,
           ),
         );
 

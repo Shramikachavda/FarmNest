@@ -10,6 +10,7 @@ import 'package:agri_flutter/providers/market_place_provider/favorite_provider.d
 import 'package:agri_flutter/providers/market_place_provider/product_provider.dart';
 import 'package:agri_flutter/theme/theme.dart';
 import 'package:agri_flutter/utils/comman.dart';
+import 'package:dotlottie_loader/dotlottie_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -37,7 +38,7 @@ class DetailProductView extends BaseStatefulWidget {
 
 class _DetailProductViewState extends State<DetailProductView> {
   void showSuccessAnimationAndNavigate(BuildContext context, Product product) {
-    final orderProvider = Provider.of<OrderProvider>(context);
+    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
     orderProvider.addOrder(product);
     showDialog(
       context: context,
@@ -48,12 +49,24 @@ class _DetailProductViewState extends State<DetailProductView> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Lottie.asset(
-                  ImageConst.buyNowAnim,
-                  height: 400.h,
-                  width: 500.w,
+                DotLottieLoader.fromAsset(
+                  'assets/animations/your_file.lottie',
+                  frameBuilder: (context, composition) {
+                    if (composition != null) {
+                      return Lottie.memory(
+                        composition.animations.values.single,
+                        height: 400,
+                        width: 500,
+                      );
+                    } else {
+                      return Container(); // or a loading indicator if you want
+                    }
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Text('❌ Failed to load .lottie animation');
+                  },
                 ),
-                const SizedBox(height: 12),
+
                 const Text(
                   "Order Placed Successfully!",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -98,7 +111,13 @@ class _DetailProductViewState extends State<DetailProductView> {
                   width: double.infinity,
                   height: 270.h,
                   decoration: BoxDecoration(
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(
+                      color: themeColor().outlineVariant,
+                      width: 2,
+                    ),
+
                     image: DecorationImage(
                       image: NetworkImage(product.imageUrl),
                       fit: BoxFit.contain,
@@ -142,7 +161,7 @@ class _DetailProductViewState extends State<DetailProductView> {
                     ),
                     Padding(
                       padding: EdgeInsets.all(5.r),
-                      child: bodyText('${product.quantity}'),
+                      child: bodyText('${cartProvider.getQuantity(product)}'),
                     ),
                     customRoundIconButton(
                       context: context,

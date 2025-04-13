@@ -209,6 +209,7 @@ class _SignupViewState extends State<SignupView> {
                             textEditingController: _passwordController,
                             obscureText: isObscure,
                             isPasswordField: true,
+                            maxLine: 1,
 
                             icon: Icon(
                               isObscure
@@ -243,6 +244,7 @@ class _SignupViewState extends State<SignupView> {
                             textEditingController: _confirmPasswordController,
                             obscureText: isObscure,
                             isPasswordField: true,
+                            maxLine: 1,
 
                             icon: Icon(
                               isObscure

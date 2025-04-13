@@ -47,7 +47,7 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent, // Custom color for HomePageScreen
-      statusBarIconBrightness: Brightness.light, // Light icons
+      statusBarIconBrightness: Brightness.dark, // Light icons
     ),
   );
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -56,7 +56,11 @@ void main() async {
 
   await Hive.initFlutter();
   await LocalStorageService.initHive();
+  
+  
 
+  
+  
   // Initialize timezone
   tz.initializeTimeZones();
 
@@ -119,7 +123,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return BlocBuilder<AppThemeBloc, AppThemeState>(
           bloc: context.read<AppThemeBloc>(),
-          builder: (context, state) { 
+          builder: (context, state) {
             return MaterialApp(
               title: 'Farm Nest',
               debugShowCheckedModeBanner: false,

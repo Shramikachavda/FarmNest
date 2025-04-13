@@ -302,7 +302,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
             child: Card(
-              color: themeColor().surfaceContainerHighest,
               //elevation: 4,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16.r),
@@ -311,7 +310,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 padding: EdgeInsets.all(24.w),
                 child: IntrinsicWidth(
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,
                     children: [
@@ -319,16 +318,16 @@ class _HomePageScreenState extends State<HomePageScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            bodyMediumText(name),
-                            bodyText("🌤 $description"),
-                            SizedBox(height: 2.h),
-                            bodyText("🔽 Min: $tempMin°C"),
-                            bodyText("🌬 Wind: $windSpeed m/s"),
-                            bodyText(
-                              "🌅 Sunrise: ${sunrise.hour}:${sunrise.minute.toString().padLeft(2, '0')}",
-                            ),
-                          ],
+                          children:
+                              [
+                                bodyText("🌤 $description"),
+                                SizedBox(height: 2.h),
+                                bodyText("🔽 Min: $tempMin°C"),
+                                bodyText("🌬 Wind: $windSpeed m/s"),
+                                bodyText(
+                                  "🌅 Sunrise: ${sunrise.hour}:${sunrise.minute.toString().padLeft(2, '0')}",
+                                ),
+                              ].separator(SizedBox(height: 2.h)).toList(),
                         ),
                       ),
                       SizedBox(width: 15.w),
@@ -338,16 +337,17 @@ class _HomePageScreenState extends State<HomePageScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
-                              children: [
-                                Image.network(
-                                  "https://openweathermap.org/img/wn/$icon@2x.png",
-                                  width: 50.w,
-                                ),
-                                bodyMediumText("${weather['main']['temp']}°C"),
-                              ],
+                              children:
+                                  [
+                                    Image.network(
+                                      "https://openweathermap.org/img/wn/$icon@2x.png",
+                                      width: 40.w,
+                                    ),
+                                    bodyMediumText(
+                                      "${weather['main']['temp']}°C",
+                                    ),
+                                  ].separator(SizedBox(height: 2.h)).toList(),
                             ),
-
-                            SizedBox(height: 2.h),
 
                             bodyText("🔼 Max: $tempMax°C"),
 
@@ -411,24 +411,60 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   Widget upComingEventCard() {
     return Padding(
-      padding: EdgeInsets.only(left: 24.w, right: 24.h, bottom: 24.h),
+      padding: EdgeInsets.only(left: 24.w, right: 24.w, bottom: 24.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children:
             [
-              bodyMediumText("Upcoming Events"),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  bodyMediumText("Upcoming Events"),
+                  customIconButton(
+                    context: context,
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Stack(
+                            children: [
+                              BackdropFilter(
+                                filter: ImageFilter.blur(
+                                  sigmaX: 2.0,
+                                  sigmaY: 2.0,
+                                ),
+                                child: Container(),
+                              ),
+                              Center(
+                                child: AddEventExpenseDialog(
+                                  DateTime.now().add(Duration(days: 1)),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    assetIcon: Icon(
+                      Icons.add,
+                      color: themeColor().onInverseSurface,
+                      size: 24.sp,
+                    ),
+                  ),
+                ],
+              ),
               Consumer<EventExpenseProvider>(
-                builder: (context, event, child) {
-                  final upComingEvent = event.upcomingTwoEvents;
-                  final upComingEventLength = upComingEvent.length;
+                builder: (context, eventProvider, child) {
+                  final upComingEvents = eventProvider.upcomingTwoEvents;
+                  final upComingEventLength = upComingEvents.length;
 
-                  if (upComingEvent.isEmpty) {
+                  if (upComingEventLength == 0) {
                     return SizedBox(
                       width: double.infinity,
                       child: Card(
                         color: themeColor().surface,
                         shape: RoundedRectangleBorder(
-                         borderRadius: BorderRadius.circular(12.r),
+                          borderRadius: BorderRadius.circular(12.r),
                           side: BorderSide(
                             color: themeColor().outlineVariant,
                             width: 2,
@@ -436,48 +472,9 @@ class _HomePageScreenState extends State<HomePageScreen> {
                         ),
                         child: Padding(
                           padding: EdgeInsets.all(12.w),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: bodyText(
-                                  "No events added yet. Tap ➕ to get started!",
-                                  maxLine: 2,
-                                ),
-                              ),
-                              customIconButton(
-                                context: context,
-                                onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return Stack(
-                                        children: [
-                                          BackdropFilter(
-                                            filter: ImageFilter.blur(
-                                              sigmaX: 2.0,
-                                              sigmaY: 2.0,
-                                            ),
-                                            child: Container(),
-                                          ),
-                                          Center(
-                                            child: AddEventExpenseDialog(
-                                              DateTime.now().add(
-                                                Duration(days: 1),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-                                assetIcon: Icon(
-                                  Icons.add,
-                                  color: themeColor().onInverseSurface,
-                                  size: 24.sp,
-                                ),
-                              ),
-                            ],
+                          child: bodyText(
+                            "No events added yet. Tap ➕ to get started!",
+                            maxLine: 2,
                           ),
                         ),
                       ),
@@ -485,64 +482,28 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   }
 
                   if (upComingEventLength == 1) {
-                    return Card(
-                      child: Padding(
-                        padding: EdgeInsets.all(12.w),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Event details
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Tooltip(
-                                  message: upComingEvent[0].title,
-                                  child: bodyBoldMediumText(
-                                    upComingEvent[0].title,
-                                  ),
-                                ),
-                                bodyText(upComingEvent[0].category),
-                                bodyText(
-                                  DateFormat(
-                                    'dd-MM-yyyy',
-                                  ).format(upComingEvent[0].date),
-                                ),
-                              ],
-                            ),
-
-                            // Edit & delete icons
-                            Column(
-                              children: [
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(Icons.edit),
-                                ),
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(Icons.delete),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
+                    return eventCard(
+                      upComingEvent: upComingEvents,
+                      index: 0,
+                      eventProvider: eventProvider,
                     );
                   }
 
-                  // For 2 events
                   return Row(
                     children: [
                       Expanded(
                         child: eventCard(
-                          upComingEvent: upComingEvent,
+                          upComingEvent: upComingEvents,
                           index: 0,
+                          eventProvider: eventProvider,
                         ),
                       ),
                       SizedBox(width: 12.w),
                       Expanded(
                         child: eventCard(
-                          upComingEvent: upComingEvent,
+                          upComingEvent: upComingEvents,
                           index: 1,
+                          eventProvider: eventProvider,
                         ),
                       ),
                     ],
@@ -631,7 +592,11 @@ class _HomePageScreenState extends State<HomePageScreen> {
     );
   }
 
-  Widget eventCard({required List upComingEvent, required int index}) {
+  Widget eventCard({
+    required List upComingEvent,
+    required int index,
+    required EventExpenseProvider eventProvider,
+  }) {
     final event = upComingEvent[index]; // Cleaner access
     return Card(
       child: Container(
@@ -656,20 +621,49 @@ class _HomePageScreenState extends State<HomePageScreen> {
               children: [
                 IconButton(
                   onPressed: () {
-                    //_fireStoreService.up
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Stack(
+                          children: [
+                            BackdropFilter(
+                              filter: ImageFilter.blur(
+                                sigmaX: 2.0,
+                                sigmaY: 2.0,
+                              ),
+                              child: Container(),
+                            ),
+                            Center(
+                              child: AddEventExpenseDialog(
+                                event.date,
+                                eventToEdit: event,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
                   icon: Icon(Icons.edit),
                 ),
                 IconButton(
-                  onPressed: () {
-
-                 //   _fireStoreService.deleteEvent(upComingEvent[index]);
+                  onPressed: () async {
+                    try {
+                      await eventProvider.removeEventExpense(event);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Event deleted successfully')),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Failed to delete event: $e')),
+                      );
+                    }
                   },
+
                   icon: Icon(Icons.delete),
                 ),
               ],
             ),
-
           ],
         ),
       ),

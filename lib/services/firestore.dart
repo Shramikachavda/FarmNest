@@ -237,6 +237,9 @@ class FirestoreService {
   /// **7️⃣ Place Order**
   Future<void> placeOrder(List<Product> cartProducts) async {
     try {
+      if (userId == null) {
+        throw Exception("User not logged in");
+      }
       print(
         "🔹 Placing order for User: $userId, Products: ${cartProducts.length}",
       );
@@ -258,12 +261,15 @@ class FirestoreService {
       }
     } catch (e) {
       print("❌ Failed to place order: $e");
+      throw e; // Propagate error to UI
     }
   }
 
-  /// **8️⃣ Fetch All Orders**
   Future<List<Map<String, dynamic>>> getOrders() async {
     try {
+      if (userId == null) {
+        throw Exception("User not logged in");
+      }
       print("🔹 Fetching orders for User: $userId");
       final snapshot =
           await _db
@@ -314,6 +320,8 @@ class FirestoreService {
     }
   }
 
+  /*
+
   /// 🔹 Add Crop to Firestore
   Future<void> addCrop(CropDetails crop) async {
     try {
@@ -363,6 +371,9 @@ class FirestoreService {
       print("❌ Error removing crop: $e");
     }
   }
+
+
+  */
 
   /// 🔹 Add Crop to Firestore
   Future<void> addLiveStock(LiveStockDetail live) async {
@@ -429,6 +440,8 @@ class FirestoreService {
         });
   }
 
+  /*
+
   /// 🔹 **Update Crop inside User**
   Future<void> updateCrop(String userId, CropDetails crop) async {
     await _db
@@ -446,7 +459,7 @@ class FirestoreService {
           'startDate': crop.startDate,
           'harvestDate': crop.harvesDate,
         });
-  }
+  }    */
 
   //user
 
@@ -604,7 +617,7 @@ class FirestoreService {
   //farm address default
 
   //add
- /* Future<void> addDefaultLocation(DefaultFarmerAddress farm) async {
+  /* Future<void> addDefaultLocation(DefaultFarmerAddress farm) async {
     try {
       await _db
           .collection("users")
@@ -620,83 +633,60 @@ class FirestoreService {
   } */
 
   Future<void> addNewAddress(DefaultFarmerAddress farm) async {
-  try {
-    final userRef = _db.collection("users").doc(userId);
-    await userRef
-        .collection("defaultAddress")
-        .doc(farm.name)
-        .set(farm.toJson());
-    print("✅ New address added");
-  } catch (e) {
-    print("❌ Error adding address: $e");
-    rethrow;
-  }
-}
-Future<DefaultFarmerAddress?> getDefaultAddress() async {
-  try {
-    final snapshot = await _db
-        .collection("users")
-        .doc(userId)
-        .collection("defaultAddress")
-        .where('isDefault', isEqualTo: true)
-        .limit(1)
-        .get();
-
-    if (snapshot.docs.isNotEmpty) {
-      return DefaultFarmerAddress.fromJson(snapshot.docs.first.data());
+    try {
+      final userRef = _db.collection("users").doc(userId);
+      await userRef
+          .collection("defaultAddress")
+          .doc(farm.name)
+          .set(farm.toJson());
+      print("✅ New address added");
+    } catch (e) {
+      print("❌ Error adding address: $e");
+      rethrow;
     }
-    return null;
-  } catch (e) {
-    return null;
   }
-}
-Future<List<DefaultFarmerAddress>> getAllAddresses() async {
-  try {
-    final snapshot = await _db
-        .collection("users")
-        .doc(userId)
-        .collection("defaultAddress")
-        .get();
 
-    return snapshot.docs
-        .map((doc) => DefaultFarmerAddress.fromJson(doc.data()))
-        .toList();
-  } catch (e) {
-    print("❌ Error fetching addresses: $e");
-    return [];
+  //
+
+  // ... other existing code ...
+
+  Future<DefaultFarmerAddress?> getDefaultAddress() async {
+    try {
+      final snapshot =
+          await _db
+              .collection("users")
+              .doc(userId)
+              .collection("defaultAddress")
+              .where('isDefault', isEqualTo: true)
+              .limit(1)
+              .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return DefaultFarmerAddress.fromJson(snapshot.docs.first.data());
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
   }
-}
-Future<void> updateAddress(DefaultFarmerAddress farm) async {
-  try {
-    await _db
-        .collection("users")
-        .doc(userId)
-        .collection("defaultAddress")
-        .doc(farm.name)
-        .update(farm.toJson());
 
-    print("✅ Address updated");
-  } catch (e) {
-    print("❌ Error updating address: $e");
+  Future<List<DefaultFarmerAddress>> getAllAddresses() async {
+    try {
+      final snapshot =
+          await _db
+              .collection("users")
+              .doc(userId)
+              .collection("defaultAddress")
+              .get();
+
+      return snapshot.docs
+          .map((doc) => DefaultFarmerAddress.fromJson(doc.data()))
+          .toList();
+    } catch (e) {
+      print("❌ Error fetching addresses: $e");
+      return [];
+    }
   }
-}
-Future<void> deleteAddress(String addressName) async {
-  try {
-    await _db
-        .collection("users")
-        .doc(userId)
-        .collection("defaultAddress")
-        .doc(addressName)
-        .delete();
-    print("🗑️ Address deleted");
-  } catch (e) {
-    print("❌ Error deleting address: $e");
-  }
-}
-
-
-
-  //add default address
 
   Future<void> addDefaultLocation(DefaultFarmerAddress farm) async {
     try {
@@ -714,33 +704,116 @@ Future<void> deleteAddress(String addressName) async {
         'address2': farm.address2,
         'landmark': farm.landmark,
         'contactNumber': farm.contactNumber,
-        'isDefault': isFirst,
+        'isDefault': isFirst ? true : farm.isDefault,
       });
 
-      print("✅ Address saved. Default: $isFirst");
+      print("✅ Address saved. Default: ${isFirst ? true : farm.isDefault}");
     } catch (e) {
       print("❌ Failed to save address: $e");
       rethrow;
     }
   }
 
-
-
-
-  //update
-  Future<void> updateDefaultAddress(DefaultFarmerAddress address) async {
+  Future<void> updateAddress(DefaultFarmerAddress farm) async {
     try {
       await _db
           .collection("users")
           .doc(userId)
           .collection("defaultAddress")
-          .doc(address.name)
-          .update(address.toJson());
-
-      print("✅ Default address updated successfully");
+          .doc(farm.name)
+          .update(farm.toJson());
+      print("✅ Address updated");
     } catch (e) {
-      print("❌ Error updating default address: $e");
+      print("❌ Error updating address: $e");
+    }
+  }
+
+  Future<void> deleteAddress(String addressName) async {
+    try {
+      final addressRef = _db
+          .collection("users")
+          .doc(userId)
+          .collection("defaultAddress");
+
+      final deletedDoc = await addressRef.doc(addressName).get();
+      final wasDefault =
+          deletedDoc.exists && deletedDoc.data()?['isDefault'] == true;
+
+      await addressRef.doc(addressName).delete();
+      print("🗑️ Address deleted");
+
+      if (wasDefault) {
+        final remainingAddresses = await addressRef.get();
+        if (remainingAddresses.docs.isNotEmpty) {
+          await remainingAddresses.docs.first.reference.update({
+            'isDefault': true,
+          });
+          print("✅ Set new default address");
+        }
+      }
+    } catch (e) {
+      print("❌ Error deleting address: $e");
+    }
+  }
+
+  Future<void> setDefaultAddress(String addressName) async {
+    try {
+      final addressRef = _db
+          .collection("users")
+          .doc(userId)
+          .collection("defaultAddress");
+
+      final allAddresses = await addressRef.get();
+      for (var doc in allAddresses.docs) {
+        await doc.reference.update({'isDefault': false});
+      }
+
+      await addressRef.doc(addressName).update({'isDefault': true});
+      print("✅ Default address set to $addressName");
+    } catch (e) {
+      print("❌ Error setting default address: $e");
       rethrow;
+    }
+  }
+
+  // crops with gimini
+
+  Future<void> addCrop(String userId, CropDetails crop) async {
+    await _db
+        .collection('users')
+        .doc(userId)
+        .collection('crops')
+        .doc(crop.id)
+        .set(crop.toMap());
+  }
+
+  Future<void> updateCrop(String userId, CropDetails crop) async {
+    await _db
+        .collection('users')
+        .doc(userId)
+        .collection('crops')
+        .doc(crop.id)
+        .update(crop.toMap());
+  }
+
+  Future<List<CropDetails>> getCrops() async {
+    final snapshot =
+        await _db.collection('users').doc(userId).collection('crops').get();
+    return snapshot.docs.map((doc) => CropDetails.fromMap(doc.data())).toList();
+  }
+
+  Future<void> addToOrders(Product product) async {
+    try {
+      print("🛒 Placing order for: ${product.id}, User: $userId");
+      await _db
+          .collection('users')
+          .doc(userId)
+          .collection('orders')
+          .doc(product.id)
+          .set(product.toJson());
+      print("✅ Order placed: ${product.id}");
+    } catch (e) {
+      print("❌ Error placing order: $e");
     }
   }
 }

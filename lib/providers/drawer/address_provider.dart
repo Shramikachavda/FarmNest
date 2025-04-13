@@ -1,38 +1,46 @@
 import 'package:flutter/material.dart';
-
 import '../../models/post_sign_up/default_farmer_address.dart';
 import '../../services/firestore.dart';
 
 class AddressProvider with ChangeNotifier {
   AddressProvider() {
-    loadAddresses();
+    loadAddressesSilently();
   }
 
   final FirestoreService _firestoreService = FirestoreService();
 
   List<DefaultFarmerAddress> _addresses = [];
-  bool _isLoading = false; // <-- Add this line
+  bool _isLoading = false;
 
   List<DefaultFarmerAddress> get addresses => _addresses;
-  bool get isLoading => _isLoading; // <-- And this getter
+  bool get isLoading => _isLoading;
+
+  Future<void> loadAddressesSilently() async {
+    _isLoading = true; // Update state without notifying
+    _addresses = await _firestoreService.getAllAddresses();
+    _isLoading = false;
+    print(
+      "Silently Loaded Addresses: ${_addresses.map((a) => '${a.name}: ${a.isDefault}').toList()}",
+    );
+    // No notifyListeners() here; let the widget handle initial render
+  }
 
   Future<void> loadAddresses() async {
-    _isLoading = true;        // Start loading
+    _isLoading = true;
     notifyListeners();
 
     _addresses = await _firestoreService.getAllAddresses();
+    print(
+      "Loaded Addresses: ${_addresses.map((a) => '${a.name}: ${a.isDefault}').toList()}",
+    );
 
-    _isLoading = false;       // Done loading
+    _isLoading = false;
     notifyListeners();
   }
 
   Future<void> addAddress(DefaultFarmerAddress address) async {
-    if (address.isDefault) {
-      await _firestoreService.addDefaultLocation(address);
-    } else {
-      await _firestoreService.addNewAddress(address);
-    }
-    await loadAddresses();
+    await _firestoreService.addDefaultLocation(address);
+    await loadAddresses(); // Use notifying version here
   }
 
   Future<void> updateAddress(DefaultFarmerAddress address) async {
@@ -46,12 +54,13 @@ class AddressProvider with ChangeNotifier {
   }
 
   Future<void> setDefault(DefaultFarmerAddress address) async {
-    await _firestoreService.addDefaultLocation(address);
+    await _firestoreService.setDefaultAddress(address.name);
     await loadAddresses();
   }
 
   Future<DefaultFarmerAddress?> getDefaultAddress() async {
-    return await _firestoreService.getDefaultAddress();
+    final result = await _firestoreService.getDefaultAddress();
+    print("Default Address from Firestore: $result");
+    return result;
   }
-
 }

@@ -44,12 +44,12 @@ class CartProvider with ChangeNotifier {
         // Product already exists, increase its quantity
         await increaseQuantity(_cartList[existingIndex]);
       } else {
-        // Product does not exist, add it with quantity = 1
-        //  product.quantity = 1;
-        await _firestoreService.addToCart(product);
-        _cartList.add(product);
+        // 👇 Make sure quantity is set to 1 explicitly
+        final newProduct = product.copyWith(quantity: 1);
+        await _firestoreService.addToCart(newProduct);
+        _cartList.add(newProduct);
         notifyListeners();
-        print("✅ Product added to cart: ${product.id}");
+        print("✅ Product added to cart: ${newProduct.id}");
       }
     } catch (e) {
       print("❌ Error adding to cart: $e");
@@ -176,5 +176,10 @@ class CartProvider with ChangeNotifier {
   // ✅ **Check if a product is in the cart**
   bool isProductInCart(Product product) {
     return _cartList.any((item) => item.id == product.id);
+  }
+
+  int getQuantity(Product product) {
+    final index = _cartList.indexWhere((item) => item.id == product.id);
+    return index != -1 ? _cartList[index].quantity : 1;
   }
 }

@@ -1,3 +1,4 @@
+// presentation/calender_view/add_event_expense.dart
 import 'package:agri_flutter/core/drop_down_value.dart';
 import 'package:agri_flutter/customs_widgets/custom_button.dart';
 import 'package:agri_flutter/customs_widgets/custom_form_field.dart';
@@ -14,8 +15,9 @@ import '../../core/widgets/BaseStateFullWidget.dart';
 
 class AddEventExpenseDialog extends BaseStatefulWidget {
   final DateTime selectedDate;
+  final EventExpense? eventToEdit; // Added for editing
 
-  const AddEventExpenseDialog(this.selectedDate, {super.key});
+  const AddEventExpenseDialog(this.selectedDate, {this.eventToEdit, super.key});
 
   @override
   State<AddEventExpenseDialog> createState() => _AddEventExpenseDialogState();
@@ -32,27 +34,53 @@ class AddEventExpenseDialog extends BaseStatefulWidget {
 }
 
 class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
-
-  //textEditingController
-  final TextEditingController  _titleController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _customCategoryController = TextEditingController();
 
-  //focusNode
-
   final FocusNode _focusNodeTitle = FocusNode();
-  final FocusNode _focusNodeamount = FocusNode();
+  final FocusNode _focusNodeAmount = FocusNode();
   final FocusNode _focusNodeCategory = FocusNode();
 
   String _selectedType = "Event";
   DateTime? _selectedReminderTime;
   Categoty? _selectedCategory = Categoty.harvesting;
+  late DateTime _selectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = widget.selectedDate;
+
+    // Pre-fill fields if editing
+    if (widget.eventToEdit != null) {
+      _titleController.text = widget.eventToEdit!.title;
+      _amountController.text = widget.eventToEdit!.amount?.toString() ?? '';
+      _selectedType = widget.eventToEdit!.type;
+      _selectedReminderTime = widget.eventToEdit!.reminder;
+      _selectedDate = widget.eventToEdit!.date;
+
+      // Handle category (enum or custom)
+      try {
+        _selectedCategory = Categoty.values.firstWhere(
+          (cat) => cat.name == widget.eventToEdit!.category,
+          orElse: () => Categoty.other,
+        );
+        if (_selectedCategory == Categoty.other) {
+          _customCategoryController.text = widget.eventToEdit!.category;
+        }
+      } catch (e) {
+        _selectedCategory = Categoty.other;
+        _customCategoryController.text = widget.eventToEdit!.category;
+      }
+    }
+  }
 
   Future<void> _pickReminderTime(BuildContext context) async {
     final DateTime now = DateTime.now();
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: now,
+      initialDate: _selectedDate,
       firstDate: now,
       lastDate: DateTime(2030),
     );
@@ -72,6 +100,7 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
             pickedTime.hour,
             pickedTime.minute,
           );
+          _selectedDate = pickedDate; // Update selected date
         });
       }
     }
@@ -82,6 +111,9 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
     _titleController.dispose();
     _amountController.dispose();
     _customCategoryController.dispose();
+    _focusNodeTitle.dispose();
+    _focusNodeAmount.dispose();
+    _focusNodeCategory.dispose();
     super.dispose();
   }
 
@@ -90,16 +122,14 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
     final eventExpenseProvider = Provider.of<EventExpenseProvider>(context);
 
     return SizedBox(
-      //  width: MediaQuery.of(context).size.width * 0.8,
       child: AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.r),
         ),
-
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Add $_selectedType"),
+            Text(widget.eventToEdit == null ? "Add $_selectedType" : "Edit $_selectedType"),
             IconButton(
               onPressed: () => Navigator.pop(context),
               icon: const Icon(Icons.close),
@@ -109,7 +139,6 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
-
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -122,13 +151,11 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
               CustomFormField(
                 focusNode: _focusNodeTitle,
                 textInputAction: TextInputAction.next,
-
                 hintText: 'Enter your title',
                 keyboardType: TextInputType.name,
                 label: 'Title',
                 textEditingController: _titleController,
               ),
-
               SizedBox(height: 15.h),
               reusableDropdown<Categoty>(
                 label: "Category",
@@ -144,13 +171,9 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
                 },
               ),
               SizedBox(height: 15.h),
-
               if (_selectedCategory == Categoty.other)
                 _buildCustomCategoryField(),
-
               if (_selectedType == "Expense") _buildExpenseField(),
-
-              //    SizedBox(height: 15.h),
               Row(
                 children: [
                   Expanded(
@@ -165,7 +188,6 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
                   ),
                 ],
               ),
-
               if (_selectedReminderTime != null)
                 Text(
                   "Reminder: ${_selectedReminderTime!.toLocal().toString().split('.')[0]}",
@@ -173,7 +195,7 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
               SizedBox(height: 15.h),
               CustomButton(
                 onClick: () async => _saveEvent(eventExpenseProvider, context),
-                buttonName: "Add",
+                buttonName: widget.eventToEdit == null ? "Add" : "Update",
               ),
             ],
           ),
@@ -216,7 +238,7 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
       children: [
         CustomFormField(
           textInputAction: TextInputAction.next,
-          focusNode: _focusNodeamount,
+          focusNode: _focusNodeAmount,
           hintText: 'Enter your expense',
           keyboardType: TextInputType.number,
           label: 'Expense',
@@ -243,10 +265,9 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
       return;
     }
 
-    String finalCategory =
-        _selectedCategory == Categoty.other
-            ? _customCategoryController.text
-            : _selectedCategory!.name;
+    String finalCategory = _selectedCategory == Categoty.other
+        ? _customCategoryController.text
+        : _selectedCategory!.name;
 
     if (finalCategory.isEmpty) {
       showCustomSnackBar(context, "Please enter a category");
@@ -255,15 +276,13 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
 
     try {
       final event = EventExpense(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        id: widget.eventToEdit?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
         title: _titleController.text,
-        amount:
-            _selectedType == "Expense"
-                ? double.parse(_amountController.text)
-                : null,
+        amount: _selectedType == "Expense" && _amountController.text.isNotEmpty
+            ? double.parse(_amountController.text)
+            : null,
         category: finalCategory,
-        // Convert enum to string
-        date: widget.selectedDate,
+        date: _selectedDate,
         type: _selectedType,
         reminder: _selectedReminderTime,
       );
@@ -277,10 +296,13 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
         );
       }
 
-      showCustomSnackBar(context, "Added successfully");
+      showCustomSnackBar(
+        context,
+        widget.eventToEdit == null ? "Added successfully" : "Updated successfully",
+      );
       Navigator.pop(context, true);
     } catch (e) {
-      showCustomSnackBar(context, "Failed to add: $e");
+      showCustomSnackBar(context, "Failed to ${widget.eventToEdit == null ? 'add' : 'update'}: $e");
     }
   }
 }

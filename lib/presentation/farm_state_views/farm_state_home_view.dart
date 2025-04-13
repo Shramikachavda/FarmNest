@@ -1,5 +1,6 @@
 import 'package:agri_flutter/core/image.dart';
 import 'package:agri_flutter/customs_widgets/custom_icon.dart';
+import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/models/crop_details.dart';
 import 'package:agri_flutter/models/live_stock_detail.dart';
 import 'package:agri_flutter/providers/farm_state_provider.dart/crop_details_provider.dart';
@@ -26,7 +27,8 @@ class FarmStateHomeView extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Farm State")),
+      backgroundColor: themeColor(context: context).surface,
+      appBar: AppBar(title: bodyMediumText("Farm State")),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(
@@ -37,7 +39,7 @@ class FarmStateHomeView extends StatelessWidget {
       ),
       body:
           combinedList.isEmpty
-              ? const Center(child: Text("No State Added"))
+              ? Center(child: bodyMediumText("No State Added"))
               : ListView.builder(
                 itemCount: combinedList.length,
                 itemBuilder: (context, index) {
@@ -127,7 +129,10 @@ class FarmStateHomeView extends StatelessWidget {
                               liveStockProvider.removeLiveStock(item);
                             }
                           },
-                          icon: Icon(Icons.delete, color: themeColor(context: context).primary),
+                          icon: Icon(
+                            Icons.delete,
+                            color: themeColor(context: context).primary,
+                          ),
                         ),
                       ],
                     ),
@@ -184,7 +189,7 @@ class FarmStateHomeView extends StatelessWidget {
         return await _showDeleteDialog(context, "Remove Crop?");
       },
       onDismissed: (direction) {
-        cropDetailsProvider.removeCrop(item);
+        // cropDetailsProvider.removeCrop(item);
       },
       child: Padding(
         padding: EdgeInsets.only(right: 10.w, left: 10.w, bottom: 5.h),
@@ -228,7 +233,7 @@ class FarmStateHomeView extends StatelessWidget {
                               "Are you sure?",
                             );
                             if (confirmDelete == true) {
-                              cropDetailsProvider.removeCrop(item);
+                              //    cropDetailsProvider.removeCrop(item);
                             }
                           },
                           icon: Icon(
@@ -262,7 +267,7 @@ class FarmStateHomeView extends StatelessWidget {
                           ImageConst.harvestDate,
                         ), // 🚜 Harvest Date Icon
                         SizedBox(width: 4.w),
-                        Text(DateFormat('dd/MM/yyyy').format(item.harvesDate)),
+                        Text(DateFormat('dd/MM/yyyy').format(item.harvestDate)),
                       ],
                     ),
                   ],
@@ -280,7 +285,7 @@ class FarmStateHomeView extends StatelessWidget {
                     SizedBox(width: 4.w),
                     Expanded(
                       child: Text(
-                        item.location,
+                        "          item.location,",
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -300,7 +305,7 @@ class FarmStateHomeView extends StatelessWidget {
                           ImageConst.ferti,
                         ), // 🛠 Fertilizer Icon
                         SizedBox(width: 4.w),
-                        Text(item.fertilizer),
+                        //   Text(item.fertilizer),
                       ],
                     ),
                     Row(
@@ -310,7 +315,7 @@ class FarmStateHomeView extends StatelessWidget {
                           ImageConst.pesti,
                         ), // 🐞 Pesticide Icon
                         SizedBox(width: 4.w),
-                        Text(item.pesticide),
+                        // Text(item.pesticide),
                       ],
                     ),
                   ],

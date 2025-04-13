@@ -1,90 +1,63 @@
-import 'package:uuid/uuid.dart';
-
-var uuid = Uuid(); // UUID instance
-
 class CropDetails {
-  final String id; // Unique ID for each crop
+  final String id;
   final String cropName;
   final String growthStage;
   final DateTime startDate;
-  final DateTime harvesDate;
-  final String location;
-  final String location2;
-  final String fertilizer;
-  final String pesticide;
+  final DateTime harvestDate;
+  final String? location;
+  final String? fertilizer;
+  final String? pesticide;
+  final String? temperature;
+  final String? humidity;
+  final String? weatherDescription;
+  final String? aiRecommendations;
 
-  /// 🔹 Constructor with UUID generation
   CropDetails({
-    String? id, // Make ID optional
+    required this.id,
     required this.cropName,
     required this.growthStage,
     required this.startDate,
-    required this.harvesDate,
-    required this.location,
-    required this.location2,
-    required this.fertilizer,
-    required this.pesticide,
-  }) : id = id ?? uuid.v4(); // Generate UUID if not provided
+    required this.harvestDate,
+    this.location,
+    this.fertilizer,
+    this.pesticide,
+    this.temperature,
+    this.humidity,
+    this.weatherDescription,
+    this.aiRecommendations,
+  });
 
-  /// 🔹 Convert object to Map (for Firebase, Hive, or local storage)
   Map<String, dynamic> toMap() {
     return {
-      'id': id, // Include ID in the map
+      'id': id,
       'cropName': cropName,
       'growthStage': growthStage,
-      'startDate': startDate.toIso8601String(), // Store as ISO string
-      'harvesDate': harvesDate.toIso8601String(),
+      'startDate': startDate.toIso8601String(),
+      'harvestDate': harvestDate.toIso8601String(),
       'location': location,
-      'location2': location2,
       'fertilizer': fertilizer,
       'pesticide': pesticide,
+      'temperature': temperature,
+      'humidity': humidity,
+      'weatherDescription': weatherDescription,
+      'aiRecommendations': aiRecommendations,
     };
   }
 
-  /// 🔹 Create object from Map
   factory CropDetails.fromMap(Map<String, dynamic> map) {
     return CropDetails(
-      id: map['id'], // Use existing ID
+      id: map['id'] ?? '',
       cropName: map['cropName'] ?? '',
       growthStage: map['growthStage'] ?? '',
-      startDate: DateTime.parse(map['startDate']),
-      harvesDate: DateTime.parse(map['harvesDate']),
-      location: map['location'] ?? '',
-      location2: map['location2'] ?? '',
-      fertilizer: map['fertilizer'] ?? '',
-      pesticide: map['pesticide'] ?? '',
-    );
-  }
-
-  /// 🔹 Convert object to JSON string
-  String toJson() => toMap().toString();
-
-  /// 🔹 Create object from JSON string
-  factory CropDetails.fromJson(Map<String, dynamic> json) {
-    return CropDetails.fromMap(json);
-  }
-
-  /// ✅ CopyWith method for easy updates
-  CropDetails copyWith({
-    String? cropName,
-    String? growthStage,
-    DateTime? startDate,
-    DateTime? harvesDate,
-    String? location,
-    String? location2,
-    String? fertilizer,
-    String? pesticide,
-  }) {
-    return CropDetails(
-      id: id, // Keep the same ID
-      cropName: cropName ?? this.cropName,
-      growthStage: growthStage ?? this.growthStage,
-      startDate: startDate ?? this.startDate,
-      harvesDate: harvesDate ?? this.harvesDate,
-      location: location ?? this.location,
-      location2: location2 ?? this.location2,
-      fertilizer: fertilizer ?? this.fertilizer,
-      pesticide: pesticide ?? this.pesticide,
+      startDate: DateTime.tryParse(map['startDate'] ?? '') ?? DateTime.now(),
+      harvestDate: DateTime.tryParse(map['harvestDate'] ?? '') ?? DateTime.now(),
+      location: map['location'] as String?,
+      fertilizer: map['fertilizer'] as String?,
+      pesticide: map['pesticide'] as String?,
+      temperature: map['temperature'] as String?,
+      humidity: map['humidity'] as String?,
+      weatherDescription: map['weatherDescription'] as String?,
+      aiRecommendations: map['aiRecommendations'] as String?,
     );
   }
 }

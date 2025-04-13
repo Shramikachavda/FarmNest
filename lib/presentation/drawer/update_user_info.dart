@@ -5,6 +5,7 @@ import 'package:agri_flutter/customs_widgets/custom_form_field.dart';
 import 'package:agri_flutter/customs_widgets/custom_snackbar.dart';
 import 'package:agri_flutter/models/user_data.dart';
 import 'package:agri_flutter/services/firestore.dart';
+import 'package:agri_flutter/theme/theme.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -75,6 +76,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+     backgroundColor:  themeColor( context: context).surface , 
       appBar: CustomAppBar( title: "Edit Profile") , 
  
       body: Padding(
@@ -96,6 +98,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               SizedBox(height: 24.h),
               CustomFormField(
+                readOnly: true,
                 hintText: 'Email',
                 keyboardType: TextInputType.name,
                 label: 'Email',

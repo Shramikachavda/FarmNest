@@ -1,4 +1,4 @@
-import 'package:agri_flutter/services/firestore.dart';
+/*import 'package:agri_flutter/services/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:agri_flutter/models/crop_details.dart';
 
@@ -62,6 +62,52 @@ Future<void> updateCrop(String userId , CropDetails crop) async {
       print("✅ Product removed: ${crop.id}");
     } catch (e) {
       print("❌ Error removing product: $e");
+    }
+  }
+}
+*/
+
+
+// lib/providers/farm_state_provider.dart/crop_details_provider.dart
+import 'package:agri_flutter/models/crop_details.dart';
+import 'package:agri_flutter/services/firestore.dart';
+import 'package:flutter/material.dart';
+
+class CropDetailsProvider with ChangeNotifier {
+  final FirestoreService _firestoreService = FirestoreService();
+  List<CropDetails> _allCropList = [];
+
+  List<CropDetails> get allCropList => _allCropList;
+
+  Future<void> addCrop(CropDetails crop) async {
+    try {
+      await _firestoreService.addCrop(_firestoreService.userId, crop);
+      _allCropList.add(crop);
+      notifyListeners();
+    } catch (e) {
+      throw Exception("Error adding crop: $e");
+    }
+  }
+
+  Future<void> updateCrop(String userId, CropDetails crop) async {
+    try {
+      await _firestoreService.updateCrop(userId, crop);
+      final index = _allCropList.indexWhere((c) => c.id == crop.id);
+      if (index != -1) {
+        _allCropList[index] = crop;
+        notifyListeners();
+      }
+    } catch (e) {
+      throw Exception("Error updating crop: $e");
+    }
+  }
+
+  Future<void> fetchCrops() async {
+    try {
+      _allCropList = await _firestoreService.getCrops();
+      notifyListeners();
+    } catch (e) {
+      throw Exception("Error fetching crops: $e");
     }
   }
 }

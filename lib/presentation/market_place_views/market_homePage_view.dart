@@ -68,12 +68,17 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
       if (query.isEmpty && selectedCategory.isEmpty) {
         _filteredProducts = ProductData.products;
       } else {
-        _filteredProducts = ProductData.products.where((product) {
-          final nameMatch = product.name.toLowerCase().contains(query);
-          final categoryMatch = product.category.toLowerCase().contains(query);
-          final categoryFilter = selectedCategory.isEmpty || product.category == selectedCategory;
-          return (nameMatch || categoryMatch) && categoryFilter;
-        }).toList();
+        _filteredProducts =
+            ProductData.products.where((product) {
+              final nameMatch = product.name.toLowerCase().contains(query);
+              final categoryMatch = product.category.toLowerCase().contains(
+                query,
+              );
+              final categoryFilter =
+                  selectedCategory.isEmpty ||
+                  product.category == selectedCategory;
+              return (nameMatch || categoryMatch) && categoryFilter;
+            }).toList();
       }
     });
   }
@@ -87,7 +92,10 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
 
   @override
   Widget build(BuildContext context) {
-    final productProvider = Provider.of<ProductProvider>(context , listen:  false);
+    final productProvider = Provider.of<ProductProvider>(
+      context,
+      listen: false,
+    );
     final favoriteProvider = Provider.of<FavoriteProvider>(context);
     final cartProvider = Provider.of<CartProvider>(context);
 
@@ -98,11 +106,17 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
         actions: [
           IconButton(
             icon: Icon(Icons.shopping_cart_outlined, size: 24.sp),
-            onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => CartView())),
+            onPressed:
+                () => Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => CartView())),
           ),
           IconButton(
             icon: Icon(Icons.favorite_border, size: 24.sp),
-            onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => FavoriteView())),
+            onPressed:
+                () => Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => FavoriteView())),
           ),
         ],
       ),
@@ -122,7 +136,8 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
             ),
 
             // Category Chips
-            SizedBox(height: 70.h,
+            SizedBox(
+              height: 70.h,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 shrinkWrap: true,
@@ -142,95 +157,139 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
               ),
             ),
 
-
             // Product Grid
             Expanded(
-              child: _filteredProducts.isEmpty
-                  ? Center(child: Text("No products found.", style: TextStyle(fontSize: 16.sp)))
-                  : GridView.builder(
-                itemCount: _filteredProducts.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.7,
-                  crossAxisSpacing: 12.w,
-                  mainAxisSpacing: 12.h,
-                ),
-                itemBuilder: (context, index) {
-                  final product = _filteredProducts[index];
-
-                  return InkWell(
-                    onTap: () {
-                      productProvider.setDetailProduct(product.id);
-
-                      print(product.id);  print(product.name);
-
-                      print("marke price page\n");
-                      Navigator.of(context).push(MaterialPageRoute(builder: (_) => DetailProductView()));
-                    },
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.r),
-                        side: BorderSide(
-                          color: themeColor().outlineVariant,
-                          width: 2,
+              child:
+                  _filteredProducts.isEmpty
+                      ? Center(
+                        child: Text(
+                          "No products found.",
+                          style: TextStyle(fontSize: 16.sp),
                         ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Image
-                          ClipRRect(
-                            borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-                            child: Container(
-                              width: double.infinity,
-                              height: 120.h,
-                              decoration: BoxDecoration(
-                                color: Colors.white70,
-                                image: DecorationImage(
-                                  image: NetworkImage(product.imageUrl),
-                                  fit: BoxFit.contain,
+                      )
+                      : GridView.builder(
+                        itemCount: _filteredProducts.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.7,
+                          crossAxisSpacing: 12.w,
+                          mainAxisSpacing: 12.h,
+                        ),
+                        itemBuilder: (context, index) {
+                          final product = _filteredProducts[index];
+
+                          return InkWell(
+                            onTap: () {
+                              productProvider.setDetailProduct(product.id);
+
+                              print(product.id);
+                              print(product.name);
+
+                              print("marke price page\n");
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => DetailProductView(),
+                                ),
+                              );
+                            },
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.r),
+                                side: BorderSide(
+                                  color: themeColor().outlineVariant,
+                                  width: 2,
                                 ),
                               ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 5.w),
-                            child: bodyText(product.name),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 5.w),
-                            child: captionStyleText(product.description),
-                          ),
-                          // Price and Buttons
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Text('₹${product.price}', style: TextStyle(fontSize: 14.sp)),
-                                customRoundIconButton(
-                                  context: context,
-                                  icon: favoriteProvider.isFavorite(product)
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
-                                  onPressed: () async {
-                                    final isFav = favoriteProvider.isFavorite(product);
-                                    if (isFav) {
-                                      await favoriteProvider.removeFavorite(product);
-                                      showCustomSnackBar(context, 'Item removed from favorite list');
-                                    } else {
-                                      await favoriteProvider.addFavorite(product);
-                                      showCustomSnackBar(context, 'Item added to favorite list');
-                                    }
-                                  },
-                                ),
-                                customRoundIconButton(
-                                  context: context,
-                                  icon: Icons.add,
-                                  onPressed: () async {
-                                    if (cartProvider.isProductInCart(product)) {
-                                      await cartProvider.increaseQuantity(product);
-                                      showCustomSnackBar(context, 'Quantity increased');
-                                  /*    ScaffoldMessenger.of(context).showSnackBar(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children:
+                                    [
+                                      // Image
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(20.r),
+                                        ),
+                                        child: Container(
+                                          width: double.infinity,
+                                          height: 120.h,
+                                          decoration: BoxDecoration(
+                                            color: themeColor(context: context).surface,
+                                            image: DecorationImage(
+                                              image: NetworkImage(
+                                                product.imageUrl,
+                                              ),
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 5.w,
+                                        ),
+                                        child: bodyText(product.name),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 5.w,
+                                        ),
+                                        child: captionStyleText(
+                                          product.description,
+                                        ),
+                                      ),
+                                      // Price and Buttons
+                                      Expanded(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            Text(
+                                              '₹${product.price}',
+                                              style: TextStyle(fontSize: 14.sp),
+                                            ),
+                                            customRoundIconButton(
+                                              context: context,
+                                              icon:
+                                                  favoriteProvider.isFavorite(
+                                                        product,
+                                                      )
+                                                      ? Icons.favorite
+                                                      : Icons.favorite_border,
+                                              onPressed: () async {
+                                                final isFav = favoriteProvider
+                                                    .isFavorite(product);
+                                                if (isFav) {
+                                                  await favoriteProvider
+                                                      .removeFavorite(product);
+                                                  showCustomSnackBar(
+                                                    context,
+                                                    'Item removed from favorite list',
+                                                  );
+                                                } else {
+                                                  await favoriteProvider
+                                                      .addFavorite(product);
+                                                  showCustomSnackBar(
+                                                    context,
+                                                    'Item added to favorite list',
+                                                  );
+                                                }
+                                              },
+                                            ),
+                                            customRoundIconButton(
+                                              context: context,
+                                              icon: Icons.add,
+                                              onPressed: () async {
+                                                if (cartProvider
+                                                    .isProductInCart(product)) {
+                                                  await cartProvider
+                                                      .increaseQuantity(
+                                                        product,
+                                                      );
+                                                  showCustomSnackBar(
+                                                    context,
+                                                    'Quantity increased',
+                                                  );
+                                                  /*    ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
                                           content: Text('Item added to cart'),
                                           action: SnackBarAction(
@@ -241,25 +300,25 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
                                           ),
                                         ),
                                       );*/
-
-
-
-                                    } else {
-                                      await cartProvider.addCartItem(product);
-                                      showCustomSnackBar(context, 'Item added to cart');
-                                    }
-                                  },
-
-                                ),
-                              ],
+                                                } else {
+                                                  await cartProvider
+                                                      .addCartItem(product);
+                                                  showCustomSnackBar(
+                                                    context,
+                                                    'Item added to cart',
+                                                  );
+                                                }
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ].separator(SizedBox(height: 5.h)).toList(),
+                              ),
                             ),
-                          ),
-                        ].separator(SizedBox(height: 5.h)).toList(),
+                          );
+                        },
                       ),
-                    ),
-                  );
-                },
-              ),
             ),
           ],
         ),
