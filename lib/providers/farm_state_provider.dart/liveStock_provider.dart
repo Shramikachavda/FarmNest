@@ -3,15 +3,46 @@ import 'package:agri_flutter/models/live_stock_detail.dart';
 import 'package:agri_flutter/services/firestore.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../core/drop_down_value.dart';
+
 class LivestockProvider with ChangeNotifier {
   final List<LiveStockDetail> _liveStockList = [];
   final FirestoreService _firestoreService = FirestoreService();
+  LivestockType? _selectedLivestockType;
+  LivestockPurpose? _selectedLivestockPurpose;
+  Gender? _selectedGender;
+
+
+
 
   LivestockProvider() {
     fetchLivestock();
   }
 
-  List<LiveStockDetail> get liveStockList => _liveStockList; // Getter for list
+  List<LiveStockDetail> get liveStockList => _liveStockList;
+
+  LivestockType? get selectedLivestockType => _selectedLivestockType;
+  LivestockPurpose? get selectedLivestockPurpose => _selectedLivestockPurpose;
+  Gender? get selectedGender => _selectedGender;
+
+
+  //set method
+  void setLivestockType(LivestockType? type) {
+    _selectedLivestockType = type ?? LivestockType.cow;
+    notifyListeners();
+  }
+
+  void setLivestockPurpose(LivestockPurpose? purpose) {
+    _selectedLivestockPurpose = purpose ?? LivestockPurpose.dairy;
+    notifyListeners();
+  }
+
+  void setGender(Gender? gender) {
+    _selectedGender = gender ?? Gender.male;
+    notifyListeners();
+  }
+
+
 
   Future<void> fetchLivestock() async {
     try {
@@ -69,4 +100,6 @@ class LivestockProvider with ChangeNotifier {
       // Optionally show an error message to the user
     }
   }
+
+
 }

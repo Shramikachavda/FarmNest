@@ -73,10 +73,37 @@ import 'package:agri_flutter/models/crop_details.dart';
 import 'package:agri_flutter/services/firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/drop_down_value.dart';
+
 class CropDetailsProvider with ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
   List<CropDetails> _allCropList = [];
 
+  // Dropdown values
+
+  GrowthStage? _selectedStage;
+  FertilizerType? _selectedFertilizer;
+  PesticideType? _selectedPesticide;
+
+
+  GrowthStage? get selectedStage => _selectedStage;
+  FertilizerType? get selectedFertilizer => _selectedFertilizer;
+  PesticideType? get selectedPesticide => _selectedPesticide;
+
+  void setGrowth(GrowthStage? value) {
+    _selectedStage = value ?? GrowthStage.seedling;
+    notifyListeners();
+  }
+
+  void setFerti(FertilizerType? value) {
+    _selectedFertilizer = value ?? FertilizerType.organic;
+    notifyListeners();
+  }
+
+  void setPesti(PesticideType? value) {
+    _selectedPesticide = value ?? PesticideType.insecticide;
+    notifyListeners();
+  }
   List<CropDetails> get allCropList => _allCropList;
 
   Future<void> addCrop(CropDetails crop) async {

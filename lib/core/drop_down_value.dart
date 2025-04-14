@@ -44,16 +44,7 @@ enum Gender {
   male,   // ♂ Male
   female  // ♀ Female
 }
-enum LivestockType {
-  cattle,    // 🐄 Cows, Buffaloes (Dairy, Meat, Labor)
-  sheep,     // 🐑 Sheep (Wool, Meat, Dairy)
-  goat,      // 🐐 Goats (Dairy, Meat, Fiber)
-  pig,       // 🐖 Pigs (Meat, Breeding)
-  poultry,   // 🐔 Chickens, Ducks, Turkeys (Eggs, Meat)
-  horse,     // 🐎 Horses (Labor, Transport, Companionship)
-  camel,     // 🐫 Camels (Labor, Dairy, Transport)
-  rabbit     // 🐇 Rabbits (Meat, Pets, Fur)
-}
+
 enum LivestockAge {
   infant,   // 🍼 0-3 months
   juvenile, // 🧒 3-12 months
@@ -92,3 +83,26 @@ enum FarmersAllocated {
   five,
   six
 }
+
+enum LivestockPurpose {
+  dairy,         // Milk production
+  meat,          // Meat production
+  breeding,      // Reproduction/genetics
+  draft,         // Field work/manual labor
+  manure,        // Organic fertilizer
+  poultry,       // Eggs and meat
+  wool,          // Fiber or wool for sale/use
+  multiPurpose;  // Combines multiple farm functions
+}
+enum LivestockType {
+  cow,         // Primary source of milk (Gir, Kankrej breeds common in Gujarat)
+  buffalo,     // High milk yield, especially Jaffarabadi & Mehsana breeds
+  goat,        // Popular for meat & milk (e.g., Surti breed)
+  sheep,       // Wool and meat (used more in dry areas like Saurashtra & Kutch)
+  poultry,     // Eggs and meat (layer and broiler farming rising in Gujarat)
+  ox,          // Draft purposes (especially in traditional farms)
+  donkey,      // Still used in hilly or rural transport in some regions
+  pig,         // Reared in some tribal/rural areas for meat
+}
+
+

@@ -20,7 +20,7 @@ class FarmStateHomeView extends StatelessWidget {
     final liveStockProvider = Provider.of<LivestockProvider>(context);
     final cropDetailsProvider = Provider.of<CropDetailsProvider>(context);
 
-    // Combine both lists **while preserving order**
+
     final combinedList = [
       ...liveStockProvider.liveStockList,
       ...cropDetailsProvider.allCropList,
@@ -35,7 +35,7 @@ class FarmStateHomeView extends StatelessWidget {
             context,
           ).push(MaterialPageRoute(builder: (context) => const AddFarmState()));
         },
-        child: const Icon(Icons.add),
+        child:  Icon(Icons.add , size : 20.sp),
       ),
       body:
           combinedList.isEmpty
@@ -45,11 +45,11 @@ class FarmStateHomeView extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final item = combinedList[index];
 
-                  /// ✅ **Livestock Card**
+                  //Livestock Card
                   if (item is LiveStockDetail) {
                     return _buildLivestockCard(context, item);
                   }
-                  /// ✅ **Crop Card**
+                  //Crop Card
                   else if (item is CropDetails) {
                     return _buildCropCard(context, item);
                   }

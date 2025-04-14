@@ -142,10 +142,10 @@ class _DetailProductViewState extends State<DetailProductView> {
                       },
                       icon:
                           favoriteProvider.isFavorite(product)
-                              ? Icon(Icons.favorite, size: 24.sp)
+                              ? Icon(Icons.favorite, size: 20.sp)
                               : Icon(
                                 Icons.favorite_border_outlined,
-                                size: 24.sp,
+                                size: 20.sp,
                               ),
                     ),
                   ],

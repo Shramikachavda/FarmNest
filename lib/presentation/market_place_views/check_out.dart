@@ -67,7 +67,7 @@ class _CheckoutViewState extends State<CheckoutView> {
         listen: false,
       );
 
-      await addressProvider.loadAddressesSilently();
+      await addressProvider.loadAddresses();
       DefaultFarmerAddress? selectedAddress = selectedAddressProvider.selected;
 
       if (selectedAddress == null ||
@@ -77,7 +77,7 @@ class _CheckoutViewState extends State<CheckoutView> {
         selectedAddress = await addressProvider.getDefaultAddress();
         if (selectedAddress == null && addressProvider.addresses.isNotEmpty) {
           selectedAddress = addressProvider.addresses.first;
-          await addressProvider.setDefault(selectedAddress);
+          await addressProvider.setDefaultIfNotAlready(selectedAddress);
         }
         if (selectedAddress != null) {
           selectedAddressProvider.setAddress(selectedAddress);

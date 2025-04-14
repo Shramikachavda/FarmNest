@@ -66,7 +66,7 @@ class _CalenderViewState extends State<CalenderView> {
                 context,
               ).push(MaterialPageRoute(builder: (context) => Graph()));
             },
-            icon: Icon(Icons.insights, size: 24.sp),
+            icon: Icon(Icons.insights, size: 20.sp),
             tooltip: "View Analytics",
           ),
         ],
@@ -84,7 +84,7 @@ class _CalenderViewState extends State<CalenderView> {
           }
         },
 
-        child: Icon(Icons.add, size: 28.sp),
+        child: Icon(Icons.add, size: 20.sp),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),

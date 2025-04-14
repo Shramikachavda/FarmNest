@@ -36,4 +36,22 @@ class DefaultFarmerAddress {
       isDefault: json['isDefault'] ?? false,
     );
   }
+
+  DefaultFarmerAddress copyWith({
+    String? address1,
+    String? address2,
+    String? name,
+    String? landmark,
+    int? contactNumber,
+    bool? isDefault,
+  }) {
+    return DefaultFarmerAddress(
+      address1: address1 ?? this.address1,
+      address2: address2 ?? this.address2,
+      name: name ?? this.name,
+      landmark: landmark ?? this.landmark,
+      contactNumber: contactNumber ?? this.contactNumber,
+      isDefault: isDefault ?? this.isDefault,
+    );
+  }
 }

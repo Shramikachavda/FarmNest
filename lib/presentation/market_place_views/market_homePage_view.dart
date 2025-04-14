@@ -105,14 +105,14 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
         title: bodyMediumText("Market place"),
         actions: [
           IconButton(
-            icon: Icon(Icons.shopping_cart_outlined, size: 24.sp),
+            icon: Icon(Icons.shopping_cart_outlined, size: 20.sp),
             onPressed:
                 () => Navigator.of(
                   context,
                 ).push(MaterialPageRoute(builder: (_) => CartView())),
           ),
           IconButton(
-            icon: Icon(Icons.favorite_border, size: 24.sp),
+            icon: Icon(Icons.favorite_border, size: 20.sp),
             onPressed:
                 () => Navigator.of(
                   context,
@@ -132,7 +132,7 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
               keyboardType: TextInputType.text,
               label: 'Search Store',
               textEditingController: _searchController,
-              icon: Icon(Icons.search, size: 24.sp),
+              icon: Icon(Icons.search, size: 20.sp),
             ),
 
             // Category Chips

@@ -139,36 +139,7 @@ class _OrderScreenState extends State<OrderScreen> {
                       ),
                     ),
                     SizedBox(height: 24.h), // Space before total container
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 12.h,
-                        horizontal: 16.w,
-                      ),
-                      decoration: BoxDecoration(
-                        color: themeColor(context: context).surfaceContainer,
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Total Quantity: $totalQty",
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          Text(
-                            "Total: ₹${totalPrice.toStringAsFixed(2)}",
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.green,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+
                   ],
                 ),
               ),

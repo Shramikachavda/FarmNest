@@ -19,6 +19,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:lottie/lottie.dart';
+
 import 'package:provider/provider.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
@@ -101,10 +102,10 @@ class _HomePageScreenState extends State<HomePageScreen> {
   String getAnimation() {
     final now = DateTime.now();
     final hour = now.hour;
-    if (hour >= 5 && hour < 12) return ImageConst.anim3;
+    if (hour >= 5 && hour < 12) return ImageConst.anim1;
     if (hour >= 12 && hour < 17) return ImageConst.anim1;
-    if (hour >= 17 && hour < 21) return ImageConst.anim2;
-    return ImageConst.anim4;
+    if (hour >= 17 && hour < 21) return ImageConst.anim1;
+    return ImageConst.anim3;
   }
 
   @override
@@ -155,7 +156,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                     assetIcon: Icon(
                       Icons.menu,
                       color: themeColor().onInverseSurface,
-                      size: 24.sp,
+                      size: 20.sp,
                     ),
                   ),
                 ),
@@ -381,13 +382,34 @@ class _HomePageScreenState extends State<HomePageScreen> {
       ),
       child: Stack(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [welcomeCardBackGroundImage()],
-          ),
+          welcomeCardBackGroundImage(),
+          lottieAnim(),
           welcomeCard(),
         ],
+      ),
+    );
+  }
+
+  Widget lottieAnim() {
+    final anim = getAnimation();
+    return Padding(
+      padding: EdgeInsets.only(right: 60.w),
+      child: Align(
+        alignment: Alignment.topRight,
+        child: SizedBox(
+          height: 100.h,
+          width: 100.h,
+          child: DotLottieLoader.fromAsset(
+            anim,
+            frameBuilder: (BuildContext ctx, DotLottie? dotlottie) {
+              if (dotlottie != null) {
+                return Lottie.memory(dotlottie.animations.values.single);
+              } else {
+                return Container();
+              }
+            },
+          ),
+        ),
       ),
     );
   }
@@ -448,7 +470,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                     assetIcon: Icon(
                       Icons.add,
                       color: themeColor().onInverseSurface,
-                      size: 24.sp,
+                      size: 20.sp,
                     ),
                   ),
                 ],
@@ -489,24 +511,21 @@ class _HomePageScreenState extends State<HomePageScreen> {
                     );
                   }
 
-                  return Row(
-                    children: [
-                      Expanded(
-                        child: eventCard(
-                          upComingEvent: upComingEvents,
-                          index: 0,
-                          eventProvider: eventProvider,
-                        ),
-                      ),
-                      SizedBox(width: 12.w),
-                      Expanded(
-                        child: eventCard(
-                          upComingEvent: upComingEvents,
-                          index: 1,
-                          eventProvider: eventProvider,
-                        ),
-                      ),
-                    ],
+                  return Expanded(
+                    child: ListView.builder(
+                                    //    scrollDirection: Axis.horizontal,
+                       shrinkWrap: true,
+                       itemBuilder: (context, index) {
+                        return  Expanded(
+                          child: eventCard(
+                             upComingEvent: upComingEvents,
+                             index: index,
+                             eventProvider: eventProvider,
+                           ),
+                        );
+                       },
+
+                    ),
                   );
                 },
               ),

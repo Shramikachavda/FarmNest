@@ -22,17 +22,17 @@ class EventExpenseProvider with ChangeNotifier {
     }
   }
 
-  /// **Get Combined Events & Expenses List**
+
   List<EventExpense> get allEventsAndExpenses => [..._events, ..._expenses];
 
-  /// **Get Events & Expenses for a Specific Date**
+
   List<EventExpense> getEventsAndExpensesForDate(DateTime date) {
     return allEventsAndExpenses
         .where((event) => isSameDay(event.date, date))
         .toList();
   }
 
-  /// **Add Event or Expense**
+
   Future<void> addEventExpense(EventExpense event) async {
     try {
       if (event.type == "Expense") {
@@ -47,7 +47,7 @@ class EventExpenseProvider with ChangeNotifier {
     }
   }
 
-  /// **Remove Event or Expense**
+
   Future<void> removeEventExpense(EventExpense event) async {
     try {
       if (event.type == "Expense") {

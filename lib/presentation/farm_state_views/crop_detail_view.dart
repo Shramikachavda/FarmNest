@@ -5,11 +5,11 @@ import 'package:agri_flutter/customs_widgets/custom_form_field.dart';
 import 'package:agri_flutter/customs_widgets/custom_snackbar.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/models/crop_details.dart';
+import 'package:agri_flutter/providers/ai_provider.dart';
 import 'package:agri_flutter/providers/api_provider/weather_provider.dart';
 import 'package:agri_flutter/providers/farm_state_provider.dart/crop_details_provider.dart';
 import 'package:agri_flutter/providers/location_provider.dart';
 import 'package:agri_flutter/services/firestore.dart';
-import 'package:agri_flutter/services/gimini_serivce/crop_adivce%20serivce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,8 +17,10 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../services/gimini_service_api.dart';
+
 class CropAdvisorView extends BaseStatefulWidget {
-  final String? existingCrop; // Firestore crop ID
+  final String? existingCrop;
 
   const CropAdvisorView({super.key, this.existingCrop});
 
@@ -53,11 +55,6 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
   final FocusNode _focusNodeTemp = FocusNode();
   final FocusNode _focusNodeHumidity = FocusNode();
 
-  // Dropdown values
-  GrowthStage? _selectedStage;
-  FertilizerType? _selectedFertilizer;
-  PesticideType? _selectedPesticide;
-
   // Form key for validation
   final _formKey = GlobalKey<FormState>();
 
@@ -68,18 +65,18 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
   final FirestoreService _firestoreService = FirestoreService();
   final GeminiService _geminiService = GeminiService();
 
-  // AI response state
-  bool _isLoading = false;
-  String _aiResponse = "";
-  bool _showAiResponse = false;
-
   // Store fetched CropDetails
   CropDetails? _cropDetails;
 
   @override
   void initState() {
     super.initState();
-    if (widget.existingCrop != null) {
+    final cropProvider = Provider.of<CropDetailsProvider>(context, listen: false);
+    if (widget.existingCrop == null) {
+      cropProvider.setGrowth(GrowthStage.seedling);
+      cropProvider.setFerti(FertilizerType.organic);
+      cropProvider.setPesti(PesticideType.insecticide);
+    } else {
       _loadCropData();
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -92,44 +89,46 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
     if (widget.existingCrop == null) return;
 
     try {
+      final cropProvider = Provider.of<CropDetailsProvider>(context, listen: false);
       final crops = await _firestoreService.getCrops();
-      _cropDetails = crops.firstWhere(
-        (crop) => crop.id == widget.existingCrop,
-        orElse:
-            () => CropDetails(
-              id: '',
-              cropName: '',
-              growthStage: '',
-              startDate: DateTime.now(),
-              harvestDate: DateTime.now(),
-            ),
+      final crop = crops.firstWhere(
+            (crop) => crop.id == widget.existingCrop,
+        orElse: () => CropDetails(
+          id: '',
+          fertilizer: '',
+          pesticide: '',
+          cropName: '',
+          growthStage: '',
+          startDate: DateTime.now(),
+          harvestDate: DateTime.now(),
+        ),
       );
 
-      if (_cropDetails!.id.isNotEmpty) {
+      if (crop.id.isNotEmpty) {
         setState(() {
-          _cropNameController.text = _cropDetails!.cropName;
-          _selectedStage = GrowthStage.values.firstWhere(
-            (e) => e.name == _cropDetails!.growthStage,
-            orElse: () => GrowthStage.seedling,
-          );
-          _sowingDateController.text = dateFormat.format(
-            _cropDetails!.startDate,
-          );
-          _harvestDateController.text = dateFormat.format(
-            _cropDetails!.harvestDate,
-          );
-          _locationController.text = _cropDetails!.location ?? "";
-          _selectedFertilizer = FertilizerType.values.firstWhere(
-            (e) => e.name == _cropDetails!.fertilizer,
-            orElse: () => FertilizerType.organic,
-          );
-          _selectedPesticide = PesticideType.values.firstWhere(
-            (e) => e.name == _cropDetails!.pesticide,
-            orElse: () => PesticideType.insecticide,
-          );
-          _temperatureController.text = _cropDetails!.temperature ?? "30";
-          _humidityController.text = _cropDetails!.humidity ?? "60";
+          _cropDetails = crop;
+          _cropNameController.text = crop.cropName;
+          _sowingDateController.text = dateFormat.format(crop.startDate);
+          _harvestDateController.text = dateFormat.format(crop.harvestDate);
+          _locationController.text = crop.location ?? '';
+          _temperatureController.text = crop.temperature ?? '30';
+          _humidityController.text = crop.humidity ?? '60';
         });
+        cropProvider.setGrowth(GrowthStage.values.firstWhere(
+              (e) => e.name == crop.growthStage,
+          orElse: () => GrowthStage.seedling,
+        ));
+        cropProvider.setFerti(FertilizerType.values.firstWhere(
+              (e) => e.name == crop.fertilizer,
+          orElse: () => FertilizerType.organic,
+        ));
+        cropProvider.setPesti(PesticideType.values.firstWhere(
+              (e) => e.name == crop.pesticide,
+          orElse: () => PesticideType.insecticide,
+        ));
+        if (crop.aiRecommendations != null) {
+          Provider.of<AIProvider>(context, listen: false).setAiResponse(crop.aiRecommendations!);
+        }
       } else {
         showCustomSnackBar(context, "Crop not found in Firestore");
       }
@@ -139,24 +138,18 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
   }
 
   Future<void> _loadWeather() async {
-    final locationProvider = Provider.of<LocationProvider>(
-      context,
-      listen: false,
-    );
-    if (locationProvider.latitude != null &&
-        locationProvider.longitude != null) {
+    final locationProvider = Provider.of<LocationProvider>(context, listen: false);
+    if (locationProvider.latitude != null && locationProvider.longitude != null) {
       try {
-        await Provider.of<WeatherViewModel>(
-          context,
-          listen: false,
-        ).loadWeather(locationProvider.latitude!, locationProvider.longitude!);
+        await Provider.of<WeatherViewModel>(context, listen: false).loadWeather(
+          locationProvider.latitude!,
+          locationProvider.longitude!,
+        );
         final weather = Provider.of<WeatherViewModel>(context, listen: false);
         if (weather.currentWeather != null) {
           setState(() {
-            _temperatureController.text =
-                weather.currentWeather!['main']['temp']?.toString() ?? "30";
-            _humidityController.text =
-                weather.currentWeather!['main']['humidity']?.toString() ?? "60";
+            _temperatureController.text = weather.currentWeather!['main']?['temp']?.toString() ?? '30';
+            _humidityController.text = weather.currentWeather!['main']?['humidity']?.toString() ?? '60';
           });
         }
       } catch (e) {
@@ -179,107 +172,76 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
       return;
     }
 
-    if (_selectedStage == null) {
-      showCustomSnackBar(context, "Please select a growth stage");
-      return;
-    }
-    if (_selectedFertilizer == null) {
-      showCustomSnackBar(context, "Please select a fertilizer type");
-      return;
-    }
-    if (_selectedPesticide == null) {
-      showCustomSnackBar(context, "Please select a pesticide type");
+    final cropProvider = Provider.of<CropDetailsProvider>(context, listen: false);
+    if (cropProvider.selectedStage == null ||
+        cropProvider.selectedFertilizer == null ||
+        cropProvider.selectedPesticide == null) {
+      showCustomSnackBar(context, "Please select growth stage, fertilizer, and pesticide");
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-      _showAiResponse = true;
-    });
+    final aiProvider = Provider.of<AIProvider>(context, listen: false);
+    aiProvider.setLoading(true);
+    aiProvider.setShowAiResponse(true);
 
     try {
       final weather = Provider.of<WeatherViewModel>(context, listen: false);
-      final weatherDescription =
-          weather.currentWeather != null &&
-                  weather.currentWeather!['weather'] != null &&
-                  weather.currentWeather!['weather'].isNotEmpty
-              ? weather.currentWeather!['weather'][0]['description'] as String?
-              : "Unknown";
+
 
       final response = await _geminiService.getCropRecommendations(
         cropName: _cropNameController.text,
-        growthStage: _selectedStage!.name,
-        sowingDate: _sowingDateController.text,
-        harvestDate: _harvestDateController.text,
-        fertilizer: _selectedFertilizer!.name,
-        pesticide: _selectedPesticide!.name,
+        growthStage: cropProvider.selectedStage!.name,
+        sowingDate: parseDate(_sowingDateController.text) ,
+        harvestDate:parseDate(_harvestDateController.text) ,
+        fertilizer: cropProvider.selectedFertilizer!.name,
+        pesticide: cropProvider.selectedPesticide!.name,
         temperature: _temperatureController.text,
         humidity: _humidityController.text,
-        weatherDescription: weatherDescription,
-        location:
-            _locationController.text.isNotEmpty
-                ? _locationController.text
-                : null,
+        location: _locationController.text.isNotEmpty ? _locationController.text : null,
       );
 
-      setState(() {
-        _aiResponse = response;
-        _isLoading = false;
-      });
-
-      print(
-        'Stage: $_selectedStage, Fertilizer: $_selectedFertilizer, Pesticide: $_selectedPesticide',
-      );
-      print('Weather: ${weather.currentWeather}');
+      aiProvider.setAiResponse(response);
+      aiProvider.setLoading(false);
     } catch (e) {
-      setState(() {
-        _aiResponse = "Error generating recommendations: $e";
-        _isLoading = false;
-      });
-      showCustomSnackBar(context, "Failed to fetch recommendations: $e");
+      aiProvider.setAiResponse("Error generating recommendations: $e");
+      aiProvider.setLoading(false);
+      showCustomSnackBar(context, "Something went wrong. Try again later: $e");
     }
   }
 
   Future<void> _saveCropDetails() async {
-    if (_selectedStage == null ||
-        _selectedFertilizer == null ||
-        _selectedPesticide == null) {
-      showCustomSnackBar(context, "Please complete all required fields");
+    if (!_formKey.currentState!.validate()) {
+      showCustomSnackBar(context, "Please fill all required fields");
       return;
     }
 
-    final cropProvider = Provider.of<CropDetailsProvider>(
-      context,
-      listen: false,
-    );
+    final cropProvider = Provider.of<CropDetailsProvider>(context, listen: false);
+    if (cropProvider.selectedStage == null ||
+        cropProvider.selectedFertilizer == null ||
+        cropProvider.selectedPesticide == null) {
+      showCustomSnackBar(context, "Please select growth stage, fertilizer, and pesticide");
+      return;
+    }
+
+    final aiProvider = Provider.of<AIProvider>(context, listen: false);
     final weather = Provider.of<WeatherViewModel>(context, listen: false);
     final cropDetails = CropDetails(
       id: _cropDetails?.id ?? const Uuid().v4(),
       cropName: _cropNameController.text,
-      growthStage: _selectedStage!.name,
+      growthStage: cropProvider.selectedStage!.name,
       startDate: parseDate(_sowingDateController.text) ?? DateTime.now(),
       harvestDate: parseDate(_harvestDateController.text) ?? DateTime.now(),
-      location:
-          _locationController.text.isEmpty ? null : _locationController.text,
-      fertilizer: _selectedFertilizer!.name,
-      pesticide: _selectedPesticide!.name,
-      temperature:
-          _temperatureController.text.isEmpty
-              ? null
-              : _temperatureController.text,
-      humidity:
-          _humidityController.text.isEmpty ? null : _humidityController.text,
-      weatherDescription:
-          weather.currentWeather != null &&
-                  weather.currentWeather!['weather'] != null &&
-                  weather.currentWeather!['weather'].isNotEmpty
-              ? weather.currentWeather!['weather'][0]['description'] as String?
-              : null,
-      aiRecommendations: _aiResponse.isEmpty ? null : _aiResponse,
+      location: _locationController.text.isNotEmpty ? _locationController.text : null,
+      fertilizer: cropProvider.selectedFertilizer!.name,
+      pesticide: cropProvider.selectedPesticide!.name,
+      temperature: _temperatureController.text.isNotEmpty ? _temperatureController.text : null,
+      humidity: _humidityController.text.isNotEmpty ? _humidityController.text : null,
+
+      aiRecommendations: aiProvider.aiResponse.isNotEmpty ? aiProvider.aiResponse : null,
     );
 
     try {
-      if (_cropDetails != null && _cropDetails!.id.isNotEmpty) {
+      if (_cropDetails?.id.isNotEmpty ?? false) {
         await cropProvider.updateCrop(_firestoreService.userId, cropDetails);
         showCustomSnackBar(context, "Crop updated successfully");
       } else {
@@ -296,6 +258,8 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
   Widget build(BuildContext context) {
     final weatherProvider = Provider.of<WeatherViewModel>(context);
     final locationProvider = Provider.of<LocationProvider>(context);
+    final aiProvider = Provider.of<AIProvider>(context);
+    final cropDetailsProvider = Provider.of<CropDetailsProvider>(context);
 
     return Scaffold(
       body: Padding(
@@ -306,7 +270,7 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (!_showAiResponse) ...[
+                if (!aiProvider.showAiResponse) ...[
                   _buildSection(
                     title: "Basic Information",
                     children: [
@@ -328,12 +292,10 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
                       SizedBox(height: 24.h),
                       reusableDropdown<GrowthStage>(
                         label: "Growth Stage",
-                        selectedValue: _selectedStage,
+                        selectedValue: cropDetailsProvider.selectedStage ?? GrowthStage.seedling,
                         items: GrowthStage.values,
                         onChanged: (newValue) {
-                          setState(() {
-                            _selectedStage = newValue;
-                          });
+                          cropDetailsProvider.setGrowth(newValue);
                         },
                       ),
                     ],
@@ -381,23 +343,19 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
                     children: [
                       reusableDropdown<FertilizerType>(
                         label: "Fertilizer Used",
-                        selectedValue: _selectedFertilizer,
+                        selectedValue: cropDetailsProvider.selectedFertilizer ?? FertilizerType.organic,
                         items: FertilizerType.values,
                         onChanged: (newValue) {
-                          setState(() {
-                            _selectedFertilizer = newValue;
-                          });
+                          cropDetailsProvider.setFerti(newValue);
                         },
                       ),
                       SizedBox(height: 24.h),
                       reusableDropdown<PesticideType>(
                         label: "Pesticide Used",
-                        selectedValue: _selectedPesticide,
+                        selectedValue: cropDetailsProvider.selectedPesticide ?? PesticideType.insecticide,
                         items: PesticideType.values,
                         onChanged: (newValue) {
-                          setState(() {
-                            _selectedPesticide = newValue;
-                          });
+                          cropDetailsProvider.setPesti(newValue);
                         },
                       ),
                     ],
@@ -409,10 +367,9 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
                       CustomFormField(
                         focusNode: _focusNodeTemp,
                         textInputAction: TextInputAction.next,
-                        hintText:
-                            weatherProvider.currentWeather != null
-                                ? "${weatherProvider.currentWeather!['main']['temp']?.toString() ?? 'N/A'}°C"
-                                : "Fetching temperature...",
+                        hintText: weatherProvider.currentWeather != null
+                            ? "${weatherProvider.currentWeather!['main']?['temp']?.toString() ?? 'N/A'}°C"
+                            : "Fetching temperature...",
                         keyboardType: TextInputType.number,
                         label: 'Temperature (°C)',
                         textEditingController: _temperatureController,
@@ -421,6 +378,9 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
                           if (value == null || value.isEmpty) {
                             return "Please enter temperature";
                           }
+                          if (double.tryParse(value) == null) {
+                            return "Please enter a valid number";
+                          }
                           return null;
                         },
                       ),
@@ -428,10 +388,9 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
                       CustomFormField(
                         focusNode: _focusNodeHumidity,
                         textInputAction: TextInputAction.next,
-                        hintText:
-                            weatherProvider.currentWeather != null
-                                ? "${weatherProvider.currentWeather!['main']['humidity']?.toString() ?? 'N/A'}%"
-                                : "Fetching humidity...",
+                        hintText: weatherProvider.currentWeather != null
+                            ? "${weatherProvider.currentWeather!['main']?['humidity']?.toString() ?? 'N/A'}%"
+                            : "Fetching humidity...",
                         keyboardType: TextInputType.number,
                         label: 'Humidity (%)',
                         textEditingController: _humidityController,
@@ -440,6 +399,9 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
                           if (value == null || value.isEmpty) {
                             return "Please enter humidity";
                           }
+                          if (double.tryParse(value) == null || double.parse(value) < 0 || double.parse(value) > 100) {
+                            return "Please enter a valid percentage (0-100)";
+                          }
                           return null;
                         },
                       ),
@@ -447,14 +409,14 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
                   ),
                   SizedBox(height: 24.h),
                   _buildSection(
-                    title: "Location (Optional)",
+                    title: "Location",
                     children: [
                       CustomFormField(
                         focusNode: _focusNodeLocation,
                         textInputAction: TextInputAction.done,
-                        hintText:
-                            locationProvider.currentAddress ??
-                            "Enter farm location",
+                        hintText: locationProvider.currentAddress?.isNotEmpty == true
+                            ? locationProvider.currentAddress!
+                            : "Enter farm location",
                         keyboardType: TextInputType.text,
                         label: 'Farm Location',
                         textEditingController: _locationController,
@@ -464,15 +426,15 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
                             color: Theme.of(context).colorScheme.primary,
                           ),
                           onPressed: () {
-                            _locationController.text =
-                                locationProvider.currentAddress ?? "";
+                            if (locationProvider.currentAddress != null) {
+                              _locationController.text = locationProvider.currentAddress!;
+                            }
                           },
                         ),
                       ),
                     ],
                   ),
                   SizedBox(height: 24.h),
-
                   CustomButton(
                     onClick: _getAIRecommendations,
                     buttonName: 'Get AI Recommendations',
@@ -497,26 +459,37 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
                       children: [
                         Row(
                           children: [
+                            IconButton(
+                              onPressed: () {
+                                aiProvider.setShowAiResponse(false);
+                              },
+                              icon: Icon(Icons.arrow_back, size: 20.sp),
+                            ),
                             Icon(
                               Icons.smart_toy,
                               color: Theme.of(context).colorScheme.primary,
-                              size: 24.sp,
+                              size: 20.sp,
                             ),
                             SizedBox(width: 8.w),
-                            bodyMediumBoldText("Farm Nest AI Advisor"),
+                            Text(
+                              "Farm Nest AI Advisor",
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                         SizedBox(height: 4.h),
                         Text(
-                          "Recommendations for ${_cropNameController.text}",
+                          "Recommendations for ${_cropNameController.text.isNotEmpty ? _cropNameController.text : 'your crop'}",
                           style: TextStyle(
                             fontSize: 16.sp,
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                         Divider(height: 24.h),
-                        if (_isLoading)
+                        if (aiProvider.isLoading)
                           Center(
                             child: Column(
                               children: [
@@ -529,10 +502,7 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
                                   "Generating expert recommendations...",
                                   style: TextStyle(
                                     fontSize: 14.sp,
-                                    color:
-                                        Theme.of(
-                                          context,
-                                        ).colorScheme.onSurfaceVariant,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                                 SizedBox(height: 30.h),
@@ -541,10 +511,9 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
                           )
                         else
                           Html(
-                            data:
-                                _aiResponse.isEmpty
-                                    ? "No recommendations available"
-                                    : _aiResponse,
+                            data: aiProvider.aiResponse.isEmpty
+                                ? "No recommendations available"
+                                : aiProvider.aiResponse,
                             style: {
                               "h3": Style(
                                 fontSize: FontSize(18.sp),
@@ -567,9 +536,7 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
                         SizedBox(height: 12.h),
                         CustomButton(
                           onClick: () {
-                            setState(() {
-                              _showAiResponse = false;
-                            });
+                            aiProvider.setShowAiResponse(false);
                           },
                           buttonName: 'Back to Form',
                         ),
@@ -597,11 +564,10 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
           title,
           style: TextStyle(
             fontSize: 16.sp,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
             color: Theme.of(context).colorScheme.primary,
           ),
         ),
-
         SizedBox(height: 12.h),
         ...children,
       ],

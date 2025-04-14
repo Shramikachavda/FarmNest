@@ -1,4 +1,5 @@
 import 'package:agri_flutter/presentation/post_sign_up/post_signup_screen.dart';
+import 'package:agri_flutter/providers/ai_provider.dart';
 import 'package:agri_flutter/providers/api_provider/marker_price_provider.dart';
 import 'package:agri_flutter/providers/api_provider/weather_provider.dart';
 import 'package:agri_flutter/providers/drawer/address_provider.dart';
@@ -102,6 +103,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => SelectedAddressProvider()),
         ChangeNotifierProvider(create: (_) => BoundaryProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
+        ChangeNotifierProvider(create: (_) => AIProvider()),
       ],
       child: BlocProvider(create: (_) => appThemeBloc, child: MyApp()),
     ),

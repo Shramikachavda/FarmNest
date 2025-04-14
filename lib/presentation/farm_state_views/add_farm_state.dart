@@ -23,6 +23,7 @@ class AddFarmState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
+
       length: 2,
       initialIndex: initialTabIndex,
       child: Scaffold(
@@ -53,6 +54,7 @@ class AddFarmState extends StatelessWidget {
           ),
           title: bodyMediumText("Add your Crop/Livestock"),
           bottom: TabBar(
+
             indicatorColor: themeColor(context: context).primary,
             indicatorWeight: 3,
             indicatorSize: TabBarIndicatorSize.tab,
@@ -68,6 +70,7 @@ class AddFarmState extends StatelessWidget {
           ),
         ),
         body: TabBarView(
+          physics: const NeverScrollableScrollPhysics(),
           children: [
             CropAdvisorView(existingCrop: existingCrop), // Crop form
             LiveStockDetailView(

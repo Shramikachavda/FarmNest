@@ -6,6 +6,7 @@ import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/presentation/home_page_view/home_page.dart';
 import 'package:agri_flutter/presentation/home_page_view/home_page_screen.dart';
 import 'package:agri_flutter/providers/password_provider.dart';
+import 'package:agri_flutter/providers/user_provider.dart';
 import 'package:agri_flutter/services/firebase_auth.dart';
 import 'package:agri_flutter/theme/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -52,7 +53,9 @@ class _ChangePasswordState extends State<ChangePassword> {
   @override
   void initState() {
     super.initState();
-    // Pre-fill email with current user's email
+    _emailController.text =  context
+        .read<UserProvider>().userEmail;
+
 
   
   }
@@ -202,6 +205,7 @@ class _ChangePasswordState extends State<ChangePassword> {
               children: [
                 SizedBox(height: 20.h),
                 CustomFormField(
+                  readOnly: true,
                   focusNode: _focusNodeEmail,
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.emailAddress,

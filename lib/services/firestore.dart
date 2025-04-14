@@ -436,7 +436,9 @@ class FirestoreService {
           'gender': livestock.gender,
           'vaccinatedDate': livestock.vaccinatedDate,
           'age': livestock.age,
-          'liveStockLive': livestock.liveStockLive,
+          'liveStockType': livestock.liveStockType,
+
+
         });
   }
 
