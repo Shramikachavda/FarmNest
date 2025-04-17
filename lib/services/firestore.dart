@@ -13,6 +13,7 @@ import '../models/user_data.dart';
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
   // **Get Current User ID**
   String get userId {
     final user = _auth.currentUser;
@@ -437,8 +438,6 @@ class FirestoreService {
           'vaccinatedDate': livestock.vaccinatedDate,
           'age': livestock.age,
           'liveStockType': livestock.liveStockType,
-
-
         });
   }
 
@@ -505,7 +504,7 @@ class FirestoreService {
 
   //farmer address
 
-  //add
+
   Future<void> addFamerAddress(FarmerAddress farm) async {
     try {
       await _db
@@ -521,7 +520,6 @@ class FirestoreService {
     }
   }
 
-  //get farmadress
   Future<FarmerAddress?> getFarmerAddress() async {
     try {
       final data =
@@ -544,7 +542,6 @@ class FirestoreService {
     }
   }
 
-  //update
   Future<void> updateFarmerAddress(FarmerAddress farm) async {
     try {
       await _db
@@ -558,7 +555,8 @@ class FirestoreService {
       rethrow;
     }
   }
-  //farm address
+
+  //farm detail
 
   //add
   Future<void> addFarm(FarmDetail farm) async {
@@ -575,31 +573,21 @@ class FirestoreService {
       rethrow;
     }
   }
-
-  //get
-  Future<FarmDetail?> getFarm(String fieldName) async {
+  //get farm
+  Future<List<FarmDetail>?> getFarm() async {
     try {
-      final docSnapshot =
-          await _db
-              .collection("users")
-              .doc(userId)
-              .collection("Farm")
-              .doc(fieldName)
-              .get();
+      final snapshot =
+          await _db.collection("users").doc(userId).collection("Farm").get();
+      return snapshot.docs
+          .map((doc) => FarmDetail.fromJson(doc.data()))
+          .toList();
 
-      if (docSnapshot.exists) {
-        return FarmDetail.fromJson(docSnapshot.data()!);
-      } else {
-        print("❗ No farm found with field name: $fieldName");
-        return null;
-      }
     } catch (e) {
       print("❌ Error fetching farm: $e");
       return null;
     }
   }
 
-  //update
   Future<void> updateFarm(FarmDetail farm) async {
     try {
       await _db
@@ -616,24 +604,9 @@ class FirestoreService {
     }
   }
 
+
+
   //farm address default
-
-  //add
-  /* Future<void> addDefaultLocation(DefaultFarmerAddress farm) async {
-    try {
-      await _db
-          .collection("users")
-          .doc(userId)
-          .collection("defaultAddress")
-          .doc(farm.name)
-          .set(farm.toJson());
-      print("✅ User added successfully");
-    } catch (e) {
-      print("❌ Error adding user: $e");
-      rethrow;
-    }
-  } */
-
   Future<void> addNewAddress(DefaultFarmerAddress farm) async {
     try {
       final userRef = _db.collection("users").doc(userId);
@@ -647,10 +620,6 @@ class FirestoreService {
       rethrow;
     }
   }
-
-  //
-
-  // ... other existing code ...
 
   Future<DefaultFarmerAddress?> getDefaultAddress() async {
     try {
@@ -778,8 +747,9 @@ class FirestoreService {
     }
   }
 
-  // crops with gimini
 
+
+  // crops with gimini
   Future<void> addCrop(String userId, CropDetails crop) async {
     await _db
         .collection('users')
@@ -803,6 +773,9 @@ class FirestoreService {
         await _db.collection('users').doc(userId).collection('crops').get();
     return snapshot.docs.map((doc) => CropDetails.fromMap(doc.data())).toList();
   }
+
+
+  //order
 
   Future<void> addToOrders(Product product) async {
     try {

@@ -1,3 +1,4 @@
+/*
 import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/presentation/home_page_view/market_price_widget.dart'; // Assuming MarketPriceCard is here
 import 'package:agri_flutter/presentation/search.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/widgets/BaseStateFullWidget.dart';
+import 'weather_forecast/forecast_screen.dart';
 
 class HomePage extends BaseStatefulWidget {
   const HomePage({super.key});
@@ -51,8 +53,8 @@ class _HomePageState extends State<HomePage> {
   Future<void> _fetchWeatherData() async {
     final locationData = await locationService.fetchLocation();
     if (locationData != null && weatherViewModel != null) {
-      double lat = locationData["latitude"]!;
-      double lon = locationData["longitude"]!;
+      double lat = locationData.latitude ?? 0 ;
+      double lon = locationData.longitude??0;
       await weatherViewModel!.loadWeather(lat, lon);
     }
   }
@@ -372,3 +374,4 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+*/

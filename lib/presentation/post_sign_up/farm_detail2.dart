@@ -4,7 +4,6 @@ import 'package:agri_flutter/customs_widgets/custom_button.dart';
 import 'package:agri_flutter/customs_widgets/custom_form_field.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/models/post_sign_up/farm_detail.dart';
-import 'package:agri_flutter/presentation/home_page_view/home_page.dart';
 import 'package:agri_flutter/providers/post_sign_up_providers/default_farmer_address.dart';
 import 'package:agri_flutter/services/firestore.dart';
 import 'package:agri_flutter/services/local_storage/post_sign_up.dart';
@@ -12,10 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-
-import '../../providers/map.dart';
 import 'draw_boundary.dart';
-import 'post_signup_screen.dart';
+
 
 class AddFarmFieldLocationScreen extends BaseStatefulWidget {
   const AddFarmFieldLocationScreen({super.key});
@@ -35,15 +32,19 @@ class AddFarmFieldLocationScreen extends BaseStatefulWidget {
 
 class _AddFarmFieldLocationScreenState
     extends State<AddFarmFieldLocationScreen> {
+
+  //form key
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  //text editing controller
   final TextEditingController _fieldNameController = TextEditingController();
   final TextEditingController _cropDetailsController = TextEditingController();
   final TextEditingController _fieldSizeController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
-  final TextEditingController _locationDescriptionController =
-  TextEditingController();
+  final TextEditingController _locationDescriptionController = TextEditingController();
   final TextEditingController _boundaryController = TextEditingController();
 
+  //focus node
   final FocusNode _focusNodeName = FocusNode();
   final FocusNode _focusNodeCropDetail = FocusNode();
   final FocusNode _focusNodeFieldSize = FocusNode();
@@ -53,7 +54,7 @@ class _AddFarmFieldLocationScreenState
 
   FarmOwnershipType selctedOwnerShip = FarmOwnershipType.family;
   FarmersAllocated selectedFarmer = FarmersAllocated.one;
-  List<double> _farmBoundaries = [];
+  List<LatLongData> _farmBoundaries = [];
 
   final FirestoreService _firestoreService = FirestoreService();
 
@@ -88,10 +89,10 @@ class _AddFarmFieldLocationScreenState
     }
   }
 
-  String _formatBoundaryCoordinates(List<LatLng> points) {
+  String _formatBoundaryCoordinates(List<LatLongData> points) {
     return points
         .map((point) =>
-    '[${point.latitude.toStringAsFixed(6)}, ${point.longitude.toStringAsFixed(6)}]')
+    '[${point.lat?.toStringAsFixed(6)}, ${point.lng?.toStringAsFixed(6)}]')
         .join(', ');
   }
 
@@ -109,6 +110,7 @@ class _AddFarmFieldLocationScreenState
               SizedBox(height: 10.h),
               bodyText(
                 "This detailed information will help our soil tester partner reach your farm easily.",
+                maxLine: 3
               ),
               SizedBox(height: 24.h),
 
@@ -146,10 +148,10 @@ class _AddFarmFieldLocationScreenState
                 hintText: 'Select boundaries from map',
                 label: 'Farm Boundaries',
                 textEditingController: _boundaryController,
-                readOnly: true, // Make it read-only since it's populated from the map
+                readOnly: true,
                 icon: IconButton(
                   onPressed: () async {
-                    final boundary = await Navigator.push(
+                    final List<LatLongData> boundary = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (_) => const SelectBoundaryScreen(),
@@ -159,9 +161,7 @@ class _AddFarmFieldLocationScreenState
                     if (boundary != null && boundary is List<LatLng>) {
                       print("✅ Selected boundary: $boundary");
                       setState(() {
-                        _farmBoundaries = boundary
-                            .expand((latlng) => [latlng.latitude, latlng.longitude])
-                            .toList();
+                        _farmBoundaries = boundary;
 
                         _boundaryController.text = _formatBoundaryCoordinates(boundary);
 

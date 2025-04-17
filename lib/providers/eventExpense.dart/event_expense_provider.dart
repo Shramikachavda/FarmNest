@@ -63,6 +63,22 @@ class EventExpenseProvider with ChangeNotifier {
   }
 
 
+  List<EventExpense> get todayEvents{
+    final now = DateTime.now();
+    List<EventExpense> result = [];
+    for(final event in allEventsAndExpenses){
+      if (event.date.year == now.year &&
+          event.date.month == now.month &&
+          event.date.day == now.day){
+        result.add(event);
+        print(event.date);
+        print(now);
+      }
+    }
+    return result;
+
+  }
+
   List<EventExpense> get upcomingTwoEvents {
   final now = DateTime.now();
   int count = 0;

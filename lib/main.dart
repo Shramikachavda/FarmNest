@@ -47,8 +47,8 @@ void main() async {
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent, // Custom color for HomePageScreen
-      statusBarIconBrightness: Brightness.dark, // Light icons
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
     ),
   );
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -104,6 +104,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => BoundaryProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
         ChangeNotifierProvider(create: (_) => AIProvider()),
+
       ],
       child: BlocProvider(create: (_) => appThemeBloc, child: MyApp()),
     ),

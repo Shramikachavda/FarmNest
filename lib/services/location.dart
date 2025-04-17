@@ -3,7 +3,7 @@ import 'package:location/location.dart';
 class LocationService {
   Location location = Location();
 
- Future<Map<String, double>?> fetchLocation() async {
+ Future<LocationData?> fetchLocation() async {
     try {
       bool _serviceEnabled;
       PermissionStatus _permissionGranted;
@@ -24,10 +24,7 @@ class LocationService {
         }
       }
       locationData = await location.getLocation();
-      return {
-        "latitude": locationData.latitude!,
-        "longitude": locationData.longitude!,
-      };
+      return locationData;
     } catch (e) {
       print(e);
       return null;

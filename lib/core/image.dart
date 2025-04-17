@@ -12,6 +12,12 @@ class ImageConst {
   static const String night = "assets/image/nightt.png";
 
 
+  //weather detail
+  static const String sun = "assets/image/sun.png";
+  static const String partyCloud = "assets/image/party cloud.png";
+
+
+
   //buy  now
   static const String buyNowAnim = "assets/anim/buy_confirmation.lottie";
 

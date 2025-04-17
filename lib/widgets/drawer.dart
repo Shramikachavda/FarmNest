@@ -10,6 +10,7 @@ import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../presentation/drawer/farm/farm_dart.dart';
 import '../theme/app_theme_bloc.dart';
 import '../theme/theme.dart';
 
@@ -97,11 +98,11 @@ class DrawerWidget extends StatelessWidget {
                   leading: Icon(Icons.eco),
                   title: bodyText("Farm"),
                   onTap: () {
-                    /*     Navigator.of(context).push(
+                         Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => SelectAddressScreen(),
+                        builder: (context) => Farm(),
                       ),
-                    );*/
+                    );
                   },
                 ),
 

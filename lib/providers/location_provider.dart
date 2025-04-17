@@ -1,6 +1,7 @@
 import 'package:agri_flutter/services/location.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:location/location.dart';
 
 
 class LocationProvider with ChangeNotifier {
@@ -14,11 +15,11 @@ class LocationProvider with ChangeNotifier {
   String? get currentAddress => _currentAddress;
 
   Future<void> getLocation() async {
-    Map<String, double>? location = await _locationRepository.fetchLocation();
-    if (location != null &&  location['latitude'] != null &&
-    location['longitude'] != null) {
-      latitude = location['latitude'];
-      longitude = location['longitude'];
+    LocationData?  location = await _locationRepository.fetchLocation();
+    if (location != null &&  location.latitude!= null &&
+    location.longitude != null) {
+      latitude = location.latitude;
+      longitude = location.longitude;
       await _fetchAddressFromLatLng(latitude!, longitude!);
       notifyListeners(); // Notify UI when data updates
     }

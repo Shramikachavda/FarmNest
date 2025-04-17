@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import '../../models/post_sign_up/farm_detail.dart';
 import '../../providers/map.dart';
 
 class SelectBoundaryScreen extends StatefulWidget {
@@ -39,7 +40,7 @@ class _SelectBoundaryScreenState extends State<SelectBoundaryScreen> {
   Future<void> _getCurrentLocation() async {
     final location = await _locationService.fetchLocation();
     if (location != null) {
-      _currentLocation = LatLng(location['latitude']!, location['longitude']!);
+      _currentLocation = LatLng(location.latitude ?? 0 , location.longitude ?? 0);
     }
   }
 
@@ -196,7 +197,10 @@ class _SelectBoundaryScreenState extends State<SelectBoundaryScreen> {
                 CustomButton(
                   onClick: () {
                     if (boundaryProvider.selectedBoundary.length >= 4) {
-                      final List<LatLng> boundary = boundaryProvider.selectedBoundary;
+                      final List<LatLongData> boundary = boundaryProvider.selectedBoundary.map((e) {
+                        return LatLongData(lat: e.latitude, lng: e.longitude);
+                      }).toList();
+
                       Navigator.pop(context, boundary);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(

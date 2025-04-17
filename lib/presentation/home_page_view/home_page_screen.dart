@@ -3,8 +3,8 @@ import 'package:agri_flutter/customs_widgets/custom_icon.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/presentation/calender_view/add_event_expense.dart';
 import 'package:agri_flutter/presentation/home_page_view/market_price_widget.dart'; // Assuming MarketPriceCard is here
+import 'package:agri_flutter/presentation/home_page_view/weather_forecast/weather_bloc.dart';
 import 'package:agri_flutter/presentation/search.dart';
-import 'package:agri_flutter/presentation/weather_details.dart';
 import 'package:agri_flutter/providers/api_provider/marker_price_provider.dart';
 import 'package:agri_flutter/providers/api_provider/weather_provider.dart';
 import 'package:agri_flutter/providers/eventExpense.dart/event_expense_provider.dart';
@@ -19,16 +19,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:lottie/lottie.dart';
-
 import 'package:provider/provider.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
 import '../../core/image.dart';
 import '../../core/widgets/BaseStateFullWidget.dart';
+import '../../models/responses/weather_response.dart';
 import '../../providers/location_provider.dart';
-import '../../theme/app_theme_bloc.dart';
 import '../../theme/theme.dart';
-import '../../utils/text_style_utils.dart';
+import 'weather_forecast/forecast_screen.dart';
 
 class HomePageScreen extends BaseStatefulWidget {
   const HomePageScreen({super.key});
@@ -52,6 +50,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
   final LocationService locationService = LocationService();
   WeatherViewModel? weatherViewModel;
   final FirestoreService _fireStoreService = FirestoreService();
+  final WeatherBloc _weatherBloc = WeatherBloc();
 
   @override
   void initState() {
@@ -66,7 +65,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
+    await _weatherBloc.fetchWeatherData();
     super.didChangeDependencies();
     // Update status bar style when dependencies (like theme) change
     SystemChrome.setSystemUIOverlayStyle(
@@ -84,8 +84,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
   Future<void> _fetchWeatherData() async {
     final locationData = await locationService.fetchLocation();
     if (locationData != null && weatherViewModel != null) {
-      double lat = locationData["latitude"]!;
-      double lon = locationData["longitude"]!;
+      double lat = locationData.latitude ?? 0;
+      double lon = locationData.longitude ?? 0;
       await weatherViewModel!.loadWeather(lat, lon);
     }
   }
@@ -134,6 +134,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
     );
   }
 
+  //welcome  cards
   Widget welcomeCard() {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.35,
@@ -241,155 +242,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
     );
   }
 
-  Widget weatherCard() {
-    return Consumer<WeatherViewModel>(
-      builder: (context, weatherViewModel, _) {
-        if (weatherViewModel.isLoading) {
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
-            child: SizedBox(
-              height: 180.h,
-              child: Card(child: Center(child: CircularProgressIndicator())),
-            ),
-          );
-        }
-        if (weatherViewModel.errorMessage != null) {
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
-            child: SizedBox(
-              height: 180.h,
-              child: Card(
-                child: Center(
-                  child: errorText(weatherViewModel.errorMessage.orEmpty()),
-                ),
-              ),
-            ),
-          );
-        }
-        if (weatherViewModel.currentWeather == null) {
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
-            child: SizedBox(
-              height: 180.h,
-              child: Card(
-                child: Center(child: Text('No weather data available.')),
-              ),
-            ),
-          );
-        }
-
-        final weather = weatherViewModel.currentWeather!;
-        final icon = weather['weather'][0]['icon'];
-        final name = weather['name'];
-        final description = weather['weather'][0]['description'];
-        final tempMin = weather['main']['temp_min'];
-        final tempMax = weather['main']['temp_max'];
-        final humidity = weather['main']['humidity'];
-        final windSpeed = weather['wind']['speed'];
-        final sunrise = DateTime.fromMillisecondsSinceEpoch(
-          weather['sys']['sunrise'] * 1000,
-        );
-        final sunset = DateTime.fromMillisecondsSinceEpoch(
-          weather['sys']['sunset'] * 1000,
-        );
-
-        return InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ForecastScreen()),
-            );
-          },
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
-            child: Card(
-              //elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.r),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(24.w),
-                child: IntrinsicWidth(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children:
-                              [
-                                bodyText("🌤 $description"),
-                                SizedBox(height: 2.h),
-                                bodyText("🔽 Min: $tempMin°C"),
-                                bodyText("🌬 Wind: $windSpeed m/s"),
-                                bodyText(
-                                  "🌅 Sunrise: ${sunrise.hour}:${sunrise.minute.toString().padLeft(2, '0')}",
-                                ),
-                              ].separator(SizedBox(height: 2.h)).toList(),
-                        ),
-                      ),
-                      SizedBox(width: 15.w),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children:
-                                  [
-                                    Image.network(
-                                      "https://openweathermap.org/img/wn/$icon@2x.png",
-                                      width: 40.w,
-                                    ),
-                                    bodyMediumText(
-                                      "${weather['main']['temp']}°C",
-                                    ),
-                                  ].separator(SizedBox(height: 2.h)).toList(),
-                            ),
-
-                            bodyText("🔼 Max: $tempMax°C"),
-
-                            bodyText("💧 Humidity: $humidity%"),
-                            bodyText(
-                              "🌇 Sunset: ${sunset.hour}:${sunset.minute.toString().padLeft(2, '0')}",
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget welcomeHeader() {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.35,
-      decoration: BoxDecoration(
-        color: themeColor().inversePrimary,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(30.r),
-          bottomRight: Radius.circular(30.r),
-        ),
-      ),
-      child: Stack(
-        children: [
-          welcomeCardBackGroundImage(),
-          lottieAnim(),
-          welcomeCard(),
-        ],
-      ),
-    );
-  }
-
   Widget lottieAnim() {
     final anim = getAnimation();
     return Padding(
@@ -414,6 +266,22 @@ class _HomePageScreenState extends State<HomePageScreen> {
     );
   }
 
+  Widget welcomeHeader() {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.35,
+      decoration: BoxDecoration(
+        color: themeColor(context: context).inversePrimary,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(30.r),
+          bottomRight: Radius.circular(30.r),
+        ),
+      ),
+      child: Stack(
+        children: [welcomeCardBackGroundImage(), lottieAnim(), welcomeCard()],
+      ),
+    );
+  }
+
   Widget welcomeCardBackGroundImage() {
     return Align(
       alignment: Alignment.bottomCenter,
@@ -431,105 +299,293 @@ class _HomePageScreenState extends State<HomePageScreen> {
     );
   }
 
+  //weather card
+  Widget weatherCard() {
+    return StreamBuilder<Weather>(
+      stream: _weatherBloc.dailyWeather,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+            child: Card(
+              child: Container(
+                height: 100.h,
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            ),
+          );
+        }
+
+        if (!snapshot.hasData || snapshot.data == null) {
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+            child: Card(
+              child: Container(
+                height: 100.h,
+                child: Center(child: bodyText("No Weather data are available")),
+              ),
+            ),
+          );
+        }
+        if (snapshot.hasError) {
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+            child: Container(
+              height: 100.h,
+              child: Center(
+                child: bodyText("Something went wrong.please try again later"),
+              ),
+            ),
+          );
+        }
+
+        //weather data
+        final today = DateTime.now();
+        Weather? weather = snapshot.data;
+        final tempData = weather?.list?.firstOrNull;
+        final date = tempData?.dtTxt ?? today;
+        final city = weather?.city?.name ?? "Unknown";
+        final description = tempData?.weather?.first.description ?? "Unknown";
+        final maxTemp = tempData?.main?.tempMax ?? 0;
+        final minTemp = tempData?.main?.tempMin ?? 0;
+        final temp = tempData?.main?.temp ?? 40;
+        final humidity = tempData?.main?.humidity ?? 0;
+        final pressure = tempData?.main?.pressure ?? 0;
+        final windSpeed = tempData?.wind?.speed ?? 0;
+        final icon = tempData?.weather?.first.icon ?? "";
+
+        print("Weather list length: ${snapshot.data?.list?.length}");
+
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ForecastScreen()),
+              );
+            },
+            child: Card(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: themeColor(
+                    context: context,
+                  ).inversePrimary.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(16.r),
+                ),
+                padding: EdgeInsets.all(12.w),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Weather Icon
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children:
+                          [
+                            Image.network(
+                              "https://openweathermap.org/img/wn/$icon@2x.png",
+                              width: 60.w,
+                              height: 60.h,
+                              errorBuilder:
+                                  (context, error, stackTrace) => Icon(
+                                    Icons.cloud_off,
+                                    size: 60.sp,
+                                    color:
+                                        themeColor(
+                                          context: context,
+                                        ).onPrimaryContainer,
+                                  ),
+                            ),
+
+                            Text(
+                              date.format('MMM dd'),
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodySmall?.copyWith(
+                                color:
+                                    themeColor(
+                                      context: context,
+                                    ).onPrimaryContainer,
+                              ),
+                            ),
+                          ].separator(SizedBox(height: 8.h)).toList(),
+                    ),
+
+                    // Main Weather Info
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children:
+                            [
+                              //temp
+                              bodyText("$temp °C"),
+
+                              //description
+                              bodyText(description),
+
+                              //min mx temp
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.arrow_downward,
+                                    size: 16.sp,
+                                    color:
+                                        themeColor(context: context).secondary,
+                                  ),
+                                  SizedBox(width: 4.w),
+                                  smallText("${minTemp.toStringAsFixed(1)} °C"),
+                                  SizedBox(width: 16.w),
+                                  Icon(
+                                    Icons.arrow_upward,
+                                    size: 16.sp,
+                                    color:
+                                        themeColor(context: context).secondary,
+                                  ),
+                                  SizedBox(width: 4.w),
+                                  smallText("${maxTemp.toStringAsFixed(1)} °C"),
+                                ],
+                              ),
+                            ].separator(SizedBox(height: 10.h)).toList(),
+                      ),
+                    ),
+                    // Additional Stats
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.water_drop,
+                              size: 20.sp,
+                              color: themeColor(context: context).primary,
+                            ),
+                            SizedBox(width: 4.w),
+                            smallText("$humidity%"),
+                          ],
+                        ),
+                        SizedBox(height: 8.h),
+                        Row(
+                          children:
+                              [
+                                Icon(
+                                  Icons.air,
+                                  size: 20.sp,
+                                  color: themeColor(context: context).primary,
+                                ),
+
+                                smallText("$windSpeed m/s"),
+                              ].separator(SizedBox(width: 4.w)).toList(),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  //event
   Widget upComingEventCard() {
     return Padding(
       padding: EdgeInsets.only(left: 24.w, right: 24.w, bottom: 24.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children:
-            [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  bodyMediumText("Upcoming Events"),
-                  customIconButton(
-                    context: context,
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return Stack(
-                            children: [
-                              BackdropFilter(
-                                filter: ImageFilter.blur(
-                                  sigmaX: 2.0,
-                                  sigmaY: 2.0,
-                                ),
-                                child: Container(),
+        children: [
+          //today events and add button
+          Padding(
+            padding: EdgeInsets.only(bottom: 12.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                bodyMediumText("Today's Events"),
+                customIconButton(
+                  context: context,
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Stack(
+                          children: [
+                            BackdropFilter(
+                              filter: ImageFilter.blur(
+                                sigmaX: 2.0,
+                                sigmaY: 2.0,
                               ),
-                              Center(
-                                child: AddEventExpenseDialog(
-                                  DateTime.now().add(Duration(days: 1)),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    assetIcon: Icon(
-                      Icons.add,
-                      color: themeColor().onInverseSurface,
-                      size: 20.sp,
+                              child: Container(),
+                            ),
+                            Center(
+                              child: AddEventExpenseDialog(DateTime.now()),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  assetIcon: Icon(
+                    Icons.add,
+                    color: themeColor().onInverseSurface,
+                    size: 20.sp,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Consumer<EventExpenseProvider>(
+            builder: (context, eventProvider, child) {
+              final todayEvents = eventProvider.todayEvents;
+              final todayEventsLength = todayEvents.length;
+
+              //if no event added
+              if (todayEventsLength == 0) {
+                return Card(
+                  color: themeColor().surface,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                    side: BorderSide(
+                      color: themeColor().outlineVariant,
+                      width: 2,
                     ),
                   ),
-                ],
-              ),
-              Consumer<EventExpenseProvider>(
-                builder: (context, eventProvider, child) {
-                  final upComingEvents = eventProvider.upcomingTwoEvents;
-                  final upComingEventLength = upComingEvents.length;
-
-                  if (upComingEventLength == 0) {
-                    return SizedBox(
-                      width: double.infinity,
-                      child: Card(
-                        color: themeColor().surface,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                          side: BorderSide(
-                            color: themeColor().outlineVariant,
-                            width: 2,
-                          ),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(12.w),
-                          child: bodyText(
-                            "No events added yet. Tap ➕ to get started!",
-                            maxLine: 2,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-
-                  if (upComingEventLength == 1) {
-                    return eventCard(
-                      upComingEvent: upComingEvents,
-                      index: 0,
-                      eventProvider: eventProvider,
-                    );
-                  }
-
-                  return Expanded(
-                    child: ListView.builder(
-                                    //    scrollDirection: Axis.horizontal,
-                       shrinkWrap: true,
-                       itemBuilder: (context, index) {
-                        return  Expanded(
-                          child: eventCard(
-                             upComingEvent: upComingEvents,
-                             index: index,
-                             eventProvider: eventProvider,
-                           ),
-                        );
-                       },
-
+                  child: Padding(
+                    padding: EdgeInsets.all(12.w),
+                    child: bodyText(
+                      "No events for today is added yet. Tap ➕ to get started!",
+                      maxLine: 2,
                     ),
-                  );
-                },
-              ),
-            ].separator(SizedBox(height: 12)).toList(),
+                  ),
+                );
+              }
+
+              return SizedBox(
+                height: 130.h,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  itemCount: todayEventsLength,
+                  itemBuilder: (context, index) {
+                    return Row(
+                      children: [
+                        eventCard(
+                          upComingEvent: todayEvents,
+                          index: index,
+                          eventProvider: eventProvider,
+                        ),
+                        SizedBox(width: 12.w),
+                      ],
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -616,27 +672,29 @@ class _HomePageScreenState extends State<HomePageScreen> {
     required int index,
     required EventExpenseProvider eventProvider,
   }) {
-    final event = upComingEvent[index]; // Cleaner access
+    final event = upComingEvent[index];
     return Card(
       child: Container(
         padding: EdgeInsets.all(12.w),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Tooltip(
-                    message: event.title,
-                    child: bodyMediumBoldText(event.title),
-                  ),
-                  bodyText(event.category),
-                  bodyText(DateFormat('dd-MM-yyyy').format(event.date)),
-                ],
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children:
+                  [
+                    Tooltip(
+                      message: event.title,
+                      child: bodyMediumBoldText(event.title),
+                    ),
+                    bodyText(event.category),
+                    bodyText(DateFormat('dd-MM-yyyy').format(event.date)),
+                  ].separator(SizedBox(height: 5.h)).toList(),
             ),
 
             Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 IconButton(
                   onPressed: () {
