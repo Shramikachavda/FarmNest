@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 class FarmDetail {
+  final String id;
   final String fieldName;
   final String ownershipType;
   final String cropDetails;
@@ -9,9 +11,10 @@ class FarmDetail {
   final String state;
   final String locationDescription;
   final String farmersAllocated;
-  final List<LatLongData> farmBoundaries; // e.g., [lat1, lng1, lat2, lng2, ...]
+  final List<LatLongData> farmBoundaries;
 
   FarmDetail({
+    String? id,
     required this.fieldName,
     required this.ownershipType,
     required this.cropDetails,
@@ -20,11 +23,11 @@ class FarmDetail {
     required this.locationDescription,
     required this.farmersAllocated,
     required this.farmBoundaries,
-  });
+  }) : id = id ?? const Uuid().v4();
 
-  factory FarmDetail.fromJson(Map<String, dynamic> json) {
-    print(json["farmBoundaries"]);
+  factory FarmDetail.fromJson(Map<String, dynamic> json, {String? docId}) {
     return FarmDetail(
+      id: docId ?? json['id'] ?? const Uuid().v4(),
       fieldName: json['fieldName'] ?? '',
       ownershipType: json['ownershipType'] ?? '',
       cropDetails: json['cropDetails'] ?? '',
@@ -32,12 +35,18 @@ class FarmDetail {
       state: json['state'] ?? '',
       locationDescription: json['locationDescription'] ?? '',
       farmersAllocated: json['farmersAllocated'] ?? '',
-      farmBoundaries: json["farmBoundaries"] == null ? [] : List<LatLongData>.from(json["farmBoundaries"]!.map((x) => LatLongData.fromJson(x))),
+      farmBoundaries:
+          json['farmBoundaries'] == null
+              ? []
+              : List<LatLongData>.from(
+                json['farmBoundaries'].map((x) => LatLongData.fromJson(x)),
+              ),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'fieldName': fieldName,
       'ownershipType': ownershipType,
       'cropDetails': cropDetails,
@@ -45,31 +54,23 @@ class FarmDetail {
       'state': state,
       'locationDescription': locationDescription,
       'farmersAllocated': farmersAllocated,
-      "farmBoundaries": farmBoundaries == null ? [] : List<dynamic>.from(farmBoundaries.map((x) => x.toJson())),
+      'farmBoundaries': farmBoundaries.map((x) => x.toJson()).toList(),
     };
   }
-
 }
 
 class LatLongData {
-  double? lng;
-  double? lat;
+  final double? lat;
+  final double? lng;
 
-  LatLongData({
-    this.lng,
-    this.lat,
-  });
+  LatLongData({required this.lat, required this.lng});
 
   factory LatLongData.fromJson(Map<String, dynamic> json) => LatLongData(
-    lng: json["lng"]?.toDouble(),
-    lat: json["lat"]?.toDouble(),
+    lat: json['lat']?.toDouble() ?? 0.0,
+    lng: json['lng']?.toDouble() ?? 0.0,
   );
 
-  Map<String, dynamic> toJson() => {
-    "lng": lng,
-    "lat": lat,
-  };
+  Map<String, dynamic> toJson() => {'lat': lat, 'lng': lng};
 
   LatLng toLatLng() => LatLng(lat ?? 0.0, lng ?? 0.0);
-
 }

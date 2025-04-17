@@ -504,7 +504,6 @@ class FirestoreService {
 
   //farmer address
 
-
   Future<void> addFamerAddress(FarmerAddress farm) async {
     try {
       await _db
@@ -565,7 +564,7 @@ class FirestoreService {
           .collection("users")
           .doc(userId)
           .collection("Farm")
-          .doc(farm.fieldName)
+          .doc(farm.id)
           .set(farm.toJson());
       print("✅ User added successfully");
     } catch (e) {
@@ -573,6 +572,7 @@ class FirestoreService {
       rethrow;
     }
   }
+
   //get farm
   Future<List<FarmDetail>?> getFarm() async {
     try {
@@ -581,11 +581,31 @@ class FirestoreService {
       return snapshot.docs
           .map((doc) => FarmDetail.fromJson(doc.data()))
           .toList();
-
     } catch (e) {
       print("❌ Error fetching farm: $e");
       return null;
     }
+  }
+
+  Future<void> updateFarmBoundary(
+    String farmId,
+    List<LatLongData> boundaries,
+  ) async {
+    await _db
+        .collection("users")
+        .doc(userId)
+        .collection('farms')
+        .doc(farmId)
+        .update({'farmBoundaries': boundaries.map((p) => p.toJson()).toList()});
+  }
+
+  Future<void> deleteFarm(String farmId) async {
+    await _db
+        .collection("users")
+        .doc(userId)
+        .collection('farms')
+        .doc(farmId)
+        .delete();
   }
 
   Future<void> updateFarm(FarmDetail farm) async {
@@ -603,8 +623,6 @@ class FirestoreService {
       rethrow;
     }
   }
-
-
 
   //farm address default
   Future<void> addNewAddress(DefaultFarmerAddress farm) async {
@@ -747,8 +765,6 @@ class FirestoreService {
     }
   }
 
-
-
   // crops with gimini
   Future<void> addCrop(String userId, CropDetails crop) async {
     await _db
@@ -773,7 +789,6 @@ class FirestoreService {
         await _db.collection('users').doc(userId).collection('crops').get();
     return snapshot.docs.map((doc) => CropDetails.fromMap(doc.data())).toList();
   }
-
 
   //order
 

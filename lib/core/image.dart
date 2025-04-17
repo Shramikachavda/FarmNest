@@ -12,6 +12,13 @@ class ImageConst {
   static const String night = "assets/image/nightt.png";
 
 
+  //farm
+    static const String bg1 = "assets/image/bg1.png";
+      static const String bg2 = "assets/image/bg2.png";
+        static const String bg3 = "assets/image/bg3.png";
+
+
+
   //weather detail
   static const String sun = "assets/image/sun.png";
   static const String partyCloud = "assets/image/party cloud.png";

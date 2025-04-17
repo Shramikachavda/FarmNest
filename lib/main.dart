@@ -57,11 +57,7 @@ void main() async {
 
   await Hive.initFlutter();
   await LocalStorageService.initHive();
-  
-  
 
-  
-  
   // Initialize timezone
   tz.initializeTimeZones();
 
@@ -104,7 +100,6 @@ void main() async {
         ChangeNotifierProvider(create: (_) => BoundaryProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
         ChangeNotifierProvider(create: (_) => AIProvider()),
-
       ],
       child: BlocProvider(create: (_) => appThemeBloc, child: MyApp()),
     ),
