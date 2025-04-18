@@ -8,8 +8,8 @@ class WeatherRepository {
       'https://api.openweathermap.org/data/2.5/weather';
   static const String _baseUrlHourly =
       'https://api.openweathermap.org/data/2.5/forecast';
-  static const String _apiKey =
-      '9442f93b3131dfd4791a8a09c19efdbb'; // Replace with your key
+  static const String _apiKey ="";
+    //  '9442f93b3131dfd4791a8a09c19efdbb'; // Replace with your key
 
   Future<Map<String, dynamic>> fetchCurrentWeather(
     double lat,

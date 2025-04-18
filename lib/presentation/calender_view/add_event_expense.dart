@@ -36,7 +36,8 @@ class AddEventExpenseDialog extends BaseStatefulWidget {
 class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
-  final TextEditingController _customCategoryController = TextEditingController();
+  final TextEditingController _customCategoryController =
+      TextEditingController();
 
   final FocusNode _focusNodeTitle = FocusNode();
   final FocusNode _focusNodeAmount = FocusNode();
@@ -121,84 +122,87 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
   Widget build(BuildContext context) {
     final eventExpenseProvider = Provider.of<EventExpenseProvider>(context);
 
-    return SizedBox(
-      child: AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.r),
-        ),
-        title: Row(
+    return AlertDialog(
+      title: Padding(
+          padding:  EdgeInsets.symmetric(horizontal: 30.w ) ,
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
           children: [
-            Text(widget.eventToEdit == null ? "Add $_selectedType" : "Edit $_selectedType"),
+            Text(
+              widget.eventToEdit == null
+                  ? "Add $_selectedType"
+                  : "Edit $_selectedType",
+            ),
             IconButton(
               onPressed: () => Navigator.pop(context),
               icon: const Icon(Icons.close),
             ),
           ],
         ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildRadioButton("Event"),
-                  _buildRadioButton("Expense"),
-                ],
-              ),
-              SizedBox(height: 15.h),
-              CustomFormField(
-                focusNode: _focusNodeTitle,
-                textInputAction: TextInputAction.next,
-                hintText: 'Enter your title',
-                keyboardType: TextInputType.name,
-                label: 'Title',
-                textEditingController: _titleController,
-              ),
-              SizedBox(height: 15.h),
-              reusableDropdown<Categoty>(
-                label: "Category",
-                selectedValue: _selectedCategory,
-                items: Categoty.values,
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedCategory = newValue;
-                    if (newValue != Categoty.other) {
-                      _customCategoryController.clear();
-                    }
-                  });
-                },
-              ),
-              SizedBox(height: 15.h),
-              if (_selectedCategory == Categoty.other)
-                _buildCustomCategoryField(),
-              if (_selectedType == "Expense") _buildExpenseField(),
-              Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 50.h,
-                      child: ElevatedButton.icon(
-                        onPressed: () => _pickReminderTime(context),
-                        icon: const Icon(Icons.alarm),
-                        label: const Text("Set Reminder"),
-                      ),
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildRadioButton("Event"),
+                _buildRadioButton("Expense"),
+              ],
+            ),
+            SizedBox(height: 15.h),
+            CustomFormField(
+              focusNode: _focusNodeTitle,
+              textInputAction: TextInputAction.next,
+              hintText: 'Enter your title',
+              keyboardType: TextInputType.name,
+              label: 'Title',
+              textEditingController: _titleController,
+            ),
+            SizedBox(height: 15.h),
+            reusableDropdown<Categoty>(
+              label: "Category",
+              selectedValue: _selectedCategory,
+              items: Categoty.values,
+              onChanged: (newValue) {
+                setState(() {
+                  _selectedCategory = newValue;
+                  if (newValue != Categoty.other) {
+                    _customCategoryController.clear();
+                  }
+                });
+              },
+            ),
+            SizedBox(height: 15.h),
+            if (_selectedCategory == Categoty.other)
+              _buildCustomCategoryField(),
+            if (_selectedType == "Expense") _buildExpenseField(),
+            Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 50.h,
+                    child: ElevatedButton.icon(
+                      onPressed: () => _pickReminderTime(context),
+                      icon: const Icon(Icons.alarm),
+                      label: const Text("Set Reminder"),
                     ),
                   ),
-                ],
-              ),
-              if (_selectedReminderTime != null)
-                Text(
-                  "Reminder: ${_selectedReminderTime!.toLocal().toString().split('.')[0]}",
                 ),
-              SizedBox(height: 15.h),
-              CustomButton(
-                onClick: () async => _saveEvent(eventExpenseProvider, context),
-                buttonName: widget.eventToEdit == null ? "Add" : "Update",
+              ],
+            ),
+            if (_selectedReminderTime != null)
+              Text(
+                "Reminder: ${_selectedReminderTime!.toLocal().toString().split('.')[0]}",
               ),
-            ],
-          ),
+            SizedBox(height: 15.h),
+            CustomButton(
+              onClick: () async => _saveEvent(eventExpenseProvider, context),
+              buttonName: widget.eventToEdit == null ? "Add" : "Update",
+            ),
+          ],
         ),
       ),
     );
@@ -265,9 +269,10 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
       return;
     }
 
-    String finalCategory = _selectedCategory == Categoty.other
-        ? _customCategoryController.text
-        : _selectedCategory!.name;
+    String finalCategory =
+        _selectedCategory == Categoty.other
+            ? _customCategoryController.text
+            : _selectedCategory!.name;
 
     if (finalCategory.isEmpty) {
       showCustomSnackBar(context, "Please enter a category");
@@ -276,11 +281,14 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
 
     try {
       final event = EventExpense(
-        id: widget.eventToEdit?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        id:
+            widget.eventToEdit?.id ??
+            DateTime.now().millisecondsSinceEpoch.toString(),
         title: _titleController.text,
-        amount: _selectedType == "Expense" && _amountController.text.isNotEmpty
-            ? double.parse(_amountController.text)
-            : null,
+        amount:
+            _selectedType == "Expense" && _amountController.text.isNotEmpty
+                ? double.parse(_amountController.text)
+                : null,
         category: finalCategory,
         date: _selectedDate,
         type: _selectedType,
@@ -298,11 +306,16 @@ class _AddEventExpenseDialogState extends State<AddEventExpenseDialog> {
 
       showCustomSnackBar(
         context,
-        widget.eventToEdit == null ? "Added successfully" : "Updated successfully",
+        widget.eventToEdit == null
+            ? "Added successfully"
+            : "Updated successfully",
       );
       Navigator.pop(context, true);
     } catch (e) {
-      showCustomSnackBar(context, "Failed to ${widget.eventToEdit == null ? 'add' : 'update'}: $e");
+      showCustomSnackBar(
+        context,
+        "Failed to ${widget.eventToEdit == null ? 'add' : 'update'}: $e",
+      );
     }
   }
 }

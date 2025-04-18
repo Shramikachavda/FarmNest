@@ -578,9 +578,15 @@ class FirestoreService {
     try {
       final snapshot =
           await _db.collection("users").doc(userId).collection("Farm").get();
+
+      print("Actual farms in Firestore after delete:");
+      for (var doc in snapshot.docs) {
+        print(" - ${doc.id}");
+      }
       return snapshot.docs
           .map((doc) => FarmDetail.fromJson(doc.data()))
           .toList();
+
     } catch (e) {
       print("❌ Error fetching farm: $e");
       return null;
@@ -594,18 +600,29 @@ class FirestoreService {
     await _db
         .collection("users")
         .doc(userId)
-        .collection('farms')
+        .collection('Farm')
         .doc(farmId)
         .update({'farmBoundaries': boundaries.map((p) => p.toJson()).toList()});
   }
 
   Future<void> deleteFarm(String farmId) async {
-    await _db
-        .collection("users")
-        .doc(userId)
-        .collection('farms')
-        .doc(farmId)
-        .delete();
+    print("Attempting to delete farm: $farmId for userId: $userId");
+
+    try {
+      await _db
+          .collection("users")
+          .doc(userId)
+          .collection('Farm')
+          .doc(farmId)
+          .delete();
+
+      print("Farm deleted successfully");
+
+    } catch (e, stackTrace) {
+      print("Delete failed: $e");
+      print(stackTrace);
+      rethrow;
+    }
   }
 
   Future<void> updateFarm(FarmDetail farm) async {
@@ -788,6 +805,14 @@ class FirestoreService {
     final snapshot =
         await _db.collection('users').doc(userId).collection('crops').get();
     return snapshot.docs.map((doc) => CropDetails.fromMap(doc.data())).toList();
+  }
+
+  Future<void> deleteCrop(String id) async{
+    try {
+      await _db.collection('users').doc(userId).collection('crops').doc(id).delete();
+    }catch(e){
+      rethrow;
+    }
   }
 
   //order

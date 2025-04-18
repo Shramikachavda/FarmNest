@@ -1,5 +1,6 @@
 import 'package:google_generative_ai/google_generative_ai.dart';
 
+import '../models/responses/weather_response.dart';
 
 class GeminiService {
   final String apiKey = 'AIzaSyDK4TME_6YPTDBvteVSuoyA05cBgRueiYQ';
@@ -9,7 +10,7 @@ class GeminiService {
     required String cropName,
     required String growthStage,
     required DateTime? sowingDate,
-    required DateTime?  harvestDate,
+    required DateTime? harvestDate,
     required String fertilizer,
     required String pesticide,
     required String temperature,
@@ -199,13 +200,35 @@ Include an expected maturity or production milestone (e.g., milking start, slaug
 
   bool _validateDates(DateTime? sowingDate, DateTime? harvestDate) {
     try {
-
       final sowing = sowingDate;
       final harvest = harvestDate;
       return !sowing!.isAfter(harvest!) &&
           harvest.difference(sowing).inDays >= 15;
     } catch (e) {
       return false;
+    }
+  }
+
+  Future<String> getFarmAdvice(String location, String locationDescription ) async {
+    try {
+      final model = GenerativeModel(model: modelName, apiKey: apiKey);
+
+      final prompt = '''
+You are a smart farming assistant.
+Based on the following location and weather of that location , give a short 1-line farming advice.if you found ciy name that is not present you can say wrong city name
+
+State: $location
+address : $locationDescription
+
+Respond in 1 line, practical and specific.
+''';
+
+      final content = [Content.text(prompt)];
+      final response = await model.generateContent(content);
+
+      return response.text ?? 'No recommendations received';
+    } catch (e) {
+      return 'Failed to generate recommendations: $e';
     }
   }
 }

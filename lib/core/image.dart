@@ -15,7 +15,7 @@ class ImageConst {
   //farm
     static const String bg1 = "assets/image/bg1.png";
       static const String bg2 = "assets/image/bg2.png";
-        static const String bg3 = "assets/image/bg3.png";
+        static const String bg3 = "assets/image/b3.png";
 
 
 
@@ -27,6 +27,7 @@ class ImageConst {
 
   //buy  now
   static const String buyNowAnim = "assets/anim/buy_confirmation.lottie";
+  static const String confirm = "assets/image/confirm.png";
 
   static const String lightThemeAnimation = "assets/anim/dark_anim.lottie";
   static const String darkThemeAniamtion = "assets/anim/light_anim.lottie";
@@ -42,11 +43,11 @@ class ImageConst {
   static const String intro1 = "assets/image/i1.png";
 
   //farmstate
-  static const String vacc = "assets/image/image 17.svg ";
-  static const String pesti = "assets/image/image 16.svg";
-  static const String location = "assets/image/image 15.svg";
-  static const String startDate = "assets/image/image 13.svg";
-  static const String harvestDate = "assets/image/image 12.svg";
+  static const String vacc = "assets/image/download (5).png";
+  static const String pesti = "assets/image/download (5).png";
+  static const String location = "assets/image/download (4).png";
+  static const String startDate = "assets/image/download (3).png";
+  static const String harvestDate = "assets/image/download (2).png";
   static const String ferti = "assets/image/image 10.svg";
 
   //icons

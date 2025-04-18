@@ -1,9 +1,9 @@
 import 'package:agri_flutter/core/image.dart';
 import 'package:agri_flutter/customs_widgets/custom_snackbar.dart';
+import 'package:agri_flutter/utils/comman.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:provider/provider.dart';
 import '../../../customs_widgets/custom_app_bar.dart';
 import '../../../customs_widgets/reusable.dart';
 import '../../../models/post_sign_up/farm_detail.dart';
@@ -22,6 +22,7 @@ class Farm extends StatefulWidget {
 class _FarmState extends State<Farm> {
   final FarmBloc _farmBloc = FarmBloc();
 
+
   @override
   void didChangeDependencies() async {
     await _farmBloc.getFarmDetail();
@@ -32,7 +33,17 @@ class _FarmState extends State<Farm> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: themeColor(context: context).surface,
-      appBar: CustomAppBar(),
+      appBar: CustomAppBar(title: "Your Farms"),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          NavigationUtils.push(
+            MaterialPageRoute(
+              builder: (context) => AddFarmFieldLocationScreen(),
+            ),
+          );
+        },
+        child: Icon(Icons.add),
+      ),
       body: StreamBuilder(
         stream: _farmBloc.farmList,
         builder: (context, snapshot) {
@@ -44,8 +55,10 @@ class _FarmState extends State<Farm> {
             return Center(child: bodyText(snapshot.error.toString()));
           }
 
-          if (!snapshot.hasData || snapshot.data == null) {
-            return Center(child: bodyText("No Data found"));
+          if (!snapshot.hasData ||
+              snapshot.data == null ||
+              snapshot.data!.isEmpty) {
+            return Center(child: bodyText("Add your farm"));
           }
 
           final farmdata = snapshot.data ?? [];
@@ -64,129 +77,208 @@ class _FarmState extends State<Farm> {
   }
 
   Widget farmDetailCard(FarmDetail farm) {
-    if (farm.farmBoundaries.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    final List<LatLongData> boundaryPoints =
-        farm.farmBoundaries
-            .map(
-              (point) => LatLongData(
-                lat: point.lat?.toDouble() ?? 0.0,
-                lng: point.lng?.toDouble() ?? 0.0,
-              ),
-            )
-            .toList();
-
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
         margin: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
         elevation: 4,
-
         child: Padding(
-          padding: EdgeInsets.all(16.w),
+          padding: EdgeInsets.all(12.w),
           child: Stack(
             children: [
-              Image.asset(ImageConst.bg, height: 300.h),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  bodyMediumBoldText(farm.fieldName),
-                  SizedBox(height: 8.h),
-                  bodyText(farm.ownershipType),
-                  bodyText(farm.locationDescription),
-                  bodyText(farm.cropDetails),
-                  bodyText(farm.state),
-                  Text(
-                    'Area: ${farm.fieldSize} hectares',
-                    style: TextStyle(fontSize: 14.sp),
-                  ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    'State: ${farm.state}',
-                    style: TextStyle(fontSize: 14.sp),
-                  ),
-                  SizedBox(height: 16.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          NavigationUtils.push(
-                            MaterialPageRoute(
+              //image
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12.r),
+                child: Image.asset(
+                  ImageConst.bg3,
+                  height: 260.h,
+                  fit: BoxFit.cover,
+                  opacity: AlwaysStoppedAnimation(0.2),
+                ),
+              ),
+
+              //data
+              Padding(
+                padding: EdgeInsets.all(12.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    //name and delete button
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        bodyMediumBoldText(farm.fieldName, maxLine: 2),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
                               builder:
-                                  (_) => FarmBoundaryScreen(
-                                    farmId: farm.id,
-                                    boundaryPoints: farm.farmBoundaries,
-                                    onBoundaryUpdated: (newBoundary) {
-                                      _farmBloc.updateFarmBoundary(
-                                        farm.id,
-                                        newBoundary,
-                                      );
-                                    },
+                                  (context) => AlertDialog(
+                                    title: const Text('Delete Farm'),
+                                    content: Text(
+                                      'Are you sure you want to delete ${farm.fieldName}?',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () async {
+                                          final isDelete = await _farmBloc
+                                              .deleteFarm(farm.id);
+                                          Navigator.pop(context);
+
+                                          if (isDelete) {
+                                            showCustomSnackBar(
+                                              context,
+                                              '${farm.fieldName} deleted',
+                                            );
+                                          } else {
+                                            showCustomSnackBar(
+                                              context,
+                                              '${farm.fieldName}is not deleted',
+                                            );
+                                          }
+                                        },
+                                        child: bodyText('Delete'),
+                                      ),
+                                    ],
                                   ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+
+                    //crop and area
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      spacing: 10.w,
+                      children: [
+                        Icon(Icons.grass, size: 20.sp),
+                        bodyText(farm.cropDetails, maxLine: 2),
+                        SizedBox(width: 15.w),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          spacing: 10.w,
+                          children: [
+                            Icon(Icons.aspect_ratio, size: 20.sp),
+                            bodyText('${farm.fieldSize} ', maxLine: 2),
+                          ],
+                        ),
+                      ],
+                    ),
+
+                    //ownership type and farmer
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      spacing: 10.w,
+                      children: [
+                        Icon(Icons.badge, size: 20.sp),
+                        bodyText(" ${farm.ownershipType}", maxLine: 2),
+                        SizedBox(width: 15.w),
+
+                        //farmer
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          spacing: 10.w,
+                          children: [
+                            Icon(Icons.groups, size: 20.sp),
+                            bodyText(' ${farm.farmersAllocated}'),
+                          ],
+                        ),
+                      ],
+                    ),
+
+                    //location  city and
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      spacing: 10.w,
+                      children: [
+                        Icon(Icons.location_on, size: 20.sp),
+                        bodyText(farm.locationDescription, maxLine: 2),
+
+                        //    SizedBox(width: 5.w),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      spacing: 10.w,
+                      children: [
+                        Icon(Icons.location_city, size: 20.sp),
+                        bodyText(farm.state),
+                      ],
+                    ),
+
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            NavigationUtils.push(
+                              MaterialPageRoute(
+                                builder:
+                                    (_) => FarmBoundaryScreen(
+                                      farmId: farm.id,
+                                      boundaryPoints: farm.farmBoundaries,
+                                      onBoundaryUpdated: (newBoundary) {
+                                        _farmBloc.updateFarmBoundary(
+                                          farm.id,
+                                          newBoundary,
+                                        );
+                                      },
+                                    ),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.map),
+                          label: bodyText('View Map'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                themeColor(context: context).primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.r),
                             ),
-                          );
-                        },
-                        icon: const Icon(Icons.map),
-                        label: bodyText('View Map'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: themeColor(context: context).primary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.r),
                           ),
                         ),
-                      ),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder:
-                                    (context) => AlertDialog(
-                                      title: const Text('Delete Farm'),
-                                      content: Text(
-                                        'Are you sure you want to delete ${farm.fieldName}?',
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed:
-                                              () => Navigator.pop(context),
-                                          child: const Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () async {
-                                            final isDelete = await _farmBloc
-                                                .deleteFarm(farm.id);
-                                            Navigator.pop(context);
+                      ],
+                    ),
 
-                                            if (isDelete) {
-                                              showCustomSnackBar(
-                                                context,
-                                                '${farm.fieldName} deleted',
-                                              );
-                                            } else {
-                                              showCustomSnackBar(
-                                                context,
-                                                '${farm.fieldName}is not deleted',
-                                              );
-                                            }
-                                          },
-                                          child: bodyText('Delete'),
-                                        ),
-                                      ],
-                                    ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
+            /*        //advice
+                    // AI Response Section
+                    Consumer<AIProvider>(
+                      builder: (context, aiProvider, _) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children:
+                          [
+                            // Other farm details...
+
+                            // AI Response Button and Text
+                         Row(children: [
+                           Icon(Icons.tips_and_updates),
+                           TextButton(onPressed: (){   aiProvider.getSuggestion(
+                             context,
+                             farm,
+                           );}, child: smallText("Get Advice"))
+                         ],)
+
+
+                          ].separator(SizedBox(height: 8.h)).toList(),
+                        );
+                      },
+                    ),
+                    if (farm.aiResponse != null)
+                      Text(
+                        farm.aiResponse ?? "No response",
+                        maxLines: 3,
+                      ),  */
+
+                  ].separator(SizedBox(height: 8,)).toList(),
+                ),
               ),
             ],
           ),
@@ -299,7 +391,7 @@ class _FarmBoundaryScreenState extends State<FarmBoundaryScreen> {
           Padding(
             padding: EdgeInsets.all(16.w),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 ElevatedButton.icon(
                   onPressed: _clearBoundary,

@@ -44,10 +44,6 @@ class _SelectBoundaryScreenState extends State<SelectBoundaryScreen> {
     }
   }
 
-  Widget _circular() {
-    return const Center(child: CircularProgressIndicator());
-  }
-
   Future<void> _centerMapOnBoundary() async {
     final boundaryProvider = Provider.of<BoundaryProvider>(context, listen: false);
     if (boundaryProvider.selectedBoundary.isNotEmpty) {

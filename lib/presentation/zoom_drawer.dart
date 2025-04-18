@@ -1,12 +1,8 @@
-import 'package:agri_flutter/presentation/home_page_view/home_page.dart';
 import 'package:agri_flutter/presentation/home_page_view/home_page_screen.dart';
-import 'package:agri_flutter/presentation/home_view.dart';
 import 'package:agri_flutter/theme/theme.dart';
 import 'package:agri_flutter/widgets/drawer.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
-
 import '../core/widgets/BaseStateFullWidget.dart';
 
 class MyZoomDrawer extends BaseStatefulWidget {

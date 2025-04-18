@@ -13,7 +13,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'draw_boundary.dart';
 
-
 class AddFarmFieldLocationScreen extends BaseStatefulWidget {
   const AddFarmFieldLocationScreen({super.key});
 
@@ -32,7 +31,6 @@ class AddFarmFieldLocationScreen extends BaseStatefulWidget {
 
 class _AddFarmFieldLocationScreenState
     extends State<AddFarmFieldLocationScreen> {
-
   //form key
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -41,7 +39,8 @@ class _AddFarmFieldLocationScreenState
   final TextEditingController _cropDetailsController = TextEditingController();
   final TextEditingController _fieldSizeController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
-  final TextEditingController _locationDescriptionController = TextEditingController();
+  final TextEditingController _locationDescriptionController =
+      TextEditingController();
   final TextEditingController _boundaryController = TextEditingController();
 
   //focus node
@@ -82,184 +81,194 @@ class _AddFarmFieldLocationScreenState
         await LocalStorageService.setPostSignupCompleted();
         postSignupNotifier.completeSignupAndNavigate();
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("❌ Error: $e")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("❌ Error: $e")));
       }
     }
   }
 
   String _formatBoundaryCoordinates(List<LatLongData> points) {
     return points
-        .map((point) =>
-    '[${point.lat?.toStringAsFixed(6)}, ${point.lng?.toStringAsFixed(6)}]')
+        .map(
+          (point) =>
+              '[${point.lat?.toStringAsFixed(6)}, ${point.lng?.toStringAsFixed(6)}]',
+        )
         .join(', ');
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 30.w),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              bodyLargeText("Add Farms Field Location"),
-              SizedBox(height: 10.h),
-              bodyText(
-                "This detailed information will help our soil tester partner reach your farm easily.",
-                maxLine: 3
-              ),
-              SizedBox(height: 24.h),
+    return Scaffold(
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 30.w),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                bodyLargeText("Add Farms Field Location"),
+                SizedBox(height: 10.h),
+                bodyText(
+                  "This detailed information will help our soil tester partner reach your farm easily.",
+                  maxLine: 3,
+                ),
+                SizedBox(height: 24.h),
 
-              /// Field Name
-              CustomFormField(
-                focusNode: _focusNodeName,
-                textInputAction: TextInputAction.next,
-                hintText: 'Enter your farm field name',
-                keyboardType: TextInputType.text,
-                label: 'Field Name',
-                textEditingController: _fieldNameController,
-                validator: (value) =>
-                value == null || value.trim().isEmpty
-                    ? 'Please enter field name'
-                    : null,
-              ),
-              SizedBox(height: 24.h),
+                /// Field Name
+                CustomFormField(
+                  focusNode: _focusNodeName,
+                  textInputAction: TextInputAction.next,
+                  hintText: 'Enter your farm field name',
+                  keyboardType: TextInputType.text,
+                  label: 'Field Name',
+                  textEditingController: _fieldNameController,
+                  validator:
+                      (value) =>
+                          value == null || value.trim().isEmpty
+                              ? 'Please enter field name'
+                              : null,
+                ),
+                SizedBox(height: 24.h),
 
-              /// Ownership
-              reusableDropdown<FarmOwnershipType>(
-                label: 'Ownership Type',
-                selectedValue: selctedOwnerShip,
-                items: FarmOwnershipType.values,
-                onChanged: (FarmOwnershipType? value) {
-                  setState(() {
-                    selctedOwnerShip = value!;
-                  });
-                },
-              ),
-              SizedBox(height: 24.h),
+                /// Ownership
+                reusableDropdown<FarmOwnershipType>(
+                  label: 'Ownership Type',
+                  selectedValue: selctedOwnerShip,
+                  items: FarmOwnershipType.values,
+                  onChanged: (FarmOwnershipType? value) {
+                    setState(() {
+                      selctedOwnerShip = value!;
+                    });
+                  },
+                ),
+                SizedBox(height: 24.h),
 
-              /// Farm Boundaries
-              CustomFormField(
-                focusNode: _focusNodeBoundary,
-                hintText: 'Select boundaries from map',
-                label: 'Farm Boundaries',
-                textEditingController: _boundaryController,
-                readOnly: true,
-                icon: IconButton(
-                  onPressed: () async {
-                    final List<LatLongData> boundary = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const SelectBoundaryScreen(),
-                      ),
-                    );
+                /// Farm Boundaries
+                CustomFormField(
+                  focusNode: _focusNodeBoundary,
+                  hintText: 'Select boundaries from map',
+                  label: 'Farm Boundaries',
+                  textEditingController: _boundaryController,
+                  readOnly: true,
+                  icon: IconButton(
+                    onPressed: () async {
+                      final List<LatLongData> boundary = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SelectBoundaryScreen(),
+                        ),
+                      );
 
-                    if (boundary != null && boundary is List<LatLng>) {
                       print("✅ Selected boundary: $boundary");
                       setState(() {
                         _farmBoundaries = boundary;
 
-                        _boundaryController.text = _formatBoundaryCoordinates(boundary);
+                        _boundaryController.text = _formatBoundaryCoordinates(
+                          boundary,
+                        );
 
-                        _boundaryController.selection = TextSelection.fromPosition(
-                          TextPosition(offset: _boundaryController.text.length),
+                        _boundaryController
+                            .selection = TextSelection.fromPosition(
+                          TextPosition(
+                            offset: _boundaryController.text.length,
+                          ),
                         );
                       });
-                    } else {
-                      print("❌ No boundary returned");
-                    }
-                  },
-                  icon: const Icon(Icons.map),
+                                        },
+                    icon: const Icon(Icons.map),
+                  ),
+                  keyboardType: TextInputType.text,
+                  textInputAction: TextInputAction.next,
                 ),
-                keyboardType: TextInputType.text,
-                textInputAction: TextInputAction.next,
-              ),
-              SizedBox(height: 24.h),
+                SizedBox(height: 24.h),
 
-              /// Crop Details
-              CustomFormField(
-                focusNode: _focusNodeCropDetail,
-                textInputAction: TextInputAction.next,
-                hintText: 'Crop details cultivating in field',
-                keyboardType: TextInputType.text,
-                label: 'Crop Details',
-                textEditingController: _cropDetailsController,
-                validator: (value) =>
-                value == null || value.trim().isEmpty
-                    ? 'Please enter crop details'
-                    : null,
-              ),
-              SizedBox(height: 24.h),
+                /// Crop Details
+                CustomFormField(
+                  focusNode: _focusNodeCropDetail,
+                  textInputAction: TextInputAction.next,
+                  hintText: 'Crop details cultivating in field',
+                  keyboardType: TextInputType.text,
+                  label: 'Crop Details',
+                  textEditingController: _cropDetailsController,
+                  validator:
+                      (value) =>
+                          value == null || value.trim().isEmpty
+                              ? 'Please enter crop details'
+                              : null,
+                ),
+                SizedBox(height: 24.h),
 
-              /// Field Size
-              CustomFormField(
-                focusNode: _focusNodeFieldSize,
-                textInputAction: TextInputAction.next,
-                hintText: 'Field size in sq.m',
-                keyboardType: TextInputType.number,
-                label: 'Field Size',
-                textEditingController: _fieldSizeController,
-                validator: (value) =>
-                value == null || value.trim().isEmpty
-                    ? 'Please enter field size'
-                    : null,
-              ),
-              SizedBox(height: 24.h),
+                /// Field Size
+                CustomFormField(
+                  focusNode: _focusNodeFieldSize,
+                  textInputAction: TextInputAction.next,
+                  hintText: 'Field size in sq.m',
+                  keyboardType: TextInputType.number,
+                  label: 'Field Size',
+                  textEditingController: _fieldSizeController,
+                  validator:
+                      (value) =>
+                          value == null || value.trim().isEmpty
+                              ? 'Please enter field size'
+                              : null,
+                ),
+                SizedBox(height: 24.h),
 
-              /// State
-              CustomFormField(
-                focusNode: _focusNodeState,
-                textInputAction: TextInputAction.next,
-                hintText: 'State where the field is situated',
-                keyboardType: TextInputType.text,
-                label: 'State',
-                textEditingController: _stateController,
-                validator: (value) =>
-                value == null || value.trim().isEmpty
-                    ? 'Please enter state'
-                    : null,
-              ),
-              SizedBox(height: 24.h),
+                /// State
+                CustomFormField(
+                  focusNode: _focusNodeState,
+                  textInputAction: TextInputAction.next,
+                  hintText: 'State where the field is situated',
+                  keyboardType: TextInputType.text,
+                  label: 'State',
+                  textEditingController: _stateController,
+                  validator:
+                      (value) =>
+                          value == null || value.trim().isEmpty
+                              ? 'Please enter state'
+                              : null,
+                ),
+                SizedBox(height: 24.h),
 
-              /// Location Description
-              CustomFormField(
-                focusNode: _focusNodeLocation,
-                textInputAction: TextInputAction.done,
-                hintText: 'Description to reach your field',
-                keyboardType: TextInputType.text,
-                label: 'Location Description',
-                textEditingController: _locationDescriptionController,
-                validator: (value) =>
-                value == null || value.trim().isEmpty
-                    ? 'Please enter location description'
-                    : null,
-              ),
-              SizedBox(height: 24.h),
+                /// Location Description
+                CustomFormField(
+                  focusNode: _focusNodeLocation,
+                  textInputAction: TextInputAction.done,
+                  hintText: 'Description to reach your field',
+                  keyboardType: TextInputType.text,
+                  label: 'Location Description',
+                  textEditingController: _locationDescriptionController,
+                  validator:
+                      (value) =>
+                          value == null || value.trim().isEmpty
+                              ? 'Please enter location description'
+                              : null,
+                ),
+                SizedBox(height: 24.h),
 
-              /// Farmers Allocated
-              reusableDropdown<FarmersAllocated>(
-                label: 'Farmers Allocated',
-                selectedValue: selectedFarmer,
-                items: FarmersAllocated.values,
-                onChanged: (FarmersAllocated? value) {
-                  setState(() {
-                    selectedFarmer = value!;
-                  });
-                },
-              ),
-              SizedBox(height: 24.h),
+                /// Farmers Allocated
+                reusableDropdown<FarmersAllocated>(
+                  label: 'Farmers Allocated',
+                  selectedValue: selectedFarmer,
+                  items: FarmersAllocated.values,
+                  onChanged: (FarmersAllocated? value) {
+                    setState(() {
+                      selectedFarmer = value!;
+                    });
+                  },
+                ),
+                SizedBox(height: 24.h),
 
-              /// Submit Button
-              CustomButton(
-                onClick: _submitFarmDetails,
-                buttonName: "Save and Proceed",
-              ),
-              SizedBox(height: 24.h),
-            ],
+                /// Submit Button
+                CustomButton(
+                  onClick: _submitFarmDetails,
+                  buttonName: "Save and Proceed",
+                ),
+                SizedBox(height: 24.h),
+              ],
+            ),
           ),
         ),
       ),

@@ -68,6 +68,7 @@ dependencies:
   intl:
   google_generative_ai: ^0.4.6
   flutter_map: ^8.1.1
+  flutter_launcher_icons: ^0.14.3
 
 
 dev_dependencies:
@@ -81,6 +82,11 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
   build_runner: ^2.4.15
+
+flutter_launcher_icons:
+  ios: true
+  image_path: "assets/image/farmnest_logo.png"
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

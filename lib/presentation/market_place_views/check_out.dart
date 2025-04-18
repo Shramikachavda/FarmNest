@@ -1,12 +1,15 @@
 // presentation/market_place/checkout_view.dart
+import 'package:agri_flutter/core/image.dart';
 import 'package:agri_flutter/core/widgets/BaseStateFullWidget.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/presentation/drawer/order_screen.dart';
 import 'package:agri_flutter/services/firestore.dart';
 import 'package:agri_flutter/utils/comman.dart';
 import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
+import 'package:dotlottie_loader/dotlottie_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../customs_widgets/custom_app_bar.dart';
@@ -30,6 +33,7 @@ class CheckoutView extends BaseStatefulWidget {
   Route buildRoute() => materialRoute();
 
   static const String route = "/CheckoutView";
+
   @override
   String get routeName => route;
 }
@@ -118,31 +122,28 @@ class _CheckoutViewState extends State<CheckoutView> {
     }
 
     try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId == null) {
-        showCustomSnackBar(context, "User not logged in");
-        return;
-      }
-
       if (cartProvider.cartItems.isEmpty) {
         showCustomSnackBar(context, "Cart is empty");
         return;
       }
 
-      setState(() {
+      /*   setState(() {
         _isLoading = true;
-      });
+      });*/
 
       await _firestoreService.placeOrder(cartProvider.cartItems);
 
+      await confirmAnim();
+
       showCustomSnackBar(context, "Order placed successfully!");
 
-      cartProvider.clearCart();
+      await cartProvider.clearCart();
       selectedAddressProvider.clear();
-
-      Navigator.of(context).pushAndRemoveUntil(
+      await cartProvider.clearCart();
+      selectedAddressProvider.clear();
+      NavigationUtils.pop();
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const OrderScreen()),
-        (route) => false,
       );
     } catch (e) {
       showCustomSnackBar(context, "Order failed: $e");
@@ -151,6 +152,25 @@ class _CheckoutViewState extends State<CheckoutView> {
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> confirmAnim() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        Future.delayed(const Duration(minutes: 30), () {
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+        });
+
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Image.asset(ImageConst.confirm),
+        );
+      },
+    );
   }
 
   @override

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:agri_flutter/customs_widgets/custom_app_bar.dart';
 import 'package:agri_flutter/customs_widgets/custom_icon.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
@@ -257,16 +259,52 @@ class _CalenderViewState extends State<CalenderView> {
                                   ),
                               ],
                             ),
-                            trailing: IconButton(
-                              icon: Icon(Icons.delete, size: 20.sp),
-                              onPressed: () async {
-                                await provider.removeEventExpense(event);
-                                if (event.reminder != null) {
-                                  await NotificationService.cancelNotification(
-                                    int.parse(event.id),
-                                  );
-                                }
-                              },
+                            trailing: Column(
+                              children: [
+                                Expanded(
+                                  child: IconButton(
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return Stack(
+                                            children: [
+                                              BackdropFilter(
+                                                filter: ImageFilter.blur(
+                                                  sigmaX: 2.0,
+                                                  sigmaY: 2.0,
+                                                ),
+                                                child: Container(),
+                                              ),
+                                              Center(
+                                                child: AddEventExpenseDialog(
+                                                  event.date,
+                                                  eventToEdit: event,
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                    icon: Icon(Icons.edit  , size:  20.sp,),
+                                  ),
+                                ),
+                                SizedBox(height: 5.h,) ,
+                                Expanded(
+                                  child: IconButton(
+                                    icon: Icon(Icons.delete, size: 20.sp),
+                                    onPressed: () async {
+                                      await provider.removeEventExpense(event);
+                                      if (event.reminder != null) {
+                                        await NotificationService.cancelNotification(
+                                          int.parse(event.id),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),

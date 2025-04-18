@@ -1,3 +1,4 @@
+import 'package:agri_flutter/core/widgets/BaseStateFullWidget.dart';
 import 'package:agri_flutter/customs_widgets/custom_app_bar.dart';
 import 'package:agri_flutter/customs_widgets/custom_button.dart';
 import 'package:agri_flutter/customs_widgets/custom_snackbar.dart';
@@ -14,8 +15,20 @@ import '../../providers/market_place_provider/product_provider.dart';
 import '../../utils/navigation/navigation_utils.dart';
 import 'detail_product_view.dart';
 
-class CartView extends StatefulWidget {
+class CartView extends BaseStatefulWidget {
   const CartView({super.key});
+
+
+
+  @override
+  Route buildRoute() {
+    return materialRoute();
+  }
+
+  static const String route = "/CartView";
+
+  @override
+  String get routeName => route;
 
   @override
   State<CartView> createState() => _CartViewState();

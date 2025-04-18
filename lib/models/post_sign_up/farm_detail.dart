@@ -12,6 +12,7 @@ class FarmDetail {
   final String locationDescription;
   final String farmersAllocated;
   final List<LatLongData> farmBoundaries;
+  String? aiResponse;
 
   FarmDetail({
     String? id,
@@ -23,6 +24,7 @@ class FarmDetail {
     required this.locationDescription,
     required this.farmersAllocated,
     required this.farmBoundaries,
+    this.aiResponse ,
   }) : id = id ?? const Uuid().v4();
 
   factory FarmDetail.fromJson(Map<String, dynamic> json, {String? docId}) {
@@ -35,6 +37,7 @@ class FarmDetail {
       state: json['state'] ?? '',
       locationDescription: json['locationDescription'] ?? '',
       farmersAllocated: json['farmersAllocated'] ?? '',
+      aiResponse: json['aiResponse'],
       farmBoundaries:
           json['farmBoundaries'] == null
               ? []
@@ -55,6 +58,7 @@ class FarmDetail {
       'locationDescription': locationDescription,
       'farmersAllocated': farmersAllocated,
       'farmBoundaries': farmBoundaries.map((x) => x.toJson()).toList(),
+      'aiResponse':aiResponse
     };
   }
 }

@@ -129,6 +129,15 @@ class CropDetailsProvider with ChangeNotifier {
     }
   }
 
+  Future<void> removeCrop(String id) async{
+    try{
+      await _firestoreService.deleteCrop(id);
+      print("delete");
+    }catch(e){
+      throw Exception("Error fetching crops: $e");
+    }
+  }
+
   Future<void> fetchCrops() async {
     try {
       _allCropList = await _firestoreService.getCrops();

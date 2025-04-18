@@ -7,6 +7,7 @@ import 'package:agri_flutter/providers/farm_state_provider.dart/crop_details_pro
 import 'package:agri_flutter/providers/farm_state_provider.dart/liveStock_provider.dart';
 import 'package:agri_flutter/theme/theme.dart';
 import 'package:agri_flutter/presentation/farm_state_views/add_farm_state.dart';
+import 'package:agri_flutter/utils/comman.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -19,7 +20,6 @@ class FarmStateHomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     final liveStockProvider = Provider.of<LivestockProvider>(context);
     final cropDetailsProvider = Provider.of<CropDetailsProvider>(context);
-
 
     final combinedList = [
       ...liveStockProvider.liveStockList,
@@ -35,7 +35,7 @@ class FarmStateHomeView extends StatelessWidget {
             context,
           ).push(MaterialPageRoute(builder: (context) => const AddFarmState()));
         },
-        child:  Icon(Icons.add , size : 20.sp),
+        child: Icon(Icons.add, size: 20.sp),
       ),
       body:
           combinedList.isEmpty
@@ -223,7 +223,7 @@ class FarmStateHomeView extends StatelessWidget {
                               ),
                             );
                           },
-                          icon: const Icon(Icons.edit_outlined), // ✏️ Edit Icon
+                          icon: const Icon(Icons.edit_outlined),
                         ),
                         SizedBox(width: 8.w), // Consistent spacing
                         IconButton(
@@ -232,8 +232,7 @@ class FarmStateHomeView extends StatelessWidget {
                               context,
                               "Are you sure?",
                             );
-                            if (confirmDelete == true) {
-                              //    cropDetailsProvider.removeCrop(item);
+                            if (confirmDelete == true) {cropDetailsProvider.removeCrop(item.id);
                             }
                           },
                           icon: Icon(
@@ -246,26 +245,29 @@ class FarmStateHomeView extends StatelessWidget {
                   ],
                 ),
 
-                SizedBox(height: 8.h),
-
-                /// 📆 **Start & Harvest Dates**
+                //start and harvesting data
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
-                        customIcon(context, ImageConst.startDate),
-                        // 📆 Start Date Icon
+                        Image.asset(
+                          ImageConst.startDate,
+                          height: 20.sp,
+                          width: 20.sp,
+                        ),
                         SizedBox(width: 4.w),
                         Text(DateFormat('dd/MM/yyyy').format(item.startDate)),
                       ],
                     ),
                     Row(
                       children: [
-                        customIcon(
-                          context,
+                        Image.asset(
                           ImageConst.harvestDate,
-                        ), // 🚜 Harvest Date Icon
+                          height: 20.sp,
+                          width: 20.sp,
+                        ),
+                        // 🚜 Harvest Date Icon
                         SizedBox(width: 4.w),
                         Text(DateFormat('dd/MM/yyyy').format(item.harvestDate)),
                       ],
@@ -273,54 +275,53 @@ class FarmStateHomeView extends StatelessWidget {
                   ],
                 ),
 
-                SizedBox(height: 8.h),
-
-                /// 📍 **Location**
+                //location
                 Row(
                   children: [
-                    customIcon(
-                      context,
+                    Image.asset(
                       ImageConst.location,
-                    ), // 📍 Location Icon
+                      height: 20.sp,
+                      width: 20.sp,
+                    ),
                     SizedBox(width: 4.w),
                     Expanded(
                       child: Text(
-                        "          item.location,",
+                        "${item.location}",
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
                 ),
 
-                SizedBox(height: 8.h),
-
-                /// 🛠 **Fertilizer & Pesticide**
+                //ferti and pesti
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
-                        customIcon(
-                          context,
-                          ImageConst.ferti,
-                        ), // 🛠 Fertilizer Icon
+                        Image.asset(
+                          ImageConst.harvestDate,
+                          height: 20.sp,
+                          width: 20.sp,
+                        ),
                         SizedBox(width: 4.w),
-                        //   Text(item.fertilizer),
+                        smallText(item.fertilizer),
                       ],
                     ),
                     Row(
                       children: [
-                        customIcon(
-                          context,
+                        Image.asset(
                           ImageConst.pesti,
+                          height: 20.sp,
+                          width: 20.sp,
                         ), // 🐞 Pesticide Icon
                         SizedBox(width: 4.w),
-                        // Text(item.pesticide),
+                        smallText(item.pesticide),
                       ],
                     ),
                   ],
                 ),
-              ],
+              ].separator(SizedBox(height: 8.h),).toList(),
             ),
           ),
         ),
@@ -328,7 +329,6 @@ class FarmStateHomeView extends StatelessWidget {
     );
   }
 
-  /// ✅ **Reusable Edit & Delete Buttons**
   Widget _buildEditDeleteButtons(
     BuildContext context, {
     required VoidCallback onEdit,

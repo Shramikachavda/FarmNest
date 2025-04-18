@@ -10,14 +10,14 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
 
     <application
-        android:label="agri_flutter"
+        android:label="@string/app_name"
         android:usesCleartextTraffic="true"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <!-- google map -->
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBkdT5XD9WyRvWIupFFiF15Tl8aERHhPYI"/>
-        
+
         <!-- Local Notifications Foreground Service -->
         <service
             android:name="com.dexterous.flutterlocalnotifications.ForegroundService"
@@ -35,8 +35,8 @@
         </receiver>
 
         <!-- Alarm Manager Receiver -->
-        <receiver 
-            android:name="dev.fluttercommunity.plus.androidalarmmanager.AlarmBroadcastReceiver" 
+        <receiver
+            android:name="dev.fluttercommunity.plus.androidalarmmanager.AlarmBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
