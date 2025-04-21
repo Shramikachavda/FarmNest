@@ -21,6 +21,7 @@ import 'package:provider/provider.dart';
 import '../../core/widgets/BaseStateFullWidget.dart';
 import '../../customs_widgets/custom_icon.dart';
 import '../../data/choice_chips_value.dart';
+import '../../providers/category_provider.dart';
 
 class MarketHomepageView extends BaseStatefulWidget {
   const MarketHomepageView({super.key});
@@ -44,22 +45,22 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
   List<Product> _filteredProducts = [];
   Timer? _debounce;
 
-  final FirestoreService _fireStore = FirestoreService();
+
 
   @override
   void initState() {
     super.initState();
-    final productsProvider = Provider.of<Products>(context, listen: false);
-    productsProvider
-        .fetchProducts()
-        .then((_) {
-          setState(() {
-            _filteredProducts = productsProvider.products;
-          });
-        })
-        .catchError((error) {
-          showCustomSnackBar(context, 'Failed to load products: $error');
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final productsProvider = Provider.of<Products>(context, listen: false);
+      productsProvider.fetchProducts().then((_) {
+        setState(() {
+          _filteredProducts = productsProvider.products;
         });
+      }).catchError((error) {
+        showCustomSnackBar(context, 'Failed to load products: $error');
+      });
+    });
 
     _searchController.addListener(() {
       if (_debounce?.isActive ?? false) _debounce!.cancel();
@@ -68,6 +69,10 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
       });
     });
   }
+
+
+
+
 
   @override
   void dispose() {
@@ -111,7 +116,6 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
       context,
       listen: false,
     );
-    final productsProvider = Provider.of<Products>(context, listen: false);
     final favoriteProvider = Provider.of<FavoriteProvider>(context);
     final cartProvider = Provider.of<CartProvider>(context);
 
@@ -151,17 +155,11 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
               icon: Icon(Icons.search, size: 20.sp),
             ),
 
-            FutureBuilder<List<String>>(
-              future: _fireStore.getCategory(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Center(child: Text("Error: ${snapshot.error}"));
-                }
-
-                final categories = snapshot.data ?? [];
-
+            Consumer<CategoryProvider>(
+              builder: (context, category, child) {
+                final categories = category.CategotyList;
                 if (categories.isEmpty) {
-                  return Center(child: Text("No categories found."));
+                  return Center(child: bodyText("No categories found."));
                 }
 
                 return SizedBox(
@@ -186,14 +184,17 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
                 );
               },
             ),
-            // Category Chips
 
             // Product Grid
             Expanded(
               child: Consumer<Products>(
                 builder: (context, productsProvider, child) {
                   if (productsProvider.isLoading) {
-                    return Center(child: CircularProgressIndicator());
+                    return showLoading(context);
+                  }
+
+                  if (productsProvider.products.isEmpty) {
+                    bodyText("No products found.");
                   }
                   if (_filteredProducts.isEmpty) {
                     bodyText("No products found.");
@@ -226,7 +227,8 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20.r),
                             side: BorderSide(
-                              color: themeColor().outlineVariant,
+                              color:
+                                  themeColor(context: context).outlineVariant,
                               width: 2,
                             ),
                           ),
@@ -234,26 +236,63 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children:
                                 [
-                                  // Image
                                   ClipRRect(
                                     borderRadius: BorderRadius.vertical(
                                       top: Radius.circular(20.r),
                                     ),
-                                    child: Container(
-                                      width: double.infinity,
-                                      height: 100.h,
-                                      decoration: BoxDecoration(
-                                        color:
-                                            themeColor(
-                                              context: context,
-                                            ).surface,
-                                        image: DecorationImage(
-                                          image: NetworkImage(product.imageUrl),
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ),
-                                    ),
+                                    child:
+                                        product.imageUrl.isNotEmpty
+                                            ? Image.network(
+                                              product.imageUrl,
+                                              width: double.infinity,
+                                              height: 100.h,
+                                              fit: BoxFit.cover,
+                                              errorBuilder:
+                                                  (
+                                                    context,
+                                                    error,
+                                                    stackTrace,
+                                                  ) => Container(
+                                                    color:
+                                                        themeColor(
+                                                          context: context,
+                                                        ).surfaceContainerHighest,
+                                                    width: double.infinity,
+                                                    height: 100.h,
+                                                    child: Center(
+                                                      child: Icon(
+                                                        Icons
+                                                            .image_not_supported,
+                                                        size: 60.w,
+                                                        color:
+                                                            themeColor(
+                                                              context: context,
+                                                            ).onSurfaceVariant,
+                                                      ),
+                                                    ),
+                                                  ),
+                                            )
+                                            : Container(
+                                              color:
+                                                  themeColor(
+                                                    context: context,
+                                                  ).surfaceContainerHighest,
+                                              width: double.infinity,
+                                              height: 100.h,
+                                              child: Center(
+                                                child: Icon(
+                                                  Icons.image_not_supported,
+                                                  size: 50.w,
+                                                  color:
+                                                      themeColor(
+                                                        context: context,
+                                                      ).onSurfaceVariant,
+                                                ),
+                                              ),
+                                            ),
                                   ),
+
+                                  // Image
                                   Padding(
                                     padding: EdgeInsets.symmetric(
                                       horizontal: 5.w,
@@ -274,7 +313,9 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceAround,
                                       children: [
-                                        smallText('₹${product.price}'),
+                                        smallText(
+                                          '₹${product.price.toStringAsFixed(2)}',
+                                        ),
                                         customRoundIconButton(
                                           context: context,
                                           icon:

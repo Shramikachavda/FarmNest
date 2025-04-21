@@ -494,9 +494,8 @@ class _CropAdvisorViewState extends State<CropAdvisorView> {
                             child: Column(
                               children: [
                                 SizedBox(height: 30.h),
-                                CircularProgressIndicator(
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
+                                showLoading(
+context                                ),
                                 SizedBox(height: 16.h),
                                 Text(
                                   "Generating expert recommendations...",

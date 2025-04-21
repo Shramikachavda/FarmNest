@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/widgets/BaseStateFullWidget.dart';
+import '../../customs_widgets/reusable.dart';
 
 class ExpenseBarChart extends BaseStatefulWidget {
   @override
@@ -45,7 +46,7 @@ class _ExpenseBarChartState extends State<ExpenseBarChart> {
       body: Consumer<EventExpenseProvider>(
         builder: (context, eventExpenseProvider, child) {
           if (isLoading) {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: showLoading(context));
           }
 
           final expenses = eventExpenseProvider.expenses;

@@ -45,7 +45,7 @@ class _SignupViewState extends State<SignupView> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  TextEditingController();
 
   //focusnode
   final FocusNode _focusNodeName = FocusNode();
@@ -62,7 +62,7 @@ class _SignupViewState extends State<SignupView> {
     final validate = _formKey.currentState!.validate();
 
     if (validate) {
-      showLoadingDialog(context);
+      showLoading(context);
       try {
         User? user = await _fireBaseAuth.signUp(
           _emailController.text.trim(),
@@ -91,7 +91,8 @@ class _SignupViewState extends State<SignupView> {
           // Ensure post-signup flag is false (redundant with default, but explicit)
           await LocalStorageService.initHive(); // Ensure Hive is initialized
           if (LocalStorageService.hasCompletedPostSignup()) {
-            await LocalStorageService.setPostSignupCompleted(); // Reset to false if somehow true
+            await LocalStorageService
+                .setPostSignupCompleted(); // Reset to false if somehow true
           }
           // Show success message
           print("Navigating to LoginView...");
@@ -118,10 +119,9 @@ class _SignupViewState extends State<SignupView> {
         children: [
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(right: 30.w, left: 30.w),
+              padding: EdgeInsets.only(right: 24.w, left: 24.w),
               child: SingleChildScrollView(
                 child: Form(
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,31 +201,40 @@ class _SignupViewState extends State<SignupView> {
                         selector: (context, provider) => provider.isObscure,
                         builder: (context, isObscure, child) {
                           return CustomFormField(
-                            textInputAction: TextInputAction.next,
-                            focusNode: _focusNodePassword,
-                            keyboardType: TextInputType.text,
-                            hintText: 'Enter your password',
-                            label: 'Password',
-                            textEditingController: _passwordController,
-                            obscureText: isObscure,
-                            isPasswordField: true,
-                            maxLine: 1,
+                              textInputAction: TextInputAction.next,
+                              focusNode: _focusNodePassword,
+                              keyboardType: TextInputType.text,
+                              hintText: 'Enter your password',
+                              label: 'Password',
+                              textEditingController: _passwordController,
+                              obscureText: isObscure,
+                              isPasswordField: true,
+                              maxLine: 1,
 
-                            icon: Icon(
-                              isObscure
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                            ),
-                            onTogglePassword:
-                                () =>
-                                    context
-                                        .read<PasswordProvider>()
-                                        .toggleObscure(),
-                            validator:
-                                (value) =>
-                                    (value == null || value.isEmpty)
-                                        ? 'Password cannot be empty'
-                                        : null,
+                              icon: Icon(
+                                isObscure
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                              ),
+                              onTogglePassword:
+                                  () =>
+                                  context
+                                      .read<PasswordProvider>()
+                                      .toggleObscure(),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Password cannot be empty';
+                                } else if (!RegExp(
+                                    r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#\$%\^&\*\(\)_\+\-=\[\]\{\};:\",<>\./?\\|]).{6,}$',
+                                ).hasMatch(value)) {
+                                  return 'Password must contain at least 6 characters, one letter, one number, and one special character';
+                                }
+                                return null;
+                              }
+
+
+
+
                           );
                         },
                       ),
@@ -253,15 +262,15 @@ class _SignupViewState extends State<SignupView> {
                             ),
                             onTogglePassword:
                                 () =>
-                                    context
-                                        .read<ConfirmPasswordProvider>()
-                                        .toggleObscure(),
+                                context
+                                    .read<ConfirmPasswordProvider>()
+                                    .toggleObscure(),
                             validator:
                                 (value) =>
-                                    (value == null ||
-                                            value != _passwordController.text)
-                                        ? 'Passwords do not match'
-                                        : null,
+                            (value == null ||
+                                value != _passwordController.text)
+                                ? 'Passwords do not match'
+                                : null,
                           );
                         },
                       ),

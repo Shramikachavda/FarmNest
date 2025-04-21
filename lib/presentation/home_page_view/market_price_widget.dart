@@ -13,7 +13,7 @@ class MarketPriceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: themeColor().surfaceContainerLow,
+      color:themeColor(context : context).surfaceContainerLow,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.r),
       ),
@@ -30,13 +30,13 @@ class MarketPriceCard extends StatelessWidget {
                       TextSpan(
                         text: "Commodity: ",
                         style: AppTextStyles.bodyBoldStyle.copyWith(
-                          color: themeColor().onSurface,
+                          color:themeColor(context : context).onSurface,
                         ),
                       ),
                       TextSpan(
                         text: " ${record['Commodity']} (${record['Variety']}",
                         style: AppTextStyles.bodySmallStyle.copyWith(
-                          color: themeColor().onSurface,
+                          color:themeColor(context : context).onSurface,
                         ),
                       ),
                     ],
@@ -49,13 +49,13 @@ class MarketPriceCard extends StatelessWidget {
                   TextSpan(
                     text: "Date: ",
                     style: AppTextStyles.bodyBoldStyle.copyWith(
-                      color: themeColor().onSurface,
+                      color:themeColor(context : context).onSurface,
                     ),
                   ),
                   TextSpan(
                     text: " ${record['Arrival_Date']}",
                     style: AppTextStyles.bodySmallStyle.copyWith(
-                      color: themeColor().onSurface,
+                      color:themeColor(context : context).onSurface,
                     ),
                   ),
                 ],

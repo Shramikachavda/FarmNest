@@ -60,7 +60,13 @@ class AddressProvider with ChangeNotifier {
   }
 
   Future<DefaultFarmerAddress?> getDefaultAddress() async {
-    return await _firestoreService.getDefaultAddress();
+    _isLoading = true;
+    notifyListeners();
+    final data =  await _firestoreService.getDefaultAddress();
+    _isLoading = false;
+    notifyListeners();
+    return data;
+
   }
 }
 

@@ -1,3 +1,4 @@
+import 'package:agri_flutter/core/image.dart';
 import 'package:agri_flutter/customs_widgets/custom_app_bar.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/presentation/login_view.dart';
@@ -47,10 +48,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       return;
     }
 
-    _showLoadingDialog(); // Show loading indicator
+   showLoading(context);
 
     try {
       bool success = await _fireBaseAuth.sendPasswordResetEmail(email);
+
       if (!mounted) return;
 
       Navigator.pop(context); // Close loading dialog
@@ -87,51 +89,61 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     }
   }
 
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Center(child: CircularProgressIndicator()),
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: themeColor(context: context).surface,
       appBar: CustomAppBar(),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 30.w),
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: 40.h),
-              headLine2("Forgot Password"),
-              SizedBox(height: 8.h),
-              bodyMediumText("Enter your registered email address"),
-              SizedBox(height: 40.h),
-              CustomFormField(
-                maxLine: 1,
-                focusNode: _focusNodeEmail,
-                textInputAction: TextInputAction.done,
-                hintText: 'Enter your email address',
-                keyboardType: TextInputType.emailAddress,
-                label: 'Email Address',
-                textEditingController: _emailController,
-                icon: Icon(Icons.email),
+      body: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: 12.h),
+
+                    headLine2("Forgot Password"),
+                    Center(
+                      child: Image.asset(
+                        ImageConst.password,
+                        height: 200,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+                    bodyMediumText("Enter your registered email address"),
+                    SizedBox(height: 20.h),
+                    CustomFormField(
+                      maxLine: 1,
+                      focusNode: _focusNodeEmail,
+                      textInputAction: TextInputAction.done,
+                      hintText: 'Enter your email address',
+                      keyboardType: TextInputType.emailAddress,
+                      label: 'Email Address',
+                      textEditingController: _emailController,
+                      icon: Icon(Icons.email),
+                    ),
+                    SizedBox(height: 35.h),
+                    CustomButton(
+                      onClick: _resetPassword,
+                      buttonName: 'Send Email',
+                    ),
+                  ],
+                ),
               ),
-              SizedBox(height: 35.h),
-              CustomButton(onClick: _resetPassword, buttonName: 'Send Email'),
-              Spacer(),
-              footer(context: context),
-            
-            ],
+            ),
           ),
-        ),
+
+          footer(context: context),
+        ],
       ),
     );
   }

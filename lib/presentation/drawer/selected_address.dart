@@ -108,7 +108,7 @@ class SelectAddressScreen extends StatelessWidget {
       body: Consumer<AddressProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return showLoading(context);
           }
 
           final addresses = provider.addresses;

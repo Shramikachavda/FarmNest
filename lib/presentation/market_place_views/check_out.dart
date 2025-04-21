@@ -177,7 +177,7 @@ class _CheckoutViewState extends State<CheckoutView> {
       backgroundColor: themeColor(context: context).surface,
       appBar: CustomAppBar(title: 'Checkout'),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ?  showLoading(context)
           : Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
               child: Column(
@@ -231,7 +231,7 @@ class _CheckoutViewState extends State<CheckoutView> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const SelectAddressScreen(),
+                              builder: (context) =>  SelectAddressScreen(),
                             ),
                           ).then((_) => _loadDefaultAddress());
                         },

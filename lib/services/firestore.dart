@@ -237,37 +237,42 @@ class FirestoreService {
 
   /// **7️⃣ Place Order**
 
+
+
   Future<void> placeOrder(
-    List<Product> cartProducts,
-    DefaultFarmerAddress? address,
-  ) async {
+      List<Product> cartProducts,
+      DefaultFarmerAddress? address,
+      ) async {
     try {
       if (userId == null) {
         throw Exception("User not logged in");
       }
       print(
-        "🔹 Placing order for User: $userId, Products: ${cartProducts.length}",
+        "🔹 Placing orders for User: $userId, Products: ${cartProducts.length}",
       );
-      final orderRef =
-          _db.collection('users').doc(userId).collection('orders').doc();
 
-      // Calculate total price
+      // Calculate total price (if needed for individual products)
       final total = cartProducts.fold<double>(
         0.0,
-        (sum, product) => sum + (product.price * product.quantity),
+            (sum, product) => sum + (product.price * product.quantity),
       );
 
-      final orderData = {
-        'orderId': orderRef.id,
-        'products': cartProducts.map((p) => p.toMap()).toList(),
-        'total': total,
-        'timestamp': FieldValue.serverTimestamp(),
-        'status': 'Pending',
-        'address': address?.toJson(), // Include address
-      };
+      // Loop through each product and create an individual order for each
+      for (var product in cartProducts) {
+        final orderRef = _db.collection('users').doc(userId).collection('orders').doc();
 
-      await orderRef.set(orderData);
-      print("✅ Order placed successfully: ${orderRef.id}");
+        final orderData = {
+          'orderId': orderRef.id,
+          'product': product.toMap(), // Each product gets its own entry
+          'total': product.price * product.quantity, // Price for each product
+          'timestamp': FieldValue.serverTimestamp(),
+          'status': 'Pending',
+          'address': address?.toJson(), // Include address for each order
+        };
+
+        await orderRef.set(orderData);
+        print("✅ Order placed successfully for product ${product.id}: ${orderRef.id}");
+      }
 
       // Clear Cart After Order
       for (var product in cartProducts) {
@@ -278,6 +283,7 @@ class FirestoreService {
       throw e;
     }
   }
+
 
   Future<List<Map<String, dynamic>>> getOrders({String? userId}) async {
     try {
@@ -603,17 +609,7 @@ class FirestoreService {
     }
   }
 
-  Future<void> updateFarmBoundary(
-    String farmId,
-    List<LatLongData> boundaries,
-  ) async {
-    await _db
-        .collection("users")
-        .doc(userId)
-        .collection('Farm')
-        .doc(farmId)
-        .update({'farmBoundaries': boundaries.map((p) => p.toJson()).toList()});
-  }
+
 
   Future<void> deleteFarm(String farmId) async {
     print("Attempting to delete farm: $farmId for userId: $userId");
@@ -649,6 +645,22 @@ class FirestoreService {
       rethrow;
     }
   }
+
+
+  Future<void> updateFarmBoundary(
+      String farmId,
+      List<LatLongData> boundaries,
+      ) async {
+    await _db
+        .collection("users")
+        .doc(userId)
+        .collection('Farm')
+        .doc(farmId)
+        .update({
+      'farmBoundaries': boundaries.map((p) => p.toJson()).toList(),
+    });
+  }
+
 
   //farm address default
   Future<void> addNewAddress(DefaultFarmerAddress farm) async {

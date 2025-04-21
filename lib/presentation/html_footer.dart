@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 
+import '../customs_widgets/reusable.dart';
+
 class HtmlViewerScreen extends StatelessWidget {
   final String title;
   final String assetPath;
@@ -25,7 +27,7 @@ class HtmlViewerScreen extends StatelessWidget {
         future: _loadHtml(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return  showLoading(context);
           }
           if (snapshot.hasError) {
             return const Center(child: Text("Failed to load document."));

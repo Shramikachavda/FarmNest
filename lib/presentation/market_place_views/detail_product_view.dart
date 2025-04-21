@@ -45,42 +45,43 @@ class _DetailProductViewState extends State<DetailProductView> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            DotLottieLoader.fromAsset(
-              'assets/animations/your_file.lottie',
-              frameBuilder: (context, composition) {
-                if (composition != null) {
-                  return Lottie.memory(
-                    composition.animations.values.single,
-                    height: 400,
-                    width: 500,
-                  );
-                } else {
-                  return Container();
-                }
-              },
-              errorBuilder: (context, error, stackTrace) {
-                return const Text('❌ Failed to load .lottie animation');
-              },
+      builder:
+          (_) => Dialog(
+            backgroundColor: Colors.transparent,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DotLottieLoader.fromAsset(
+                  'assets/animations/your_file.lottie',
+                  frameBuilder: (context, composition) {
+                    if (composition != null) {
+                      return Lottie.memory(
+                        composition.animations.values.single,
+                        height: 400,
+                        width: 500,
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Text('❌ Failed to load .lottie animation');
+                  },
+                ),
+                const Text(
+                  "Order Placed Successfully!",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
-            const Text(
-              "Order Placed Successfully!",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
+          ),
     );
 
     Future.delayed(const Duration(seconds: 5), () {
       Navigator.of(context).pop();
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => OrderScreen()),
-      );
+      Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (context) => OrderScreen()));
     });
   }
 
@@ -136,127 +137,170 @@ class _DetailProductViewState extends State<DetailProductView> {
         padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: double.infinity,
-              height: 270.h,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20.r),
-                border: Border.all(
-                  color: themeColor().outlineVariant,
-                  width: 2,
+          children:
+              [
+                ClipRRect(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(20.r),
+                    bottom: Radius.circular(20.r),
+                  ),
+                  child:
+                      product.imageUrl.isNotEmpty
+                          ? Image.network(
+                            product.imageUrl,
+                            width: double.infinity,
+                            height: 270.h,
+                            fit: BoxFit.cover,
+                            errorBuilder:
+                                (context, error, stackTrace) => Container(
+                                  color:
+                                      themeColor(
+                                        context: context,
+                                      ).surfaceContainerHighest,
+                                  width: double.infinity,
+                                  height: 270.h,
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.image_not_supported,
+                                      size: 60.w,
+                                      color:
+                                          themeColor(
+                                            context: context,
+                                          ).onSurfaceVariant,
+                                    ),
+                                  ),
+                                ),
+                          )
+                          : Container(
+                            color:
+                                themeColor(
+                                  context: context,
+                                ).surfaceContainerHighest,
+                            width: double.infinity,
+                            height: 270.h,
+                            child: Center(
+                              child: Icon(
+                                Icons.image_not_supported,
+                                size: 50.w,
+                                color:
+                                    themeColor(
+                                      context: context,
+                                    ).onSurfaceVariant,
+                              ),
+                            ),
+                          ),
                 ),
-                image: DecorationImage(
-                  image: NetworkImage(product.imageUrl),
-                  fit: BoxFit.contain,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    bodySemiLargeExtraBoldText(product.name),
+                    IconButton(
+                      onPressed: () {
+                        favoriteProvider.isFavorite(product)
+                            ? favoriteProvider.removeFavorite(product)
+                            : favoriteProvider.addFavorite(product);
+                        showCustomSnackBar(
+                          context,
+                          favoriteProvider.isFavorite(product)
+                              ? 'Item added to favorite list'
+                              : 'Item removed from favorite list',
+                        );
+                      },
+                      icon:
+                          favoriteProvider.isFavorite(product)
+                              ? Icon(Icons.favorite, size: 20.sp)
+                              : Icon(
+                                Icons.favorite_border_outlined,
+                                size: 20.sp,
+                              ),
+                    ),
+                  ],
                 ),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                bodySemiLargeExtraBoldText(product.name),
-                IconButton(
-                  onPressed: () {
-                    favoriteProvider.isFavorite(product)
-                        ? favoriteProvider.removeFavorite(product)
-                        : favoriteProvider.addFavorite(product);
-                    showCustomSnackBar(
-                      context,
-                      favoriteProvider.isFavorite(product)
-                          ? 'Item added to favorite list'
-                          : 'Item removed from favorite list',
-                    );
-                  },
-                  icon: favoriteProvider.isFavorite(product)
-                      ? Icon(Icons.favorite, size: 20.sp)
-                      : Icon(
-                          Icons.favorite_border_outlined,
-                          size: 20.sp,
-                        ),
+                Row(
+                  children: [
+                    customRoundIconButton(
+                      context: context,
+                      icon: Icons.remove,
+                      onPressed: () async {
+                        await cartProvider.decreaseQuantity(product);
+                      },
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(5.r),
+                      child: bodyText('${cartProvider.getQuantity(product)}'),
+                    ),
+                    customRoundIconButton(
+                      context: context,
+                      icon: Icons.add,
+                      onPressed: () async {
+                        await cartProvider.increaseQuantity(product);
+                      },
+                    ),
+                    Spacer(),
+                    SizedBox(height: 5.h),
+                    Text(
+                      "₹ ${cartProvider.getProductTotalPrice(product).toString()}",
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            Row(
-              children: [
-                customRoundIconButton(
-                  context: context,
-                  icon: Icons.remove,
-                  onPressed: () async {
-                    await cartProvider.decreaseQuantity(product);
-                  },
-                ),
-                Padding(
-                  padding: EdgeInsets.all(5.r),
-                  child: bodyText('${cartProvider.getQuantity(product)}'),
-                ),
-                customRoundIconButton(
-                  context: context,
-                  icon: Icons.add,
-                  onPressed: () async {
-                    await cartProvider.increaseQuantity(product);
-                  },
+                SizedBox(height: 5.h),
+                bodyMediumBoldText("Product Description"),
+                Text(
+                  product.description,
+                  style: TextStyle(
+                    color: themeColor(context: context).onSurfaceVariant,
+                  ),
                 ),
                 Spacer(),
-                SizedBox(height: 5.h),
-                Text(
-                  "₹ ${cartProvider.getProductTotalPrice(product).toString()}",
-                ),
-              ],
-            ),
-            SizedBox(height: 5.h),
-            bodyMediumBoldText("Product Description"),
-            Text(
-              product.description,
-              style: TextStyle(color: themeColor().onSurfaceVariant),
-            ),
-            Spacer(),
-            Row(
-              children: [
-                Expanded(
-                  child: CustomButton(
-                    onClick: () {
-                      cartProvider.addCartItem(product);
-                      showCustomSnackBar(context, "Product added to cart");
-                    },
-                    buttonName: "Add to cart",
-                  ),
-                ),
-                SizedBox(width: 8.w),
-                Expanded(
-                  child: CustomButton(
-                    onClick: () async {
-                      final result = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text("Confirm Purchase"),
-                          content: const Text(
-                            "Are you sure you want to buy this item now?",
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(false),
-                              child: const Text("Cancel"),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(true),
-                              child: const Text("Buy Now"),
-                            ),
-                          ],
-                        ),
-                      );
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomButton(
+                        onClick: () {
+                          cartProvider.addCartItem(product);
+                          showCustomSnackBar(context, "Product added to cart");
+                        },
+                        buttonName: "Add to cart",
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      child: CustomButton(
+                        onClick: () async {
+                          final result = await showDialog<bool>(
+                            context: context,
+                            builder:
+                                (context) => AlertDialog(
+                                  title: const Text("Confirm Purchase"),
+                                  content: const Text(
+                                    "Are you sure you want to buy this item now?",
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed:
+                                          () =>
+                                              Navigator.of(context).pop(false),
+                                      child: const Text("Cancel"),
+                                    ),
+                                    TextButton(
+                                      onPressed:
+                                          () => Navigator.of(context).pop(true),
+                                      child: const Text("Buy Now"),
+                                    ),
+                                  ],
+                                ),
+                          );
 
-                      if (result == true) {
-                        await _placeOrder(product);
-                      }
-                    },
-                    buttonName: "Buy Now",
-                  ),
+                          if (result == true) {
+                            await _placeOrder(product);
+                          }
+                        },
+                        buttonName: "Buy Now",
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ].separator(SizedBox(height: 3.h)).toList(),
+              ].separator(SizedBox(height: 3.h)).toList(),
         ),
       ),
     );

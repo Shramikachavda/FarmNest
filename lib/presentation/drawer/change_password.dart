@@ -206,6 +206,8 @@ class _ChangePasswordState extends State<ChangePassword> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 20.h),
+                Center(child: Icon(Icons.lock_rounded  , color: themeColor(context: context).primary , size : 100.sp)) ,
+                SizedBox(height: 20.h),
                 CustomFormField(
                   readOnly: true,
                   focusNode: _focusNodeEmail,
@@ -219,11 +221,6 @@ class _ChangePasswordState extends State<ChangePassword> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Email cannot be empty';
-                    }
-                    if (!RegExp(
-                      r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$",
-                    ).hasMatch(value)) {
-                      return 'Invalid email format';
                     }
                     return null;
                   },

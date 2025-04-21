@@ -5,6 +5,7 @@ import 'package:agri_flutter/providers/market_place_provider/favorite_provider.d
 import 'package:agri_flutter/providers/market_place_provider/product_provider.dart';
 import 'package:agri_flutter/presentation/market_place_views/detail_product_view.dart';
 import 'package:agri_flutter/providers/market_place_provider/products.dart';
+import 'package:agri_flutter/utils/comman.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -133,7 +134,7 @@ class _FavoriteViewState extends State<FavoriteView> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20.r),
                                 side: BorderSide(
-                                  color: themeColor().outlineVariant,
+                                  color:themeColor(context : context).outlineVariant,
                                   width: 2,
                                 ),
                               ),
@@ -147,15 +148,42 @@ class _FavoriteViewState extends State<FavoriteView> {
                                         borderRadius: BorderRadius.vertical(
                                           top: Radius.circular(20.r),
                                         ),
-                                        child: Container(
+                                        child:
+                                        favoriteProduct.imageUrl.isNotEmpty
+                                            ? Image.network(
+                                          favoriteProduct.imageUrl,
                                           width: double.infinity,
-                                          height: 120.h,
-                                          decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                              image: NetworkImage(
-                                                favoriteProduct.imageUrl,
+                                          height: 100.h,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (
+                                              context,
+                                              error,
+                                              stackTrace,
+                                              ) => Container(  color: themeColor(context: context).surfaceContainerHighest,        width: double.infinity,
+                                            height: 100.h,
+                                            child: Center(
+                                              child: Icon(
+                                                Icons.image_not_supported,
+                                                size: 60.w,
+                                                color:
+                                                themeColor(
+                                                  context: context,
+                                                ).onSurfaceVariant,
                                               ),
-                                              fit: BoxFit.fill,
+                                            ),
+                                          ),
+                                        )
+                                            : Container(     color: themeColor(context: context).surfaceContainerHighest,      width: double.infinity,
+                                          height: 100.h,
+                                          child: Center(
+                                            child: Icon(
+                                              Icons.image_not_supported,
+                                              size: 50.w,
+                                              color:
+                                              themeColor(
+                                                context: context,
+                                              ).onSurfaceVariant,
                                             ),
                                           ),
                                         ),
@@ -204,8 +232,8 @@ class _FavoriteViewState extends State<FavoriteView> {
                                     padding: EdgeInsets.symmetric(
                                       horizontal: 5.w,
                                     ),
-                                    child: captionStyleText(
-                                      favoriteProduct.description,
+                                    child: captionStyleText( maxLine: 2 ,
+                                      favoriteProduct.description ,
                                     ),
                                   ),
 
@@ -230,7 +258,7 @@ class _FavoriteViewState extends State<FavoriteView> {
                                       ],
                                     ),
                                   ),
-                                ],
+                                ].separator(SizedBox(height: 3.h)).toList(),
                               ),
                             ),
                           );

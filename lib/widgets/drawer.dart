@@ -160,7 +160,7 @@ class DrawerWidget extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: themeColor().primaryContainer,
+                      color:themeColor(context : context).primaryContainer,
                     ),
                     padding: EdgeInsets.all(10.h),
                     child: Icon(

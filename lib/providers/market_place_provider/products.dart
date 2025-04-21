@@ -17,10 +17,10 @@ class Products with ChangeNotifier {
       final snapshot =
           await FirebaseFirestore.instance.collection('products').get();
 
-      // Manually map the Firestore data to Product model without using fromFirestore
+
       _products =
           snapshot.docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>;
+            final data = doc.data();
 
             return Product(
               id: doc.id,

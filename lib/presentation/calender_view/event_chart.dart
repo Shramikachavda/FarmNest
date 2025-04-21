@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/widgets/BaseStateFullWidget.dart';
+import '../../customs_widgets/reusable.dart';
 
 class EventPieChart extends BaseStatefulWidget {
   const EventPieChart({super.key});
@@ -47,7 +48,7 @@ class _EventPieChartState extends State<EventPieChart> {
       body: Consumer<EventExpenseProvider>(
         builder: (context, eventExpenseProvider, child) {
           if (isLoading) {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: showLoading(context));
           }
 
           final events = eventExpenseProvider.events;

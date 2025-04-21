@@ -334,9 +334,8 @@ class _LiveStockDetailViewState extends State<LiveStockDetailView> {
                               child: Column(
                                 children: [
                                   SizedBox(height: 30.h),
-                                  CircularProgressIndicator(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                  showLoading(
+                                context
                                   ),
                                   SizedBox(height: 16.h),
                                   Text(

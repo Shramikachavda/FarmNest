@@ -52,15 +52,11 @@ class _SplashScreenState extends State<SplashScreen> {
     bool hasCompletedPostSignup = LocalStorageService.hasCompletedPostSignup();
 
     Future.delayed(const Duration(seconds: 2), () {
-
       if (!isOnboardingCompleted) {
         NavigationUtils.goToOnboardScreen();
-      }
-       else if (user != null && !hasCompletedPostSignup) {
-
+      } else if (user != null && !hasCompletedPostSignup) {
         NavigationUtils.pushReplacement(PostSignupScreen().buildRoute());
-       }
-      else if (user != null && user.emailVerified) {
+      } else if (user!.emailVerified) {
         NavigationUtils.goToHome();
       } else {
         NavigationUtils.goToLogin();

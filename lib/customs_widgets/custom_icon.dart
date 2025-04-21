@@ -18,7 +18,7 @@ Widget customIconButton({
     width: 40.h,
 
     decoration: BoxDecoration(
-      color: themeColor().onSurfaceVariant,
+      color:themeColor(context : context).onSurfaceVariant,
       borderRadius: BorderRadius.circular(12.r),
     ),
     child: IconButton(

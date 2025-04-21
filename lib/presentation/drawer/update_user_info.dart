@@ -48,7 +48,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     try {
-      showLoadingDialog(context);
+      showLoading(context);
       await _firestoreService.updateUser(
         UserModelDb(
           name: _nameController.text.trim(),

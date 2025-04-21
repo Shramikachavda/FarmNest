@@ -5,7 +5,7 @@ import 'post_sign_up/default_farmer_address.dart';
 
 class Order {
   String id;
-  final List<Product> products;
+  final Product product;
   final double total;
   final DateTime? timestamp;
   final String status;
@@ -13,7 +13,7 @@ class Order {
 
   Order({
     String? id,
-    required this.products,
+    required this.product,
     required this.total,
     this.timestamp,
     required this.status,
@@ -23,8 +23,9 @@ class Order {
   Map<String, dynamic> toMap() {
     return {
       'orderId': id,
-      'products': products.map((product) => product.toMap()).toList(),
-      'total': total,
+      'product': product.toMap(), // Serialize properly
+
+    'total': total,
       'timestamp': timestamp != null ? Timestamp.fromDate(timestamp!) : FieldValue.serverTimestamp(),
       'status': status,
       'address': address?.toJson(), // Serialize address
@@ -34,9 +35,7 @@ class Order {
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
       id: json['orderId'] ?? const Uuid().v4(),
-      products: (json['products'] as List<dynamic>)
-          .map((item) => Product.fromJson(item as Map<String, dynamic>))
-          .toList(),
+      product:Product.fromJson(json['product'] as Map<String, dynamic>),
       total: (json['total'] as num?)?.toDouble() ?? 0.0,
       timestamp: (json['timestamp'] as Timestamp?)?.toDate(),
       status: json['status'] ?? 'Pending',

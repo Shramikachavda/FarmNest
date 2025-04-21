@@ -66,7 +66,10 @@ class _CartViewState extends State<CartView> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12.r),
                                   side: BorderSide(
-                                    color: themeColor().outlineVariant,
+                                    color:
+                                        themeColor(
+                                          context: context,
+                                        ).outlineVariant,
                                     width: 2,
                                   ),
                                 ),
@@ -191,21 +194,62 @@ class _CartViewState extends State<CartView> {
                                     ),
                                   ],
                                 ),
-                                leading: ClipRRect(
-                                  borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(20.r),
+                                leading:    ClipRRect(
+                                  borderRadius: BorderRadius.all(
+                                   Radius.circular(12.r),
                                   ),
-                                  child: Container(
-                                    width: 60.w,
+                                  child:
+                                  product.imageUrl.isNotEmpty
+                                      ? Image.network(
+                                    product.imageUrl,
+                                    width: 60.w ,
                                     height: 60.h,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: NetworkImage(product.imageUrl),
-                                        fit: BoxFit.fill,
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (
+                                        context,
+                                        error,
+                                        stackTrace,
+                                        ) => Container(
+                                      color:
+                                      themeColor(
+                                        context: context,
+                                      ).surfaceContainerHighest,
+                                          width: 60.w ,
+                                          height: 60.h,
+                                      child: Center(
+                                        child: Icon(
+                                          Icons
+                                              .image_not_supported,
+                                          size: 30.w,
+                                          color:
+                                          themeColor(
+                                            context: context,
+                                          ).onSurfaceVariant,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                      : Container(
+                                    color:
+                                    themeColor(
+                                      context: context,
+                                    ).surfaceContainerHighest,
+                                    width: 60.w ,
+                                    height: 60.h,
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.image_not_supported,
+                                        size: 30.w,
+                                        color:
+                                        themeColor(
+                                          context: context,
+                                        ).onSurfaceVariant,
                                       ),
                                     ),
                                   ),
                                 ),
+
                               ),
                               SizedBox(height: 12.h),
                             ],
@@ -226,7 +270,7 @@ class _CartViewState extends State<CartView> {
                             children: [
                               bodySemiLargeExtraBoldText("Total:"),
                               bodyText(
-                                "₹ ${cartProvider.totalCartPrice.toDouble()}",
+                                "₹ ${cartProvider.totalCartPrice.toStringAsFixed(2)}",
                               ),
                             ],
                           ),

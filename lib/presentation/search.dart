@@ -65,7 +65,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 }, buttonName: "Search") ,
 
             if (provider.isLoading)
-              const CircularProgressIndicator()
+               showLoading(context)
 
 
             else if (provider.errorMessage != null)

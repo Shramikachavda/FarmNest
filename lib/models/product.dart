@@ -33,13 +33,13 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['id'] ?? const Uuid().v4(), // Generate UUID if id is missing
+      id: json['id'] ?? const Uuid().v4(),
       name: json['name'],
       category: json['category'],
       price: (json['price'] as num).toDouble(),
       imageUrl: json['imageUrl'],
       description: json['description'],
-      quantity: json['quantity'] ?? 1, // Default quantity = 1 if missing
+      quantity: json['quantity'] ?? 1,
     );
   }
 

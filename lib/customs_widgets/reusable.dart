@@ -1,6 +1,7 @@
 import 'package:agri_flutter/presentation/html_footer.dart';
 import 'package:agri_flutter/theme/theme.dart';
 import 'package:agri_flutter/theme/util.dart';
+import 'package:agri_flutter/utils/comman.dart';
 import 'package:agri_flutter/utils/text_style_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -81,6 +82,7 @@ Widget reusableDropdown<T>({
   required T? selectedValue,
   required List<T> items,
   required ValueChanged<T?> onChanged,
+
 }) {
   return DropdownButtonFormField<T>(
     value: selectedValue,
@@ -88,11 +90,11 @@ Widget reusableDropdown<T>({
     isDense: true,
     decoration: InputDecoration(
       focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: themeColor().outline),
+        borderSide: BorderSide(color:themeColor().outline),
         borderRadius: BorderRadius.circular(12),
       ),
       enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: themeColor().outline),
+        borderSide: BorderSide(color:themeColor().outline),
         borderRadius: BorderRadius.circular(12),
       ),
       labelText: label,
@@ -112,7 +114,7 @@ Widget reusableDropdown<T>({
   );
 }
 
-void showLoadingDialog(BuildContext context) {
+/*Future<void> showLoading(BuildContext context) async {
   showDialog(
     context: context,
     barrierDismissible: false,
@@ -125,14 +127,31 @@ void showLoadingDialog(BuildContext context) {
             padding: EdgeInsets.all(24.r),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: const [
-                CircularProgressIndicator(),
+              children: [
+                showLoading(context),
                 SizedBox(height: 20),
                 Text("Loading...", style: TextStyle(fontSize: 16)),
               ],
             ),
           ),
         ),
+  );
+}*/
+
+Widget showLoading(BuildContext context) {
+  return Center(
+    child: Container(
+      height: 150.h,
+      width: MediaQuery.of(context).size.width * 0.8,
+      decoration: BoxDecoration(color: themeColor(context: context).surfaceContainerHighest  , borderRadius: BorderRadius.circular(20.h)),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(child: CircularProgressIndicator()),
+          bodyText("Loading")
+        ].separator(SizedBox(height: 10.h,)).toList(),
+      ),
+    ),
   );
 }
 
@@ -166,15 +185,22 @@ Widget headLine3(String text, {Color? color, TextAlign? textAlign}) => Text(
 );
 
 //semi bold  22
-Widget bodySemiLargeBoldText(String text, {Color? color, TextAlign? textAlign}) => Text(
+Widget bodySemiLargeBoldText(
+  String text, {
+  Color? color,
+  TextAlign? textAlign,
+}) => Text(
   text,
   textAlign: textAlign,
   style: AppTextStyles.bodySemiLargeBoldStyle.copyWith(color: color),
 );
 
-
 //semi bold  22
-Widget bodySemiLargeExtraBoldText(String text, {Color? color, TextAlign? textAlign}) => Text(
+Widget bodySemiLargeExtraBoldText(
+  String text, {
+  Color? color,
+  TextAlign? textAlign,
+}) => Text(
   text,
   textAlign: textAlign,
   style: AppTextStyles.bodySemiLargeExtraBoldStyle.copyWith(color: color),
@@ -188,33 +214,49 @@ Widget smallText(String text, {Color? color, TextAlign? textAlign}) => Text(
 );
 
 //font 12
-Widget captionStyleText(String text, {Color? color, TextAlign? textAlign}) =>
+Widget captionStyleText(String text, {Color? color, TextAlign? textAlign  , int? maxLine }) =>
     Text(
-      text,
+      text,maxLines: maxLine,
       overflow: TextOverflow.ellipsis,
       textAlign: textAlign,
       style: AppTextStyles.captionStyle.copyWith(color: color),
     );
 
 //font 16 error
-Widget errorText(String text) => Text(
-  text,
-  textAlign: TextAlign.center,
-  style: AppTextStyles.errorStyle,
-);
-
+Widget errorText(String text) =>
+    Text(text, textAlign: TextAlign.center, style: AppTextStyles.errorStyle);
 
 //24 semi bold
 Widget bodyBoldMediumText(String text, {Color? color}) =>
     Text(text, style: AppTextStyles.headline2Style);
 
 //18 normal
-Widget bodyMediumText(String text, {Color? color , bool? softWrap , int? maxLine} ) =>
-    Text(text , maxLines: maxLine , softWrap: softWrap, overflow: TextOverflow.ellipsis, style: AppTextStyles.bodyLargeStyle.copyWith(color: color));
+Widget bodyMediumText(
+  String text, {
+  Color? color,
+  bool? softWrap,
+  int? maxLine,
+}) => Text(
+  text,
+  maxLines: maxLine,
+  softWrap: softWrap,
+  overflow: TextOverflow.ellipsis,
+  style: AppTextStyles.bodyLargeStyle.copyWith(color: color),
+);
 
 //18 bold semi
-Widget bodyMediumBoldText(String text, {Color? color , bool? softWrap , int? maxLine} ) =>
-    Text(text , maxLines: maxLine , softWrap: softWrap, overflow: TextOverflow.ellipsis, style: AppTextStyles.bodyBoldLargeStyle.copyWith(color: color));
+Widget bodyMediumBoldText(
+  String text, {
+  Color? color,
+  bool? softWrap,
+  int? maxLine,
+}) => Text(
+  text,
+  maxLines: maxLine,
+  softWrap: softWrap,
+  overflow: TextOverflow.ellipsis,
+  style: AppTextStyles.bodyBoldLargeStyle.copyWith(color: color),
+);
 
 //bodylarge 32
 Widget bodyLargeText(String text, {Color? color}) =>
@@ -225,11 +267,11 @@ Widget buttonText(String text, {Color? color}) =>
     Text(text, style: AppTextStyles.buttonStyle.copyWith(color: color));
 
 // 16  normal
-Widget bodyText(String text, {Color? color , int? maxLine }) => Text(
+Widget bodyText(String text, {Color? color, int? maxLine}) => Text(
   text,
   overflow: TextOverflow.ellipsis,
-    maxLines: maxLine ,
-    style: AppTextStyles.bodyStyle.copyWith(color: color),
+  maxLines: maxLine,
+  style: AppTextStyles.bodyStyle.copyWith(color: color),
 );
 
 //extension

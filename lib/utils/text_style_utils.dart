@@ -103,6 +103,6 @@ class AppTextStyles {
   static TextStyle errorStyle = TextStyle(
     fontSize: bodyFontSize,
     fontWeight: FontWeight.normal,
-    color: themeColor().error,
+    color:themeColor().error,
   );
 }

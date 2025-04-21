@@ -11,19 +11,14 @@ class ImageConst {
   static const String sunrise = "assets/image/sunset.png";
   static const String night = "assets/image/nightt.png";
 
-
   //farm
-    static const String bg1 = "assets/image/bg1.png";
-      static const String bg2 = "assets/image/bg2.png";
-        static const String bg3 = "assets/image/b3.png";
-
-
+  static const String bg1 = "assets/image/bg1.png";
+  static const String bg2 = "assets/image/bg2.png";
+  static const String bg3 = "assets/image/b3.png";
 
   //weather detail
   static const String sun = "assets/image/sun.png";
   static const String partyCloud = "assets/image/party cloud.png";
-
-
 
   //buy  now
   static const String buyNowAnim = "assets/anim/buy_confirmation.lottie";
@@ -41,6 +36,10 @@ class ImageConst {
   static const String intro2 = "assets/image/i2.png";
   static const String intro3 = "assets/image/i3.png";
   static const String intro1 = "assets/image/i1.png";
+
+  //password
+
+  static const String password = "assets/image/password.png";
 
   //farmstate
   static const String vacc = "assets/image/download (5).png";

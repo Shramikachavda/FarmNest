@@ -68,7 +68,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
                 stream: _weatherBloc.dailyWeather,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return Center(child: showLoading(context));
                   }
                   if (!snapshot.hasData || snapshot.data == null) {
                     return Center(

@@ -80,9 +80,35 @@ class FireBaseAuth {
     return _auth.currentUser;
   }
 
-  /// Sends a password reset email only if the email exists in Firebase.
   Future<bool> sendPasswordResetEmail(String email) async {
     try {
+      // Check if the email exists by fetching sign-in methods
+      List<String> signInMethods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email.trim());
+
+      // If the email is already registered, it will have sign-in methods (like email/password)
+      if (signInMethods.isEmpty) {
+        print('Email not registered: $email');
+        return false; // Email doesn't exist in Firebase
+      }
+
+      // Attempt to send the reset email
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email.trim());
+      print('Password reset email sent to $email');
+      return true; // Success indicates email exists and reset was sent
+    } on FirebaseAuthException catch (e) {
+      print('Password Reset Error: ${e.code} - ${e.message}');
+      rethrow; // Propagate other errors (e.g., invalid-email)
+    } catch (e) {
+      print('Unexpected Password Reset Error: $e');
+      rethrow;
+    }
+  }
+
+
+ /* Future<bool> sendPasswordResetEmail(String email) async {
+    try {
+
+
       // Attempt to send the reset email
       await _auth.sendPasswordResetEmail(email: email.trim());
       print('Password reset email sent to $email');
@@ -99,7 +125,7 @@ class FireBaseAuth {
       rethrow;
     }
   }
-
+*/
  Future<void> reAuthenticateAndChangePassword({
   required String email,
   required String oldPassword,
@@ -120,6 +146,6 @@ class FireBaseAuth {
     rethrow;
   }
 }
-  
-    
+
+
 }

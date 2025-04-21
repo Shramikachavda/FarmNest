@@ -35,10 +35,10 @@ class OrderProvider with ChangeNotifier {
     }
   }
 
-  int get totalQuantity => _orderList.fold(
+/*  int get totalQuantity => _orderList.fold(
         0,
         (sum, order) => sum + order.products.fold(0, (s, p) => s + p.quantity),
-      );
+      );*/
 
   double get totalPrice =>
       _orderList.fold(0.0, (sum, order) => sum + order.total);

@@ -55,7 +55,7 @@ class _LoginViewState extends State<LoginView> {
     if (_formkey.currentState!.validate()) {
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
-      showLoadingDialog(context);
+      showLoading(context);
 
       try {
         // ✅ Attempt to sign in

@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:agri_flutter/customs_widgets/custom_icon.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
-import 'package:agri_flutter/data/product.dart';
 import 'package:agri_flutter/presentation/calender_view/add_event_expense.dart';
 import 'package:agri_flutter/presentation/home_page_view/market_price_widget.dart'; // Assuming MarketPriceCard is here
 import 'package:agri_flutter/presentation/home_page_view/weather_forecast/weather_bloc.dart';
@@ -141,13 +140,9 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String address =
-        context.select<LocationProvider, String?>(
-          (provider) => provider.currentAddress,
-        ) ??
-        "Fetching...";
+
     return Scaffold(
-      backgroundColor: themeColor().surface,
+      backgroundColor:themeColor(context : context).surface,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -192,7 +187,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                     },
                     assetIcon: Icon(
                       Icons.menu,
-                      color: themeColor().onInverseSurface,
+                      color:themeColor(context : context).onInverseSurface,
                       size: 20.sp,
                     ),
                   ),
@@ -211,7 +206,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                         child: Container(
                           padding: EdgeInsets.all(12.w),
                           decoration: BoxDecoration(
-                            color: themeColor().surface.withValues(alpha: 0.4),
+                            color:themeColor(context : context).surface.withValues(alpha: 0.4),
                             borderRadius: BorderRadius.all(
                               Radius.circular(30.r),
                             ),
@@ -343,10 +338,9 @@ class _HomePageScreenState extends State<HomePageScreen> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
-            child: Card(
-              child: Container(
-                height: 100.h,
-                child: Center(child: CircularProgressIndicator()),
+            child: Container( height: 120.h,
+              child: Card(
+                child: Center(child:CircularProgressIndicator()),
               ),
             ),
           );
@@ -566,7 +560,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   },
                   assetIcon: Icon(
                     Icons.add,
-                    color: themeColor().onInverseSurface,
+                    color:themeColor(context : context).onInverseSurface,
                     size: 20.sp,
                   ),
                 ),
@@ -581,11 +575,11 @@ class _HomePageScreenState extends State<HomePageScreen> {
               //if no event added
               if (todayEventsLength == 0) {
                 return Card(
-                  color: themeColor().surface,
+                  color:themeColor(context : context).surface,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.r),
                     side: BorderSide(
-                      color: themeColor().outlineVariant,
+                      color:themeColor(context : context).outlineVariant,
                       width: 2,
                     ),
                   ),
@@ -645,7 +639,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                     },
                     child: bodyText(
                       "Explore more > ",
-                      color: themeColor().primary,
+                      color:themeColor(context : context).primary,
                     ),
                   ),
                 ],
@@ -661,7 +655,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                     return SizedBox(
                       height: 150.h,
                       child: Card(
-                        child: Center(child: CircularProgressIndicator()),
+                        child: Center(child: showLoading(context)),
                       ),
                     );
                   }
