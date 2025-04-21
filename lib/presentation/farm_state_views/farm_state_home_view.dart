@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class FarmStateHomeView extends StatelessWidget {
   const FarmStateHomeView({super.key});
@@ -45,11 +46,11 @@ class FarmStateHomeView extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final item = combinedList[index];
 
-                  //Livestock Card
+                  // Livestock Card
                   if (item is LiveStockDetail) {
                     return _buildLivestockCard(context, item);
                   }
-                  //Crop Card
+                  // Crop Card
                   else if (item is CropDetails) {
                     return _buildCropCard(context, item);
                   }
@@ -76,72 +77,68 @@ class FarmStateHomeView extends StatelessWidget {
         liveStockProvider.removeLiveStock(item);
       },
       child: Padding(
-        padding: EdgeInsets.only(right: 10.w, left: 10.w, bottom: 5.h),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
         child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
           child: Container(
-            padding: EdgeInsets.all(10.r),
+            padding: EdgeInsets.all(12.r),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.r),
-              //  color: themeColor(context: context).cardColor,
+              color: themeColor(context: context).surface,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// 🗓 **Date Row**
+                /// 🗓 **Header Row**
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.calendar_today),
+                        Icon(
+                          Icons.calendar_today,
+                          size: 16.sp,
+                          color: themeColor(context: context).primary,
+                        ),
                         SizedBox(width: 4.w),
                         Text(
                           DateFormat('dd/MM/yyyy').format(item.vaccinatedDate),
-                          style: const TextStyle(),
+                          style: TextStyle(fontSize: 14.sp),
                         ),
                       ],
                     ),
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (_) => AddFarmState(
-                                      initialTabIndex: 1, // Livestock Tab
-                                      existingLivestock: item.id, // Pass Data
-                                    ),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.edit_outlined),
-                        ),
-                        SizedBox(width: 8.w), // Consistent spacing
-                        IconButton(
-                          onPressed: () async {
-                            bool? confirmDelete = await _showDeleteDialog(
-                              context,
-                              "Are you sure?",
-                            );
-                            if (confirmDelete == true) {
-                              liveStockProvider.removeLiveStock(item);
-                            }
-                          },
-                          icon: Icon(
-                            Icons.delete,
-                            color: themeColor(context: context).primary,
+                    _buildEditDeleteButtons(
+                      context,
+                      onEdit: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (_) => AddFarmState(
+                                  initialTabIndex: 1, // Livestock Tab
+                                  existingLivestock: item.id, // Pass Data
+                                ),
                           ),
-                        ),
-                      ],
+                        );
+                      },
+                      onDelete: () {
+                        liveStockProvider.removeLiveStock(item);
+                      },
                     ),
                   ],
                 ),
+                SizedBox(height: 8.h),
 
                 /// 🐄 **Livestock Name & Age**
                 Text(
                   "${item.liveStockName}, ${item.gender} | ${item.age} Years",
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 SizedBox(height: 4.h),
 
@@ -152,19 +149,90 @@ class FarmStateHomeView extends StatelessWidget {
                     RichText(
                       text: TextSpan(
                         text: "Health Status: ",
-                        children: [TextSpan(text: "Vaccinated")],
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: themeColor(context: context).onSurface,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: "Vaccinated",
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                        ],
                       ),
                     ),
                     RichText(
                       text: TextSpan(
                         text: "Type: ",
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: themeColor(context: context).onSurface,
+                        ),
                         children: [
                           TextSpan(
-                            //    text: item.,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            text: item.liveStockType,
+                            style: TextStyle(fontWeight: FontWeight.w500),
                           ),
                         ],
                       ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8.h),
+
+                /// 🤖 **AI Recommendations**
+                ExpansionTile(
+                  title: Text(
+                    "AI Recommendations",
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: themeColor(context: context).primary,
+                    ),
+                  ),
+                  leading: Icon(
+                    Icons.smart_toy,
+                    size: 20.sp,
+                    color: themeColor(context: context).primary,
+                  ),
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 8.h,
+                      ),
+                      child:
+                          item.aiRecommendations != null &&
+                                  item.aiRecommendations!.isNotEmpty
+                              ? Html(
+                                data: item.aiRecommendations!,
+                                style: {
+                                  "h3": Style(
+                                    fontSize: FontSize(16.sp),
+                                    fontWeight: FontWeight.w600,
+                                    color: themeColor(context: context).primary,
+                                  ),
+                                  "ul": Style(
+                                    margin: Margins(bottom: Margin(8.h)),
+                                  ),
+                                  "li": Style(
+                                    fontSize: FontSize(14.sp),
+                                    margin: Margins(bottom: Margin(4.h)),
+                                    color:
+                                        themeColor(context: context).onSurface,
+                                  ),
+                                },
+                              )
+                              : Text(
+                                "No recommendations available",
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color:
+                                      themeColor(
+                                        context: context,
+                                      ).onSurfaceVariant,
+                                ),
+                              ),
                     ),
                   ],
                 ),
@@ -189,63 +257,58 @@ class FarmStateHomeView extends StatelessWidget {
         return await _showDeleteDialog(context, "Remove Crop?");
       },
       onDismissed: (direction) {
-        // cropDetailsProvider.removeCrop(item);
+        cropDetailsProvider.removeCrop(item);
       },
       child: Padding(
-        padding: EdgeInsets.only(right: 10.w, left: 10.w, bottom: 5.h),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
         child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
           child: Container(
-            padding: EdgeInsets.all(10.r),
+            padding: EdgeInsets.all(12.r),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.r),
-              //  color: themeColor(context: context).cardColor,
+              color: themeColor(context: context).surface,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// 🌱 **Crop Name & Growth Stage**
+                /// 🌱 **Header Row**
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("${item.cropName} | ${item.growthStage}"),
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (_) => AddFarmState(
-                                      initialTabIndex: 0, // Crop Tab
-                                      existingCrop: item.id, // Pass Data
-                                    ),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.edit_outlined),
-                        ),
-                        SizedBox(width: 8.w), // Consistent spacing
-                        IconButton(
-                          onPressed: () async {
-                            bool? confirmDelete = await _showDeleteDialog(
-                              context,
-                              "Are you sure?",
-                            );
-                            if (confirmDelete == true) {cropDetailsProvider.removeCrop(item.id);
-                            }
-                          },
-                          icon: Icon(
-                            Icons.delete,
-                            color: themeColor(context: context).primary,
-                          ), // 🗑 Delete Icon
-                        ),
-                      ],
+                    Text(
+                      "${item.cropName} | ${item.growthStage}",
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    _buildEditDeleteButtons(
+                      context,
+                      onEdit: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (_) => AddFarmState(
+                                  initialTabIndex: 0, // Crop Tab
+                                  existingCrop: item.id, // Pass Data
+                                ),
+                          ),
+                        );
+                      },
+                      onDelete: () {
+                        cropDetailsProvider.removeCrop(item);
+                      },
                     ),
                   ],
                 ),
+                SizedBox(height: 8.h),
 
-                //start and harvesting data
+                /// 🗓 **Start and Harvest Dates**
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -257,7 +320,10 @@ class FarmStateHomeView extends StatelessWidget {
                           width: 20.sp,
                         ),
                         SizedBox(width: 4.w),
-                        Text(DateFormat('dd/MM/yyyy').format(item.startDate)),
+                        Text(
+                          DateFormat('dd/MM/yyyy').format(item.startDate),
+                          style: TextStyle(fontSize: 14.sp),
+                        ),
                       ],
                     ),
                     Row(
@@ -267,15 +333,18 @@ class FarmStateHomeView extends StatelessWidget {
                           height: 20.sp,
                           width: 20.sp,
                         ),
-                        // 🚜 Harvest Date Icon
                         SizedBox(width: 4.w),
-                        Text(DateFormat('dd/MM/yyyy').format(item.harvestDate)),
+                        Text(
+                          DateFormat('dd/MM/yyyy').format(item.harvestDate),
+                          style: TextStyle(fontSize: 14.sp),
+                        ),
                       ],
                     ),
                   ],
                 ),
+                SizedBox(height: 8.h),
 
-                //location
+                /// 📍 **Location**
                 Row(
                   children: [
                     Image.asset(
@@ -286,21 +355,24 @@ class FarmStateHomeView extends StatelessWidget {
                     SizedBox(width: 4.w),
                     Expanded(
                       child: Text(
-                        "${item.location}",
+                        item.location ?? "Unknown",
+                        style: TextStyle(fontSize: 14.sp),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
                 ),
+                SizedBox(height: 8.h),
 
-                //ferti and pesti
+                /// 🌿 **Fertilizer and Pesticide**
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
                         Image.asset(
-                          ImageConst.harvestDate,
+                          ImageConst
+                              .harvestDate, // Replace with fertilizer icon if available
                           height: 20.sp,
                           width: 20.sp,
                         ),
@@ -314,14 +386,72 @@ class FarmStateHomeView extends StatelessWidget {
                           ImageConst.pesti,
                           height: 20.sp,
                           width: 20.sp,
-                        ), // 🐞 Pesticide Icon
+                        ),
                         SizedBox(width: 4.w),
                         smallText(item.pesticide),
                       ],
                     ),
                   ],
                 ),
-              ].separator(SizedBox(height: 8.h),).toList(),
+                SizedBox(height: 8.h),
+
+                /// 🤖 **AI Recommendations**
+                ExpansionTile(
+                  title: Text(
+                    "AI Recommendations",
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: themeColor(context: context).primary,
+                    ),
+                  ),
+                  leading: Icon(
+                    Icons.smart_toy,
+                    size: 20.sp,
+                    color: themeColor(context: context).primary,
+                  ),
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 8.h,
+                      ),
+                      child:
+                          item.aiRecommendations != null &&
+                                  item.aiRecommendations!.isNotEmpty
+                              ? Html(
+                                data: item.aiRecommendations!,
+                                style: {
+                                  "h3": Style(
+                                    fontSize: FontSize(16.sp),
+                                    fontWeight: FontWeight.w600,
+                                    color: themeColor(context: context).primary,
+                                  ),
+                                  "ul": Style(
+                                    margin: Margins(bottom: Margin(8.h)),
+                                  ),
+                                  "li": Style(
+                                    fontSize: FontSize(14.sp),
+                                    margin: Margins(bottom: Margin(4.h)),
+                                    color:
+                                        themeColor(context: context).onSurface,
+                                  ),
+                                },
+                              )
+                              : Text(
+                                "No recommendations available",
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color:
+                                      themeColor(
+                                        context: context,
+                                      ).onSurfaceVariant,
+                                ),
+                              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
@@ -329,6 +459,7 @@ class FarmStateHomeView extends StatelessWidget {
     );
   }
 
+  /// ✅ **Reusable Edit/Delete Buttons**
   Widget _buildEditDeleteButtons(
     BuildContext context, {
     required VoidCallback onEdit,
@@ -341,7 +472,6 @@ class FarmStateHomeView extends StatelessWidget {
           onPressed: onEdit,
           icon: Icon(Icons.edit, color: themeColor(context: context).primary),
         ),
-        SizedBox(width: 8.w), // Consistent spacing
         IconButton(
           onPressed: () async {
             bool? confirmDelete = await _showDeleteDialog(

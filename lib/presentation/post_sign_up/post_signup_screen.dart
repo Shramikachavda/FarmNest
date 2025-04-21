@@ -63,7 +63,7 @@ class _PostSignupScreenState extends State<PostSignupScreen> {
                         _completePostSignup();
                       }
                     },
-                    child: Text("${postSignup.currentPage + 1} / 3"),
+                    child: Text("${postSignup.currentPage + 1} / 2"),
                   ),
                 ],
               ),
@@ -71,10 +71,11 @@ class _PostSignupScreenState extends State<PostSignupScreen> {
             SizedBox(height: 10.h),
             SmoothPageIndicator(
               controller: postSignup.pageController,
-              count: 3,
+              count: 2,
               effect: WormEffect(
                 dotHeight: 5.h,
-                dotWidth: MediaQuery.of(context).size.width * .27,
+                //   dotWidth: MediaQuery.of(context).size.width * .27,
+                dotWidth: MediaQuery.of(context).size.width * .40,
                 activeDotColor: themeColor(context: context).primary,
                 dotColor: themeColor(context: context).secondary,
               ),
@@ -83,11 +84,13 @@ class _PostSignupScreenState extends State<PostSignupScreen> {
             SizedBox(height: 24.h),
             Expanded(
               child: PageView(
+                physics: NeverScrollableScrollPhysics(),
                 controller: postSignup.pageController,
                 onPageChanged: postSignup.updatePage,
+
                 children: const [
                   DefaultFarmAddress(),
-                  AddFarmerAddress(),
+                  //  AddFarmerAddress(),
                   AddFarmFieldLocationScreen(),
                 ],
               ),

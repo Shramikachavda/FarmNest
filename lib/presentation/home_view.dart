@@ -33,7 +33,6 @@ class HomeViewState extends State<HomeView> {
     MarketHomepageView(),
     CalenderView(),
     FarmStateHomeView(),
-
   ];
 
   @override
@@ -51,42 +50,40 @@ class HomeViewState extends State<HomeView> {
       body: pages[pageIndex],
       bottomNavigationBar: NavigationBar(
         backgroundColor: elevatedSurfaceColor,
-      height: 70,
-      // backgroundColor: theme.tertiaryFixedDim,
-      selectedIndex: pageIndex,
-      labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-      onDestinationSelected: (int index) {
-    setState(() {
-    pageIndex = index;
-    });
-    },
-      destinations: const [
-        NavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          selectedIcon: Icon(Icons.home),
-          label: 'Home',
-        ),
+        height: 70,
+        // backgroundColor: theme.tertiaryFixedDim,
+        selectedIndex: pageIndex,
+        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+        onDestinationSelected: (int index) {
+          setState(() {
+            pageIndex = index;
+          });
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
 
-        NavigationDestination(
-          tooltip: "Shop",
-          icon: Icon(Icons.shopping_bag) ,
-          selectedIcon:Icon(Icons.shopping_bag) ,
-          label: 'Shop',
-        ),
-        NavigationDestination(
-
-          icon: Icon(Icons.calendar_today_outlined),
-          selectedIcon: Icon(Icons.calendar_today),
-          label: 'Calendar',
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.bar_chart_outlined),
-          selectedIcon: Icon(Icons.bar_chart),
-          label: 'Stats',
-        ),
-
-
-      ],
-    ),);
+          NavigationDestination(
+            tooltip: "Shop",
+            icon: Icon(Icons.shopping_bag),
+            selectedIcon: Icon(Icons.shopping_bag),
+            label: 'Shop',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.calendar_today_outlined),
+            selectedIcon: Icon(Icons.calendar_today),
+            label: 'Calendar',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.psychology_outlined),
+            selectedIcon: Icon(Icons.psychology_outlined),
+            label: 'AgriAdvisor',
+          ),
+        ],
+      ),
+    );
   }
 }

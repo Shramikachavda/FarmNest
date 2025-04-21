@@ -5,6 +5,7 @@ import 'package:agri_flutter/customs_widgets/custom_snackbar.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
 import 'package:agri_flutter/presentation/market_place_views/check_out.dart';
 import 'package:agri_flutter/providers/market_place_provider/cart_provider.dart';
+import 'package:agri_flutter/providers/market_place_provider/products.dart';
 import 'package:agri_flutter/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,8 +18,6 @@ import 'detail_product_view.dart';
 
 class CartView extends BaseStatefulWidget {
   const CartView({super.key});
-
-
 
   @override
   Route buildRoute() {
@@ -38,22 +37,20 @@ class _CartViewState extends State<CartView> {
   @override
   void initState() {
     super.initState();
-   Provider.of<CartProvider>(context, listen: false).fetchCart();
+    Provider.of<CartProvider>(context, listen: false).fetchCart();
   }
+
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
+    final productsProvider = Provider.of<Products>(context);
 
     return Scaffold(
       backgroundColor: themeColor(context: context).surface,
       appBar: CustomAppBar(title: "Cart Items"),
       body:
           cartProvider.cartItems.isEmpty
-              ? Center(
-                child: bodyText(
-                  "No item in cart yet",
-                ),
-              )
+              ? Center(child: bodyText("No item in cart yet"))
               : Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
                 child: Column(
@@ -75,9 +72,12 @@ class _CartViewState extends State<CartView> {
                                 ),
                                 title: bodyText(product.name),
                                 onTap: () {
-
-                                  final productProvider = context.read<ProductProvider>();
-                                  productProvider.setDetailProduct(product.id);
+                                  final productProvider =
+                                      context.read<ProductProvider>();
+                                  productProvider.setDetailProduct(
+                                    product.id,
+                                    productsProvider,
+                                  );
                                   NavigationUtils.push(
                                     DetailProductView().buildRoute(),
                                   );
@@ -192,13 +192,18 @@ class _CartViewState extends State<CartView> {
                                   ],
                                 ),
                                 leading: ClipRRect(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                  child: Image.network(
-                                    product.imageUrl,
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(20.r),
+                                  ),
+                                  child: Container(
                                     width: 60.w,
-                                    height: 60.w,
-
-                                    fit: BoxFit.fill,
+                                    height: 60.h,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: NetworkImage(product.imageUrl),
+                                        fit: BoxFit.fill,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),

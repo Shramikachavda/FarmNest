@@ -67,7 +67,6 @@ Future<void> updateCrop(String userId , CropDetails crop) async {
 }
 */
 
-
 // lib/providers/farm_state_provider.dart/crop_details_provider.dart
 import 'package:agri_flutter/models/crop_details.dart';
 import 'package:agri_flutter/services/firestore.dart';
@@ -79,12 +78,15 @@ class CropDetailsProvider with ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
   List<CropDetails> _allCropList = [];
 
+  CropDetailsProvider() {
+    fetchCrops();
+  }
+
   // Dropdown values
 
   GrowthStage? _selectedStage;
   FertilizerType? _selectedFertilizer;
   PesticideType? _selectedPesticide;
-
 
   GrowthStage? get selectedStage => _selectedStage;
   FertilizerType? get selectedFertilizer => _selectedFertilizer;
@@ -104,6 +106,7 @@ class CropDetailsProvider with ChangeNotifier {
     _selectedPesticide = value ?? PesticideType.insecticide;
     notifyListeners();
   }
+
   List<CropDetails> get allCropList => _allCropList;
 
   Future<void> addCrop(CropDetails crop) async {
@@ -129,11 +132,12 @@ class CropDetailsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> removeCrop(String id) async{
-    try{
-      await _firestoreService.deleteCrop(id);
+  Future<void> removeCrop(CropDetails crop) async {
+    try {
+      await _firestoreService.deleteCrop(crop);
+      notifyListeners();
       print("delete");
-    }catch(e){
+    } catch (e) {
       throw Exception("Error fetching crops: $e");
     }
   }

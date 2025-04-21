@@ -3,7 +3,7 @@ import 'package:agri_flutter/providers/ai_provider.dart';
 import 'package:agri_flutter/providers/api_provider/marker_price_provider.dart';
 import 'package:agri_flutter/providers/api_provider/weather_provider.dart';
 import 'package:agri_flutter/providers/drawer/address_provider.dart';
-import 'package:agri_flutter/providers/drawer/order_provider.dart';
+import 'package:agri_flutter/providers/drawer/order_provider.dart';    
 import 'package:agri_flutter/providers/drawer/selected_address.dart';
 import 'package:agri_flutter/providers/eventExpense.dart/event_expense_provider.dart';
 import 'package:agri_flutter/providers/farm_state_provider.dart/crop_details_provider.dart';
@@ -13,8 +13,9 @@ import 'package:agri_flutter/providers/map.dart';
 import 'package:agri_flutter/providers/market_place_provider/cart_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/favorite_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/product_provider.dart';
+import 'package:agri_flutter/providers/market_place_provider/products.dart';
 import 'package:agri_flutter/providers/password_provider.dart';
-import 'package:agri_flutter/providers/post_sign_up.dart';
+import 'package:agri_flutter/providers/post_sign_up.dart'; 
 import 'package:agri_flutter/providers/post_sign_up_providers/default_farmer_address.dart';
 import 'package:agri_flutter/providers/user_provider.dart';
 import 'package:agri_flutter/services/local_storage/post_sign_up.dart';
@@ -100,6 +101,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => BoundaryProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
         ChangeNotifierProvider(create: (_) => AIProvider()),
+        ChangeNotifierProvider(create: (_) => Products()),
       ],
       child: BlocProvider(create: (_) => appThemeBloc, child: MyApp()),
     ),

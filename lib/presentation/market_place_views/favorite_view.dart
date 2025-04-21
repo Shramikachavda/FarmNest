@@ -4,6 +4,7 @@ import 'package:agri_flutter/customs_widgets/custom_form_field.dart';
 import 'package:agri_flutter/providers/market_place_provider/favorite_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/product_provider.dart';
 import 'package:agri_flutter/presentation/market_place_views/detail_product_view.dart';
+import 'package:agri_flutter/providers/market_place_provider/products.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,7 +37,10 @@ class _FavoriteViewState extends State<FavoriteView> {
   @override
   void initState() {
     super.initState();
-    final favoriteProvider = Provider.of<FavoriteProvider>(context, listen: false);
+    final favoriteProvider = Provider.of<FavoriteProvider>(
+      context,
+      listen: false,
+    );
     _filteredFavorites = favoriteProvider.favoriteList;
 
     _searchController.addListener(() {
@@ -55,15 +59,19 @@ class _FavoriteViewState extends State<FavoriteView> {
   }
 
   void searchProducts(String query) {
-    final favoriteProvider = Provider.of<FavoriteProvider>(context, listen: false);
+    final favoriteProvider = Provider.of<FavoriteProvider>(
+      context,
+      listen: false,
+    );
     setState(() {
       query = query.toLowerCase().trim();
-      _filteredFavorites = query.isEmpty
-          ? favoriteProvider.favoriteList
-          : favoriteProvider.favoriteList.where((product) {
-        return product.name.toLowerCase().contains(query) ||
-            product.category.toLowerCase().contains(query);
-      }).toList();
+      _filteredFavorites =
+          query.isEmpty
+              ? favoriteProvider.favoriteList
+              : favoriteProvider.favoriteList.where((product) {
+                return product.name.toLowerCase().contains(query) ||
+                    product.category.toLowerCase().contains(query);
+              }).toList();
     });
   }
 
@@ -71,6 +79,7 @@ class _FavoriteViewState extends State<FavoriteView> {
   Widget build(BuildContext context) {
     final favoriteProvider = Provider.of<FavoriteProvider>(context);
     final selectedProd = Provider.of<ProductProvider>(context);
+    final productsProvider = Provider.of<Products>(context);
 
     return Scaffold(
       backgroundColor: themeColor(context: context).surface,
@@ -79,7 +88,6 @@ class _FavoriteViewState extends State<FavoriteView> {
         padding: EdgeInsets.only(left: 24.w, right: 24.w, top: 12.h),
         child: Column(
           children: [
-
             CustomFormField(
               focusNode: _focusNodeSearch,
               textInputAction: TextInputAction.done,
@@ -91,105 +99,143 @@ class _FavoriteViewState extends State<FavoriteView> {
             ),
             SizedBox(height: 10.h),
             Expanded(
-              child: _filteredFavorites.isEmpty
-                  ? Center(child: Text("No products found.", style: TextStyle(fontSize: 16.sp)))
-                  : GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.8,
-                  crossAxisSpacing: 12.w,
-                  mainAxisSpacing: 12.h,
-                ),
-                itemCount: _filteredFavorites.length,
-                itemBuilder: (context, index) {
-                  final favoriteProduct = _filteredFavorites[index];
-                  return InkWell(
-                    onTap: () {
-                      selectedProd.setDetailProduct(favoriteProduct.id);
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => DetailProductView(),
-                      ));
-                    },
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.r),
-                        side: BorderSide(
-                          color: themeColor().outlineVariant,
-                          width: 2,
+              child:
+                  _filteredFavorites.isEmpty
+                      ? Center(
+                        child: Text(
+                          "No products found.",
+                          style: TextStyle(fontSize: 16.sp),
                         ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Stack(
-                            children: [
-
-                              //image
-                              ClipRRect(
-                                borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-                                child: Container(
-                                  width: double.infinity,
-                                  height: 120.h,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: NetworkImage(favoriteProduct.imageUrl),
-                                      fit: BoxFit.fill,
-                                    ),
-                                  ),
+                      )
+                      : GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.8,
+                          crossAxisSpacing: 12.w,
+                          mainAxisSpacing: 12.h,
+                        ),
+                        itemCount: _filteredFavorites.length,
+                        itemBuilder: (context, index) {
+                          final favoriteProduct = _filteredFavorites[index];
+                          return InkWell(
+                            onTap: () {
+                              selectedProd.setDetailProduct(
+                                favoriteProduct.id,
+                                productsProvider,
+                              );
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => DetailProductView(),
+                                ),
+                              );
+                            },
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.r),
+                                side: BorderSide(
+                                  color: themeColor().outlineVariant,
+                                  width: 2,
                                 ),
                               ),
-
-                              //fav icon
-                              Padding(
-                                padding: EdgeInsets.all(8.w),
-                                child: Align(
-                                  alignment: Alignment.topRight,
-                                  child: InkWell(
-                                    onTap: () => favoriteProvider.removeFavorite(favoriteProduct),
-                                    child: Container(
-                                      height: 30.w,
-                                      width: 30.w,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: themeColor(context: context).secondaryContainer,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Stack(
+                                    children: [
+                                      //image
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(20.r),
+                                        ),
+                                        child: Container(
+                                          width: double.infinity,
+                                          height: 120.h,
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                              image: NetworkImage(
+                                                favoriteProduct.imageUrl,
+                                              ),
+                                              fit: BoxFit.fill,
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                      child: Icon(Icons.favorite, size: 20.sp),
+
+                                      //fav icon
+                                      Padding(
+                                        padding: EdgeInsets.all(8.w),
+                                        child: Align(
+                                          alignment: Alignment.topRight,
+                                          child: InkWell(
+                                            onTap:
+                                                () => favoriteProvider
+                                                    .removeFavorite(
+                                                      favoriteProduct,
+                                                    ),
+                                            child: Container(
+                                              height: 30.w,
+                                              width: 30.w,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color:
+                                                    themeColor(
+                                                      context: context,
+                                                    ).secondaryContainer,
+                                              ),
+                                              child: Icon(
+                                                Icons.favorite,
+                                                size: 20.sp,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 5.w,
+                                    ),
+                                    child: bodyText(favoriteProduct.name),
+                                  ),
+
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 5.w,
+                                    ),
+                                    child: captionStyleText(
+                                      favoriteProduct.description,
                                     ),
                                   ),
-                                ),
+
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 5.w,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: captionStyleText(
+                                            favoriteProduct.category,
+                                            color:
+                                                themeColor(
+                                                  context: context,
+                                                ).primary,
+                                          ),
+                                        ),
+                                        bodyText("₹${favoriteProduct.price}"),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 5.w),
-                            child: bodyText(favoriteProduct.name),
-                          ),
-
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 5.w),
-                            child: captionStyleText(favoriteProduct.description),
-                          ),
-
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 5.w),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                captionStyleText(
-                                  favoriteProduct.category,
-                                  color: themeColor(context: context).primary,
-                                ),
-                                bodyText("₹${favoriteProduct.price}"),
-                              ],
                             ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
-                    ),
-                  );
-                },
-              ),
             ),
           ],
         ),

@@ -3,11 +3,13 @@ import 'package:agri_flutter/customs_widgets/custom_choice_chip.dart';
 import 'package:agri_flutter/customs_widgets/custom_form_field.dart';
 import 'package:agri_flutter/customs_widgets/custom_snackbar.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
-import 'package:agri_flutter/data/product.dart';
 import 'package:agri_flutter/models/product.dart';
 import 'package:agri_flutter/providers/market_place_provider/cart_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/favorite_provider.dart';
 import 'package:agri_flutter/providers/market_place_provider/product_provider.dart';
+import 'package:agri_flutter/providers/market_place_provider/products.dart';
+import 'package:agri_flutter/services/firestore.dart';
+
 import 'package:agri_flutter/theme/theme.dart';
 import 'package:agri_flutter/presentation/market_place_views/cart_view.dart';
 import 'package:agri_flutter/presentation/market_place_views/detail_product_view.dart';
@@ -42,10 +44,22 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
   List<Product> _filteredProducts = [];
   Timer? _debounce;
 
+  final FirestoreService _fireStore = FirestoreService();
+
   @override
   void initState() {
     super.initState();
-    _filteredProducts = ProductData.products;
+    final productsProvider = Provider.of<Products>(context, listen: false);
+    productsProvider
+        .fetchProducts()
+        .then((_) {
+          setState(() {
+            _filteredProducts = productsProvider.products;
+          });
+        })
+        .catchError((error) {
+          showCustomSnackBar(context, 'Failed to load products: $error');
+        });
 
     _searchController.addListener(() {
       if (_debounce?.isActive ?? false) _debounce!.cancel();
@@ -63,13 +77,14 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
   }
 
   void searchProducts(String query) {
+    final productsProvider = Provider.of<Products>(context, listen: false);
     setState(() {
       query = query.toLowerCase().trim();
       if (query.isEmpty && selectedCategory.isEmpty) {
-        _filteredProducts = ProductData.products;
+        _filteredProducts = productsProvider.products;
       } else {
         _filteredProducts =
-            ProductData.products.where((product) {
+            productsProvider.products.where((product) {
               final nameMatch = product.name.toLowerCase().contains(query);
               final categoryMatch = product.category.toLowerCase().contains(
                 query,
@@ -96,6 +111,7 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
       context,
       listen: false,
     );
+    final productsProvider = Provider.of<Products>(context, listen: false);
     final favoriteProvider = Provider.of<FavoriteProvider>(context);
     final cartProvider = Provider.of<CartProvider>(context);
 
@@ -121,7 +137,7 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+        padding: EdgeInsets.only(left: 24.w, right: 24.w, top: 12.h),
         child: Column(
           children: [
             // Search Field
@@ -135,190 +151,193 @@ class _MarketHomepageViewState extends State<MarketHomepageView> {
               icon: Icon(Icons.search, size: 20.sp),
             ),
 
-            // Category Chips
-            SizedBox(
-              height: 70.h,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  final label = categories[index];
-                  return Padding(
-                    padding: EdgeInsets.only(right: 12.w),
-                    child: customChoiceChip(
-                      label: label,
-                      selectedCategory: selectedCategory,
-                      onSelected: filterProducts,
-                      context: context,
-                    ),
-                  );
-                },
-              ),
+            FutureBuilder<List<String>>(
+              future: _fireStore.getCategory(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(child: Text("Error: ${snapshot.error}"));
+                }
+
+                final categories = snapshot.data ?? [];
+
+                if (categories.isEmpty) {
+                  return Center(child: Text("No categories found."));
+                }
+
+                return SizedBox(
+                  height: 70.h,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      final label = categories[index];
+                      return Padding(
+                        padding: EdgeInsets.only(right: 12.w),
+                        child: customChoiceChip(
+                          label: label,
+                          selectedCategory: selectedCategory,
+                          onSelected: filterProducts,
+                          context: context,
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
             ),
+            // Category Chips
 
             // Product Grid
             Expanded(
-              child:
-                  _filteredProducts.isEmpty
-                      ? Center(
-                        child: Text(
-                          "No products found.",
-                          style: TextStyle(fontSize: 16.sp),
-                        ),
-                      )
-                      : GridView.builder(
-                        itemCount: _filteredProducts.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.7,
-                          crossAxisSpacing: 12.w,
-                          mainAxisSpacing: 12.h,
-                        ),
-                        itemBuilder: (context, index) {
-                          final product = _filteredProducts[index];
+              child: Consumer<Products>(
+                builder: (context, productsProvider, child) {
+                  if (productsProvider.isLoading) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if (_filteredProducts.isEmpty) {
+                    bodyText("No products found.");
+                  }
 
-                          return InkWell(
-                            onTap: () {
-                              productProvider.setDetailProduct(product.id);
+                  return GridView.builder(
+                    itemCount: _filteredProducts.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.8,
+                      crossAxisSpacing: 12.w,
+                      mainAxisSpacing: 12.h,
+                    ),
+                    itemBuilder: (context, index) {
+                      final product = _filteredProducts[index];
 
-                              print(product.id);
-                              print(product.name);
-
-                              print("marke price page\n");
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => DetailProductView(),
-                                ),
-                              );
-                            },
-                            child: Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.r),
-                                side: BorderSide(
-                                  color: themeColor().outlineVariant,
-                                  width: 2,
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children:
-                                    [
-                                      // Image
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.vertical(
-                                          top: Radius.circular(20.r),
-                                        ),
-                                        child: Container(
-                                          width: double.infinity,
-                                          height: 120.h,
-                                          decoration: BoxDecoration(
-                                            color: themeColor(context: context).surface,
-                                            image: DecorationImage(
-                                              image: NetworkImage(
-                                                product.imageUrl,
-                                              ),
-                                              fit: BoxFit.contain,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 5.w,
-                                        ),
-                                        child: bodyText(product.name),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 5.w,
-                                        ),
-                                        child: captionStyleText(
-                                          product.description,
-                                        ),
-                                      ),
-                                      // Price and Buttons
-                                      Expanded(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: [
-                                            Text(
-                                              '₹${product.price}',
-                                              style: TextStyle(fontSize: 14.sp),
-                                            ),
-                                            customRoundIconButton(
-                                              context: context,
-                                              icon:
-                                                  favoriteProvider.isFavorite(
-                                                        product,
-                                                      )
-                                                      ? Icons.favorite
-                                                      : Icons.favorite_border,
-                                              onPressed: () async {
-                                                final isFav = favoriteProvider
-                                                    .isFavorite(product);
-                                                if (isFav) {
-                                                  await favoriteProvider
-                                                      .removeFavorite(product);
-                                                  showCustomSnackBar(
-                                                    context,
-                                                    'Item removed from favorite list',
-                                                  );
-                                                } else {
-                                                  await favoriteProvider
-                                                      .addFavorite(product);
-                                                  showCustomSnackBar(
-                                                    context,
-                                                    'Item added to favorite list',
-                                                  );
-                                                }
-                                              },
-                                            ),
-                                            customRoundIconButton(
-                                              context: context,
-                                              icon: Icons.add,
-                                              onPressed: () async {
-                                                if (cartProvider
-                                                    .isProductInCart(product)) {
-                                                  await cartProvider
-                                                      .increaseQuantity(
-                                                        product,
-                                                      );
-                                                  showCustomSnackBar(
-                                                    context,
-                                                    'Quantity increased',
-                                                  );
-                                                  /*    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text('Item added to cart'),
-                                          action: SnackBarAction(
-                                            label: 'View Cart',
-                                            onPressed: () {
-                                              Navigator.push(context, MaterialPageRoute(builder: (_) => CartView()));
-                                            },
-                                          ),
-                                        ),
-                                      );*/
-                                                } else {
-                                                  await cartProvider
-                                                      .addCartItem(product);
-                                                  showCustomSnackBar(
-                                                    context,
-                                                    'Item added to cart',
-                                                  );
-                                                }
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ].separator(SizedBox(height: 5.h)).toList(),
-                              ),
+                      return InkWell(
+                        onTap: () {
+                          productProvider.setDetailProduct(
+                            product.id,
+                            productsProvider,
+                          );
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => DetailProductView(),
                             ),
                           );
                         },
-                      ),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.r),
+                            side: BorderSide(
+                              color: themeColor().outlineVariant,
+                              width: 2,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children:
+                                [
+                                  // Image
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20.r),
+                                    ),
+                                    child: Container(
+                                      width: double.infinity,
+                                      height: 100.h,
+                                      decoration: BoxDecoration(
+                                        color:
+                                            themeColor(
+                                              context: context,
+                                            ).surface,
+                                        image: DecorationImage(
+                                          image: NetworkImage(product.imageUrl),
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 5.w,
+                                    ),
+                                    child: bodyText(product.name),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 5.w,
+                                    ),
+                                    child: captionStyleText(
+                                      product.description,
+                                    ),
+                                  ),
+                                  // Price and Buttons
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        smallText('₹${product.price}'),
+                                        customRoundIconButton(
+                                          context: context,
+                                          icon:
+                                              favoriteProvider.isFavorite(
+                                                    product,
+                                                  )
+                                                  ? Icons.favorite
+                                                  : Icons.favorite_border,
+                                          onPressed: () async {
+                                            final isFav = favoriteProvider
+                                                .isFavorite(product);
+                                            if (isFav) {
+                                              await favoriteProvider
+                                                  .removeFavorite(product);
+                                              showCustomSnackBar(
+                                                context,
+                                                'Item removed from favorite list',
+                                              );
+                                            } else {
+                                              await favoriteProvider
+                                                  .addFavorite(product);
+                                              showCustomSnackBar(
+                                                context,
+                                                'Item added to favorite list',
+                                              );
+                                            }
+                                          },
+                                        ),
+                                        customRoundIconButton(
+                                          context: context,
+                                          icon: Icons.add,
+                                          onPressed: () async {
+                                            if (cartProvider.isProductInCart(
+                                              product,
+                                            )) {
+                                              await cartProvider
+                                                  .increaseQuantity(product);
+                                              showCustomSnackBar(
+                                                context,
+                                                'Quantity increased',
+                                              );
+                                            } else {
+                                              await cartProvider.addCartItem(
+                                                product,
+                                              );
+                                              showCustomSnackBar(
+                                                context,
+                                                'Item added to cart',
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ].separator(SizedBox(height: 5.h)).toList(),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),

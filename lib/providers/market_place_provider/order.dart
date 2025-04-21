@@ -19,7 +19,7 @@ class OrderProvider with ChangeNotifier {
       await _db.collection('users').doc(userId).collection('orders').doc(orderId).set({
         'orderId': orderId,
         'orderDate': DateTime.now().toIso8601String(),
-        'products': cartItems.map((product) => product.toJson()).toList(),
+        'products': cartItems.map((product) => product.toMap()).toList(),
       });
 
       // Clear cart after placing order

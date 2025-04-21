@@ -9,7 +9,7 @@ class CropDetails {
   final String pesticide;
   final String? temperature;
   final String? humidity;
-
+  
   final String? aiRecommendations;
 
   CropDetails({
@@ -19,8 +19,8 @@ class CropDetails {
     required this.startDate,
     required this.harvestDate,
     this.location,
-    required  this.fertilizer,
-    required  this.pesticide,
+    required this.fertilizer,
+    required this.pesticide,
     this.temperature,
     this.humidity,
 
@@ -50,7 +50,8 @@ class CropDetails {
       cropName: map['cropName'] ?? '',
       growthStage: map['growthStage'] ?? '',
       startDate: DateTime.tryParse(map['startDate'] ?? '') ?? DateTime.now(),
-      harvestDate: DateTime.tryParse(map['harvestDate'] ?? '') ?? DateTime.now(),
+      harvestDate:
+          DateTime.tryParse(map['harvestDate'] ?? '') ?? DateTime.now(),
       location: map['location'] as String?,
       fertilizer: map['fertilizer'] as String,
       pesticide: map['pesticide'] as String,

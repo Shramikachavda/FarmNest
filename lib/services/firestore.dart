@@ -139,7 +139,7 @@ class FirestoreService {
           .doc(userId)
           .collection('fav_cart')
           .doc(product.id)
-          .set(product.toJson());
+          .set(product.toMap());
       print("✅ Added to favorites: ${product.id}");
     } catch (e) {
       print("❌ Error adding to favorites: $e");
@@ -193,7 +193,7 @@ class FirestoreService {
           .doc(userId)
           .collection('cart')
           .doc(product.id)
-          .set(product.toJson());
+          .set(product.toMap());
       print("✅ Added to cart: ${product.id}");
       print(userId);
     } catch (e) {
@@ -236,7 +236,11 @@ class FirestoreService {
   // ===========================================
 
   /// **7️⃣ Place Order**
-  Future<void> placeOrder(List<Product> cartProducts) async {
+
+  Future<void> placeOrder(
+    List<Product> cartProducts,
+    DefaultFarmerAddress? address,
+  ) async {
     try {
       if (userId == null) {
         throw Exception("User not logged in");
@@ -247,10 +251,19 @@ class FirestoreService {
       final orderRef =
           _db.collection('users').doc(userId).collection('orders').doc();
 
+      // Calculate total price
+      final total = cartProducts.fold<double>(
+        0.0,
+        (sum, product) => sum + (product.price * product.quantity),
+      );
+
       final orderData = {
         'orderId': orderRef.id,
-        'products': cartProducts.map((p) => p.toJson()).toList(),
+        'products': cartProducts.map((p) => p.toMap()).toList(),
+        'total': total,
         'timestamp': FieldValue.serverTimestamp(),
+        'status': 'Pending',
+        'address': address?.toJson(), // Include address
       };
 
       await orderRef.set(orderData);
@@ -262,28 +275,26 @@ class FirestoreService {
       }
     } catch (e) {
       print("❌ Failed to place order: $e");
-      throw e; // Propagate error to UI
+      throw e;
     }
   }
 
-  Future<List<Map<String, dynamic>>> getOrders() async {
+  Future<List<Map<String, dynamic>>> getOrders({String? userId}) async {
     try {
-      if (userId == null) {
-        throw Exception("User not logged in");
+      if (userId == null && this.userId == null) {
+        throw Exception("User ID not provided");
       }
-      print("🔹 Fetching orders for User: $userId");
-      final snapshot =
+      final effectiveUserId = userId ?? this.userId!;
+      final querySnapshot =
           await _db
               .collection('users')
-              .doc(userId)
+              .doc(effectiveUserId)
               .collection('orders')
-              .orderBy('timestamp', descending: true)
               .get();
-      print("✅ Fetched ${snapshot.docs.length} orders.");
-      return snapshot.docs.map((doc) => doc.data()).toList();
+      return querySnapshot.docs.map((doc) => doc.data()).toList();
     } catch (e) {
-      print("❌ Error fetching orders: $e");
-      return [];
+      print("❌ Failed to fetch orders: $e");
+      throw e;
     }
   }
 
@@ -586,7 +597,6 @@ class FirestoreService {
       return snapshot.docs
           .map((doc) => FarmDetail.fromJson(doc.data()))
           .toList();
-
     } catch (e) {
       print("❌ Error fetching farm: $e");
       return null;
@@ -617,7 +627,6 @@ class FirestoreService {
           .delete();
 
       print("Farm deleted successfully");
-
     } catch (e, stackTrace) {
       print("Delete failed: $e");
       print(stackTrace);
@@ -802,22 +811,35 @@ class FirestoreService {
   }
 
   Future<List<CropDetails>> getCrops() async {
-    final snapshot =
-        await _db.collection('users').doc(userId).collection('crops').get();
-    return snapshot.docs.map((doc) => CropDetails.fromMap(doc.data())).toList();
+    try {
+      final snapshot =
+          await _db.collection('users').doc(userId).collection('crops').get();
+      print(snapshot.docs.length);
+      return snapshot.docs
+          .map((doc) => CropDetails.fromMap(doc.data()))
+          .toList();
+    } catch (e) {
+      print("faild $e");
+      return [];
+    }
   }
 
-  Future<void> deleteCrop(String id) async{
+  Future<void> deleteCrop(CropDetails id) async {
     try {
-      await _db.collection('users').doc(userId).collection('crops').doc(id).delete();
-    }catch(e){
+      await _db
+          .collection('users')
+          .doc(userId)
+          .collection('crops')
+          .doc(id.id)
+          .delete();
+    } catch (e) {
       rethrow;
     }
   }
 
   //order
 
-  Future<void> addToOrders(Product product) async {
+  /* Future<void> addToOrders(Product product) async {
     try {
       print("🛒 Placing order for: ${product.id}, User: $userId");
       await _db
@@ -825,10 +847,29 @@ class FirestoreService {
           .doc(userId)
           .collection('orders')
           .doc(product.id)
-          .set(product.toJson());
+          .set(product.toMap());
       print("✅ Order placed: ${product.id}");
     } catch (e) {
       print("❌ Error placing order: $e");
     }
+  }  */
+
+  Future<List<String>> getCategory() async {
+    List<String> categories = [];
+
+    try {
+      final snapshot = await _db.collection("categories").get();
+
+      for (var doc in snapshot.docs) {
+        final category = doc.data()["name"];
+        if (category != null) {
+          categories.add(category);
+        }
+      }
+    } catch (e) {
+      print("Error fetching categories: $e");
+    }
+
+    return categories;
   }
 }

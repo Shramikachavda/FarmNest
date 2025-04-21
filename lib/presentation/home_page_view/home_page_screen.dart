@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:agri_flutter/customs_widgets/custom_icon.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
+import 'package:agri_flutter/data/product.dart';
 import 'package:agri_flutter/presentation/calender_view/add_event_expense.dart';
 import 'package:agri_flutter/presentation/home_page_view/market_price_widget.dart'; // Assuming MarketPriceCard is here
 import 'package:agri_flutter/presentation/home_page_view/weather_forecast/weather_bloc.dart';
@@ -13,6 +14,7 @@ import 'package:agri_flutter/services/firestore.dart';
 import 'package:agri_flutter/services/location.dart';
 import 'package:agri_flutter/utils/comman.dart';
 import 'package:agri_flutter/utils/navigation/navigation_utils.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotlottie_loader/dotlottie_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -108,6 +110,35 @@ class _HomePageScreenState extends State<HomePageScreen> {
     return ImageConst.anim3;
   }
 
+  /*Future<void> uploadStaticProductsToFirestore() async {
+  final products = ProductData.products;
+
+  final batch = FirebaseFirestore.instance.batch();
+  final productsCollection = FirebaseFirestore.instance.collection('products');
+
+  for (var product in products) {
+    final docRef = productsCollection.doc(); // Auto ID
+    batch.set(docRef, product.toMap());
+  }
+
+  await batch.commit();
+}
+
+    Future<void> _uploadProducts() async {
+   
+
+    try {
+      await uploadStaticProductsToFirestore();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('✅ Products uploaded to Firestore!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('❌ Upload failed: $e')),
+      );
+    } 
+  }   */
+
   @override
   Widget build(BuildContext context) {
     String address =
@@ -123,6 +154,11 @@ class _HomePageScreenState extends State<HomePageScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
 
             children: [
+              /*    ElevatedButton.icon(
+                icon: Icon(Icons.cloud_upload),
+                label: Text('Upload Static Products'),
+                onPressed: _uploadProducts,
+              ), */
               welcomeHeader(),
               weatherCard(),
               upComingEventCard(),

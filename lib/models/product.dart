@@ -1,5 +1,7 @@
+import 'package:uuid/uuid.dart';
+
 class Product {
-  final String id;
+  String id;
   final String name;
   final String category;
   final double price;
@@ -8,17 +10,16 @@ class Product {
   int quantity;
 
   Product({
-    required this.id,
+    String? id,
     required this.name,
     required this.category,
     required this.price,
     required this.imageUrl,
     required this.description,
     this.quantity = 1,
-  });
+  }) : id = id ?? const Uuid().v4();
 
-  // Convert Product to JSON for Firestore
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,
@@ -30,16 +31,15 @@ class Product {
     };
   }
 
-  // Create a Product from Firestore JSON
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['id'],
+      id: json['id'] ?? const Uuid().v4(), // Generate UUID if id is missing
       name: json['name'],
       category: json['category'],
       price: (json['price'] as num).toDouble(),
       imageUrl: json['imageUrl'],
       description: json['description'],
-      quantity: json['quantity'] ?? 1,
+      quantity: json['quantity'] ?? 1, // Default quantity = 1 if missing
     );
   }
 

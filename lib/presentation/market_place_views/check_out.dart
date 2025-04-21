@@ -1,4 +1,3 @@
-// presentation/market_place/checkout_view.dart
 import 'package:agri_flutter/core/image.dart';
 import 'package:agri_flutter/core/widgets/BaseStateFullWidget.dart';
 import 'package:agri_flutter/customs_widgets/reusable.dart';
@@ -115,8 +114,8 @@ class _CheckoutViewState extends State<CheckoutView> {
     CartProvider cartProvider,
     SelectedAddressProvider selectedAddressProvider,
   ) async {
-    final address = _addressController.text.trim();
-    if (address.isEmpty || address == 'Add your address please to proceed') {
+    final address = selectedAddressProvider.selected;
+    if (address == null) {
       showCustomSnackBar(context, "Please select an address");
       return;
     }
@@ -127,18 +126,12 @@ class _CheckoutViewState extends State<CheckoutView> {
         return;
       }
 
-      /*   setState(() {
-        _isLoading = true;
-      });*/
-
-      await _firestoreService.placeOrder(cartProvider.cartItems);
+      await _firestoreService.placeOrder(cartProvider.cartItems, address);
 
       await confirmAnim();
 
       showCustomSnackBar(context, "Order placed successfully!");
 
-      await cartProvider.clearCart();
-      selectedAddressProvider.clear();
       await cartProvider.clearCart();
       selectedAddressProvider.clear();
       NavigationUtils.pop();
@@ -183,130 +176,126 @@ class _CheckoutViewState extends State<CheckoutView> {
     return Scaffold(
       backgroundColor: themeColor(context: context).surface,
       appBar: CustomAppBar(title: 'Checkout'),
-      body:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Order Summary",
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Order Summary",
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
                     ),
-                    SizedBox(height: 10.h),
-                    Expanded(
-                      child:
-                          cartProvider.cartItems.isEmpty
-                              ? const Center(child: Text("Your cart is empty"))
-                              : ListView.builder(
-                                itemCount: cartProvider.cartItems.length,
-                                itemBuilder: (context, index) {
-                                  final item = cartProvider.cartItems[index];
-                                  return ListTile(
-                                    contentPadding: EdgeInsets.zero,
-                                    title: Text(
-                                      item.name,
-                                      style: TextStyle(fontSize: 16.sp),
-                                    ),
-                                    subtitle: Text(
-                                      "Quantity: ${item.quantity}",
-                                      style: TextStyle(fontSize: 14.sp),
-                                    ),
-                                    trailing: Text(
-                                      "₹${(item.price * item.quantity).toStringAsFixed(2)}",
-                                      style: TextStyle(fontSize: 14.sp),
-                                    ),
-                                  );
-                                },
-                              ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Delivery Address",
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) => const SelectAddressScreen(),
-                              ),
-                            ).then((_) => _loadDefaultAddress());
-                          },
-                          child: Text(
-                            _addressController.text ==
-                                    'Add your address please to proceed'
-                                ? "Add Address"
-                                : "Change Address",
-                            style: TextStyle(fontSize: 14.sp),
-                          ),
-                        ),
-                      ],
-                    ),
-                    CustomFormField(
-                      maxLine: 3,
-                      readOnly: true,
-                      focusNode: _focusNodeAddress,
-                      keyboardType: TextInputType.streetAddress,
-                      hintText: 'Select your delivery address...',
-                      label: 'Delivery address',
-                      textEditingController: _addressController,
-                      textInputAction: TextInputAction.done,
-                      validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            value == 'Add your address please to proceed') {
-                          return "Please select an address";
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 10.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Total", style: TextStyle(fontSize: 16.sp)),
-                            Text(
-                              "₹${cartProvider.totalCartPrice.toStringAsFixed(2)}",
-                              style: TextStyle(
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(width: 15.w),
-                        Expanded(
-                          child: CustomButton(
-                            buttonName: 'Confirm Order',
-                            onClick:
-                                () => _confirmOrder(
-                                  cartProvider,
-                                  selectedAddressProvider,
+                  ),
+                  SizedBox(height: 10.h),
+                  Expanded(
+                    child: cartProvider.cartItems.isEmpty
+                        ? const Center(child: Text("Your cart is empty"))
+                        : ListView.builder(
+                            itemCount: cartProvider.cartItems.length,
+                            itemBuilder: (context, index) {
+                              final item = cartProvider.cartItems[index];
+                              return ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(
+                                  item.name,
+                                  style: TextStyle(fontSize: 16.sp),
                                 ),
+                                subtitle: Text(
+                                  "Quantity: ${item.quantity}",
+                                  style: TextStyle(fontSize: 14.sp),
+                                ),
+                                trailing: Text(
+                                  "₹${(item.price * item.quantity).toStringAsFixed(2)}",
+                                  style: TextStyle(fontSize: 14.sp),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Delivery Address",
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SelectAddressScreen(),
+                            ),
+                          ).then((_) => _loadDefaultAddress());
+                        },
+                        child: Text(
+                          _addressController.text ==
+                                  'Add your address please to proceed'
+                              ? "Add Address"
+                              : "Change Address",
+                          style: TextStyle(fontSize: 14.sp),
+                        ),
+                      ),
+                    ],
+                  ),
+                  CustomFormField(
+                    maxLine: 3,
+                    readOnly: true,
+                    focusNode: _focusNodeAddress,
+                    keyboardType: TextInputType.streetAddress,
+                    hintText: 'Select your delivery address...',
+                    label: 'Delivery address',
+                    textEditingController: _addressController,
+                    textInputAction: TextInputAction.done,
+                    validator: (value) {
+                      if (value == null ||
+                          value.isEmpty ||
+                          value == 'Add your address please to proceed') {
+                        return "Please select an address";
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 10.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Total", style: TextStyle(fontSize: 16.sp)),
+                          Text(
+                            "₹${cartProvider.totalCartPrice.toStringAsFixed(2)}",
+                            style: TextStyle(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(width: 15.w),
+                      Expanded(
+                        child: CustomButton(
+                          buttonName: 'Confirm Order',
+                          onClick: () => _confirmOrder(
+                            cartProvider,
+                            selectedAddressProvider,
                           ),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
+            ),
     );
   }
 

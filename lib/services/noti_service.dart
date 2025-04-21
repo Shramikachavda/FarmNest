@@ -3,19 +3,12 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:permission_handler/permission_handler.dart';
+
 class NotificationService {
   static final FlutterLocalNotificationsPlugin
   _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   /// **Initialize Notifications**
-
-  
-
-
-    
-
-
-/// **Initialize Notifications**
   static Future<void> initNotifications() async {
     print("🔄 Initializing Notifications...");
 
@@ -31,8 +24,10 @@ class NotificationService {
 
     // Request permission for Android 13+
     final AndroidFlutterLocalNotificationsPlugin? androidPlugin =
-        _flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+        _flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >();
 
     if (androidPlugin != null) {
       bool? granted = await androidPlugin.requestNotificationsPermission();
@@ -51,20 +46,20 @@ class NotificationService {
   }
 
   /// **Check & Request Exact Alarm Permission (Android 12+)**
- static Future<bool> _checkExactAlarmPermission() async {
-  if (Platform.isAndroid) {
-    var status = await Permission.scheduleExactAlarm.status;
-    
-    if (status.isDenied) {
-      print("⚠️ Requesting Exact Alarm Permission...");
-      var result = await Permission.scheduleExactAlarm.request();
-      return result.isGranted;
+  static Future<bool> _checkExactAlarmPermission() async {
+    if (Platform.isAndroid) {
+      var status = await Permission.scheduleExactAlarm.status;
+
+      if (status.isDenied) {
+        print("⚠️ Requesting Exact Alarm Permission...");
+        var result = await Permission.scheduleExactAlarm.request();
+        return result.isGranted;
+      }
+
+      return status.isGranted;
     }
-    
-    return status.isGranted;
+    return true;
   }
-  return true;
-}
 
   /// **Schedule a Notification**
   static Future<void> scheduleNotification(
@@ -98,14 +93,14 @@ class NotificationService {
     print("✅ Notification Cancelled");
   }
 
-
   Future<void> checkNotificationStatus() async {
-  final bool? isGranted = await NotificationService
-      ._flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.areNotificationsEnabled();
+    final bool? isGranted =
+        await NotificationService._flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >()
+            ?.areNotificationsEnabled();
 
-  print("🔍 Notifications Enabled: $isGranted");
-}
+    print("🔍 Notifications Enabled: $isGranted");
+  }
 }

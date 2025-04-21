@@ -1,4 +1,4 @@
-final List<String> categories = [
+/*final List<String> categories = [
   'Seeds',
   'Fertilizer',
   'Pesticide',
@@ -6,3 +6,4 @@ final List<String> categories = [
   'Irrigation Supplies',
   'Storage & Packaging',
 ];
+*/
