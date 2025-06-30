@@ -79,7 +79,7 @@ class MaterialTheme {
       suffixIconColor: colorScheme.outline,
     ),
 
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 0.4,
       color: colorScheme.surfaceContainerLow,
       shape: RoundedRectangleBorder(
